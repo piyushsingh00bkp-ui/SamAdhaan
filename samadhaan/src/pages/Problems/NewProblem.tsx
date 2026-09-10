@@ -9,13 +9,14 @@ import {
   ArrowRight, ArrowLeft, Check, AlertTriangle,
   Loader2, CheckCircle2, X, Mic, MicOff, Volume2,
   ShieldAlert, ShieldCheck, Building2, Clock, Eye, Radio,
-  Shield, CheckCheck, RefreshCw
+  Shield, CheckCheck, RefreshCw, Navigation, Compass, Landmark
 } from 'lucide-react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { useAppStore } from '@/store';
 import apiClient from '@/api/client';
+import { INDIAN_CITIES, resolveLocationHub } from '@/utils/locationIntelligence';
 
 const CATEGORIES = [
   { id: 'infrastructure', label: 'Infrastructure', emoji: '🏗️' },
@@ -59,6 +60,10 @@ export default function ReportProblemPage() {
   const [savedToDb, setSavedToDb] = useState<boolean>(true);
   const navigate = useNavigate();
 
+  // Dynamic Location & GPS State
+  const [coords, setCoords] = useState<{ lat: number; lng: number }>({ lat: 18.5204, lng: 73.8567 });
+  const [gpsLoading, setGpsLoading] = useState(false);
+
   // Voice AI State
   const [isRecording, setIsRecording] = useState(false);
   const [voiceLoading, setVoiceLoading] = useState(false);
@@ -89,7 +94,7 @@ export default function ReportProblemPage() {
   const { register, formState: { errors }, watch, setValue, trigger, handleSubmit } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      location: 'Hinjewadi Phase 2, Pune',
+      location: 'Pune, Maharashtra',
       category: 'infrastructure',
     }
   });
@@ -98,6 +103,41 @@ export default function ReportProblemPage() {
   const title = watch('title');
   const description = watch('description');
   const location = watch('location');
+
+  const activeHub = resolveLocationHub({ lat: coords.lat, lng: coords.lng, text: location });
+
+  const handleDetectGPS = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by your browser');
+      return;
+    }
+    setGpsLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        setCoords({ lat: latitude, lng: longitude });
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+          const data = await res.json();
+          const road = data.address?.road || data.address?.suburb || data.address?.neighbourhood || '';
+          const city = data.address?.city || data.address?.town || data.address?.county || data.address?.state_district || '';
+          const state = data.address?.state || '';
+          const full = [road, city, state].filter(Boolean).join(', ') || `${latitude.toFixed(4)}°N, ${longitude.toFixed(4)}°E`;
+          setValue('location', full);
+        } catch {
+          setValue('location', `GPS Location (${latitude.toFixed(4)}°N, ${longitude.toFixed(4)}°E)`);
+        } finally {
+          setGpsLoading(false);
+        }
+      },
+      (err) => {
+        console.warn('GPS error:', err);
+        setGpsLoading(false);
+        alert('Could not access GPS location. Please select a city or type your location.');
+      },
+      { timeout: 10000 }
+    );
+  };
 
   // Initialize Speech Recognition if supported
   useEffect(() => {
@@ -355,13 +395,13 @@ export default function ReportProblemPage() {
         description: data.description,
         category: catLabel,
         locationName: data.location,
-        city: 'Pune',
-        district: 'Pune',
-        state: 'Maharashtra',
-        pincode: '411057',
-        latitude: 18.5912 + (Math.random() - 0.5) * 0.02,
-        longitude: 73.7385 + (Math.random() - 0.5) * 0.02,
-        priority: aiSeverity?.urgencyScore >= 80 ? 'CRITICAL' : 'HIGH',
+        city: activeHub.name,
+        district: activeHub.district,
+        state: activeHub.state,
+        pincode: '411001',
+        latitude: coords.lat + (Math.random() - 0.5) * 0.002,
+        longitude: coords.lng + (Math.random() - 0.5) * 0.002,
+        priority: (aiSeverity?.urgencyScore >= 80 ? 'CRITICAL' : 'HIGH') as any,
         affectedPopulation: 1200,
       };
 
@@ -476,28 +516,98 @@ export default function ReportProblemPage() {
         {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <AnimatePresence mode="wait">
-            {/* Step 1: Location */}
+            {/* Step 1: Dynamic Location & Stakeholder Mapping */}
             {step === 1 && (
               <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                <div className="glass rounded-2xl p-6 border border-white/8">
-                  <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <MapPin size={18} className="text-indigo-400" /> Where is the problem?
-                  </h2>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="text-xs font-medium text-slate-400 mb-1.5 block">Location / Address *</label>
-                      <input
-                        {...register('location')}
-                        placeholder="e.g. Near Main Gate, Hinjewadi Phase 2, Pune"
-                        className="w-full px-4 py-3 rounded-xl glass border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
-                      />
-                      {errors.location && <p className="text-xs text-red-400 mt-1.5">{errors.location.message}</p>}
+                <div className="glass rounded-2xl p-6 border border-white/8 space-y-5">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      <MapPin size={18} className="text-indigo-400" /> Where is the problem located?
+                    </h2>
+                    <button
+                      type="button"
+                      onClick={handleDetectGPS}
+                      disabled={gpsLoading}
+                      className="px-3 py-1.5 rounded-xl bg-indigo-600/20 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-600/30 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                    >
+                      {gpsLoading ? <Loader2 size={13} className="animate-spin" /> : <Navigation size={13} />}
+                      {gpsLoading ? 'Detecting GPS...' : '📍 Use Live GPS Location'}
+                    </button>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-medium text-slate-400 mb-1.5 block">Custom Address / Locality / Ward *</label>
+                    <input
+                      {...register('location')}
+                      placeholder="Type any street, landmark, village, or locality across India..."
+                      className="w-full px-4 py-3 rounded-xl glass border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
+                    />
+                    {errors.location && <p className="text-xs text-red-400 mt-1.5">{errors.location.message}</p>}
+                  </div>
+
+                  {/* Quick Indian City Hub Selector */}
+                  <div>
+                    <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2 block">
+                      Or Select Major Smart City Hub:
+                    </label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                      {INDIAN_CITIES.map((c) => (
+                        <button
+                          key={c.id}
+                          type="button"
+                          onClick={() => {
+                            setValue('location', `${c.name}, ${c.state}`);
+                            setCoords({ lat: c.lat, lng: c.lng });
+                          }}
+                          className={`px-3 py-2 rounded-xl text-xs font-medium border text-left transition-all ${
+                            activeHub.id === c.id
+                              ? 'bg-indigo-500/20 border-indigo-500/60 text-white shadow-md shadow-indigo-900/40'
+                              : 'bg-white/3 border-white/8 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                          }`}
+                        >
+                          <div className="font-semibold text-white">{c.name}</div>
+                          <div className="text-[10px] text-slate-500">{c.state}</div>
+                        </button>
+                      ))}
                     </div>
-                    {/* Map placeholder */}
-                    <div className="h-44 rounded-xl bg-white/3 border border-white/8 border-dashed flex flex-col items-center justify-center gap-2 text-slate-600 cursor-pointer hover:border-indigo-500/30 hover:text-slate-500 transition-all">
-                      <MapPin size={24} />
-                      <p className="text-xs">Location pinned to Pune Municipal Ward 47</p>
-                      <p className="text-[10px] text-slate-700">Coordinates: 18.5912° N, 73.7385° E</p>
+                  </div>
+
+                  {/* Dynamic Location Intelligence Card */}
+                  <div className="rounded-xl bg-gradient-to-br from-indigo-950/40 to-slate-900/60 border border-indigo-500/20 p-4 space-y-3">
+                    <div className="flex items-center justify-between border-b border-white/8 pb-2">
+                      <div className="flex items-center gap-2">
+                        <Building2 size={16} className="text-indigo-400" />
+                        <span className="text-xs font-bold text-white">Matched Local Government & Stakeholders</span>
+                      </div>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold">
+                        Auto Resolved
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                      <div className="bg-white/3 rounded-lg p-2.5 border border-white/6">
+                        <span className="text-slate-500 text-[10px] uppercase font-bold block">Municipal Corporation</span>
+                        <span className="text-indigo-300 font-semibold">{activeHub.municipalBody}</span>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Nodal: {activeHub.nodalOfficer}</p>
+                      </div>
+
+                      <div className="bg-white/3 rounded-lg p-2.5 border border-white/6">
+                        <span className="text-slate-500 text-[10px] uppercase font-bold block">Local University R&D Hub</span>
+                        <span className="text-purple-300 font-semibold">{activeHub.universities[0].name}</span>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Focus: {activeHub.universities[0].specialization}</p>
+                      </div>
+
+                      <div className="bg-white/3 rounded-lg p-2.5 border border-white/6">
+                        <span className="text-slate-500 text-[10px] uppercase font-bold block">CSR Industry Partner</span>
+                        <span className="text-amber-300 font-semibold">{activeHub.industryPartners[0].name}</span>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Fund Slab: {activeHub.industryPartners[0].potentialFunding}</p>
+                      </div>
+
+                      <div className="bg-white/3 rounded-lg p-2.5 border border-white/6">
+                        <span className="text-slate-500 text-[10px] uppercase font-bold block">Emergency Helpline</span>
+                        <span className="text-emerald-300 font-mono font-bold">{activeHub.helpline}</span>
+                        <p className="text-[10px] text-slate-400 mt-0.5">GPS: {coords.lat.toFixed(4)}° N, {coords.lng.toFixed(4)}° E</p>
+                      </div>
                     </div>
                   </div>
                 </div>
