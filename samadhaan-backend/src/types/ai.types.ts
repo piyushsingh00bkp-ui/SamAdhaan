@@ -112,8 +112,10 @@ export interface AIRouteResponse {
 // 5. Matching
 export interface AIMatchRequest {
   challengeId?: string;
-  category: string;
-  description: string;
+  category?: string;
+  description?: string;
+  problemDescription?: string;
+  problem?: string;
   city?: string;
   state?: string;
   latitude?: number;
@@ -152,11 +154,27 @@ export interface AIVisionRequest {
   imageUrl?: string;
   imageBase64?: string;
   mediaUrls?: string[];
+  image?: string;
+  image_path?: string;
+  mimeType?: string;
+  mime_type?: string;
+  title?: string;
+  context?: string;
+  description?: string;
 }
 
 export interface AIVisionResponse {
-  visualVerificationStatus: 'VERIFIED_DAMAGE' | 'INCONCLUSIVE' | 'IRRELEVANT_IMAGE';
+  visualVerificationStatus: 'VERIFIED_DAMAGE' | 'INCONCLUSIVE' | 'IRRELEVANT_IMAGE' | 'VERIFIED_AUTHENTIC_DAMAGE' | 'UNAUTHENTIC_OR_MISMATCH';
+  isAuthentic?: boolean;
+  authenticityScore?: number;
+  matchesDescription?: boolean;
+  matchExplanation?: string;
+  isPrioritized?: boolean;
+  warningMessage?: string | null;
   defectSeverity: number;
+  damageSeverity?: string;
+  suggestedCategory?: string;
+  recommendation?: string;
   detectedDefects: string[];
   boundingPredictions: Array<{
     label: string;
@@ -188,9 +206,10 @@ export interface AIVoiceResponse {
 
 // 8. Impact
 export interface AIImpactRequest {
-  title: string;
-  category: string;
-  proposedSolution: string;
+  title?: string;
+  category?: string;
+  proposedSolution?: string;
+  problemDescription?: string;
   estimatedBudget?: number;
   targetPopulation?: number;
 }
