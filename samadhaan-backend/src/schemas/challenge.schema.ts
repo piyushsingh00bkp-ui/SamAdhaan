@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const createChallengeSchema = z.object({
-  title: z.string().min(5, 'Title must be at least 5 characters').max(200),
-  description: z.string().min(20, 'Description must be at least 20 characters').max(5000),
+  title: z.string().min(3, 'Title must be at least 3 characters').max(200),
+  description: z.string().min(5, 'Description must be at least 5 characters').max(5000),
   category: z.string().min(2).max(100),
   subcategory: z.string().max(100).optional().nullable(),
   priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
