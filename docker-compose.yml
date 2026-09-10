@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  # 1. FastAPI AI Engine (Port 8000)
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    container_name: samadhaan-ai-engine
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-your_gemini_api_key_here}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - samadhaan-network
+
+  # 2. Express/TypeScript Backend (Port 5000)
+  backend:
+    build:
+      context: ./samadhaan-backend
+      dockerfile: Dockerfile
+    container_name: samadhaan-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PORT=5000
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgrespassword@postgres:5432/samadhaan}
+      - DIRECT_URL=${DIRECT_URL:-postgresql://postgres:postgrespassword@postgres:5432/samadhaan}
+      - FIREBASE_PROJECT_ID=samadhaan-31ee8
+      - AI_ENGINE_URL=http://ai-engine:8000
+      - CORS_ORIGIN=http://localhost:5173,http://localhost:3000,http://localhost:80
+      - ALLOW_DEV_AUTH=true
+    depends_on:
+      - ai-engine
+    networks:
+      - samadhaan-network
+
+  # 3. React/Vite Frontend (Port 5173/80)
+  frontend:
+    build:
+      context: ./samadhaan
+      dockerfile: Dockerfile
+    container_name: samadhaan-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api/v1
+    depends_on:
+      - backend
+    networks:
+      - samadhaan-network
+
+networks:
+  samadhaan-network:
+    driver: bridge

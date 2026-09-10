@@ -1,0 +1,91 @@
+﻿# ===================================================
+# SAMADHAAN Full Stack Root .gitignore
+# ===================================================
+
+# ----------------- Environment & Secrets -----------------
+.env
+.env.*
+!.env.example
+*.env
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
+
+# ----------------- Node / Frontend & Backend Dependencies -----------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnpm-store/
+
+# ----------------- Build Outputs & Bundles -----------------
+dist/
+dist-ssr/
+build/
+out/
+.next/
+*.tsbuildinfo
+.eslintcache
+
+# ----------------- Python / AI Engine -----------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+generated_reports/
+*.pdf
+
+# ----------------- OS & Editor Artifacts -----------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+
+# IDE & Editor Directories
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.bak
+*.tmp
+*.temp
+
+# ----------------- Database & Local Uploads -----------------
+*.sqlite
+*.sqlite3
+*.db
+local_uploads/
+uploads/
+.system_generated/

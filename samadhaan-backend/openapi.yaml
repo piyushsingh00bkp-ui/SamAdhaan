@@ -1,0 +1,334 @@
+openapi: 3.0.3
+info:
+  title: SAMADHAAN - National AI GovTech & Civic Innovation API
+  description: |
+    Production-grade backend and database API connecting Citizens, AI Engine, Universities, Industry CSR, and Government.
+    
+    Tagline: **"From Local Problems to Lasting Solutions"**
+  version: 1.0.0
+  contact:
+    name: SAMADHAAN Core Team (SIH 2026)
+    email: api@samadhaan.gov.in
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local Development Server
+  - url: https://api.samadhaan.gov.in/api/v1
+    description: Production Gateway
+
+components:
+  securitySchemes:
+    FirebaseBearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Firebase ID Token issued by Firebase Client SDK on frontend.
+    DevAuthUser:
+      type: apiKey
+      in: header
+      name: X-Dev-User-ID
+      description: Development-only bypass header. STRICTLY functional when NODE_ENV=development and ALLOW_DEV_AUTH=true.
+    DevAuthRole:
+      type: apiKey
+      in: header
+      name: X-Dev-Role
+      description: Optional role override (CITIZEN, UNIVERSITY, INDUSTRY, GOVERNMENT, ADMIN).
+
+  schemas:
+    ApiResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+        meta:
+          type: object
+
+    Challenge:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        subcategory:
+          type: string
+        status:
+          type: string
+          enum: [SUBMITTED, AI_ANALYZED, ROUTED, UNIVERSITY_ASSIGNED, R_AND_D, INDUSTRY_PARTNERED, PILOT, DEPLOYED, RESOLVED, REJECTED]
+        priority:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        severity:
+          type: integer
+          minimum: 0
+          maximum: 100
+        locationName:
+          type: string
+        city:
+          type: string
+        district:
+          type: string
+        state:
+          type: string
+        latitude:
+          type: number
+        longitude:
+          type: number
+        aiAnalyzed:
+          type: boolean
+        aiConfidence:
+          type: number
+
+paths:
+  /health:
+    get:
+      summary: Health check endpoint
+      tags: [System]
+      responses:
+        '200':
+          description: Service is healthy and database is connected.
+
+  /users/me:
+    get:
+      summary: Get authenticated user profile
+      tags: [Users]
+      security:
+        - FirebaseBearerAuth: []
+        - DevAuthUser: []
+      responses:
+        '200':
+          description: User profile with citizen, expert, student, or industry extensions.
+    put:
+      summary: Update user profile and citizen bio
+      tags: [Users]
+      security:
+        - FirebaseBearerAuth: []
+        - DevAuthUser: []
+      responses:
+        '200':
+          description: Updated profile.
+
+  /challenges:
+    get:
+      summary: Search and filter civic challenges with pagination
+      tags: [Challenges]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+        - name: minSeverity
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Paginated challenge list.
+    post:
+      summary: Report a new civic challenge (triggers async AI triage pipeline)
+      tags: [Challenges]
+      security:
+        - FirebaseBearerAuth: []
+        - DevAuthUser: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, category, locationName, city, district, state, latitude, longitude]
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                category:
+                  type: string
+                locationName:
+                  type: string
+                city:
+                  type: string
+                district:
+                  type: string
+                state:
+                  type: string
+                latitude:
+                  type: number
+                longitude:
+                  type: number
+      responses:
+        '201':
+          description: Challenge created successfully.
+
+  /challenges/nearby:
+    get:
+      summary: Geospatial radius search for nearby problems (PostGIS)
+      tags: [Challenges, Geospatial]
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: lng
+          in: query
+          required: true
+          schema:
+            type: number
+        - name: radius
+          in: query
+          schema:
+            type: number
+            default: 10
+            description: Radius in kilometers.
+      responses:
+        '200':
+          description: List of challenges with computed distance in km.
+
+  /challenges/{id}:
+    get:
+      summary: Get complete challenge dossier including AI analysis and projects
+      tags: [Challenges]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Challenge details.
+
+  /challenges/{id}/evidence:
+    post:
+      summary: Upload photo, video, audio, or document evidence
+      tags: [Challenges, Evidence]
+      security:
+        - FirebaseBearerAuth: []
+        - DevAuthUser: []
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Evidence uploaded and linked.
+
+  /universities:
+    get:
+      summary: List partnered Universities and Higher Education Institutes
+      tags: [Universities]
+      responses:
+        '200':
+          description: University list.
+
+  /industries:
+    get:
+      summary: List Industry and CSR Partners
+      tags: [Industry]
+      responses:
+        '200':
+          description: Industry list.
+
+  /projects:
+    get:
+      summary: List active research projects
+      tags: [Projects]
+      responses:
+        '200':
+          description: Projects list.
+    post:
+      summary: Create an R&D project (Universities only)
+      tags: [Projects]
+      security:
+        - FirebaseBearerAuth: []
+        - DevAuthUser: []
+      responses:
+        '201':
+          description: Project created.
+
+  /solutions:
+    get:
+      summary: List proposed solutions and blueprints
+      tags: [Solutions]
+      responses:
+        '200':
+          description: Solutions list.
+
+  /solutions/{id}/deploy:
+    post:
+      summary: Deploy solution to field (Updates challenge status to DEPLOYED)
+      tags: [Solutions, Deployments]
+      security:
+        - FirebaseBearerAuth: []
+        - DevAuthUser: []
+      responses:
+        '201':
+          description: Solution deployed.
+
+  /government/dashboard:
+    get:
+      summary: Municipal and Ward administration command dashboard
+      tags: [Government]
+      responses:
+        '200':
+          description: Ward statistics and critical escalations.
+
+  /government/hotspots:
+    get:
+      summary: Aggregated geospatial problem clusters for heatmap rendering
+      tags: [Government, Geospatial]
+      responses:
+        '200':
+          description: Geospatial cluster centers and intensities.
+
+  /analytics/overview:
+    get:
+      summary: National GovTech platform high-level metrics
+      tags: [Analytics]
+      responses:
+        '200':
+          description: Overview metrics.

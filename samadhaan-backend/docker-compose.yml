@@ -1,0 +1,47 @@
+services:
+  postgres:
+    image: postgis/postgis:16-3.4-alpine
+    container_name: samadhaan-postgis
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: samadhaan_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d samadhaan_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: samadhaan-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      DATABASE_URL: postgresql://postgres:postgrespassword@postgres:5432/samadhaan_db?schema=public
+      FIREBASE_PROJECT_ID: ${FIREBASE_PROJECT_ID:-samadhaan-govtech}
+      FIREBASE_CLIENT_EMAIL: ${FIREBASE_CLIENT_EMAIL:-firebase-adminsdk@samadhaan-govtech.iam.gserviceaccount.com}
+      FIREBASE_PRIVATE_KEY: ${FIREBASE_PRIVATE_KEY:-""}
+      AI_ENGINE_URL: ${AI_ENGINE_URL:-http://ai-engine:8000}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173,http://localhost:3000}
+      ALLOW_DEV_AUTH: "false"
+      MAX_FILE_SIZE: 25000000
+    ports:
+      - "5000:5000"
+    volumes:
+      - backend_uploads:/app/uploads
+
+volumes:
+  postgres_data:
+  backend_uploads:

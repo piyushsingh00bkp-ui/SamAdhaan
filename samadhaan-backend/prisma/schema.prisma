@@ -1,0 +1,627 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── ENUMS ─────────────────────────────────────────────────────────────
+
+enum Role {
+  CITIZEN
+  UNIVERSITY
+  INDUSTRY
+  GOVERNMENT
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING
+  DEACTIVATED
+}
+
+enum VerificationStatus {
+  UNVERIFIED
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum OrgType {
+  STARTUP
+  MSME
+  CORPORATION
+  CSR
+  NGO
+  TECHNOLOGY_PROVIDER
+  FUNDING_PARTNER
+}
+
+enum ChallengeStatus {
+  SUBMITTED
+  AI_ANALYZED
+  ROUTED
+  UNIVERSITY_ASSIGNED
+  R_AND_D
+  INDUSTRY_PARTNERED
+  PILOT
+  DEPLOYED
+  RESOLVED
+  REJECTED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum EvidenceType {
+  IMAGE
+  VIDEO
+  AUDIO
+  PDF
+  DOCUMENT
+}
+
+enum ProjectStatus {
+  PLANNING
+  RESEARCH
+  PROTOTYPE
+  PILOT
+  DEPLOYMENT
+  COMPLETED
+  CANCELLED
+}
+
+enum TeamRole {
+  FACULTY
+  STUDENT
+  EXPERT
+  PROJECT_MANAGER
+}
+
+enum PartnershipType {
+  FUNDING
+  TECHNOLOGY
+  MENTORSHIP
+  PILOT
+  DEPLOYMENT
+  CSR
+}
+
+enum MatchStatus {
+  SUGGESTED
+  ACCEPTED
+  DECLINED
+  ASSIGNED
+}
+
+// ── USER & PROFILES ───────────────────────────────────────────────────
+
+model User {
+  id           String     @id @default(uuid())
+  firebaseUid  String     @unique
+  email        String     @unique
+  phone        String?
+  name         String
+  avatarUrl    String?
+  role         Role       @default(CITIZEN)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  lastLoginAt  DateTime?
+
+  // Relations
+  citizenProfile      CitizenProfile?
+  expertProfile       Expert?
+  studentProfile      StudentProfile?
+  industryPartner     IndustryPartner?
+  createdChallenges   Challenge[]             @relation("UserCreatedChallenges")
+  teamMemberships     ResearchTeamMember[]
+  notifications       Notification[]
+  auditLogs           AuditLog[]
+  uploadedEvidence    ChallengeEvidence[]     @relation("UserUploadedEvidence")
+  statusChanges       ChallengeStatusHistory[] @relation("UserStatusChanges")
+
+  @@index([firebaseUid])
+  @@index([email])
+  @@index([role])
+  @@index([status])
+}
+
+model CitizenProfile {
+  id                String   @id @default(uuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio               String?
+  city              String?
+  district          String?
+  state             String?
+  pincode           String?
+  preferredLanguage String   @default("en")
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model University {
+  id                 String             @id @default(uuid())
+  name               String
+  shortName          String?
+  description        String?
+  website            String?
+  email              String?
+  phone              String?
+  address            String?
+  city               String
+  district           String
+  state              String
+  latitude           Float?
+  longitude          Float?
+  verificationStatus VerificationStatus @default(VERIFIED)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  departments   UniversityDepartment[]
+  experts       Expert[]
+  students      StudentProfile[]
+  projects      Project[]               @relation("UniversityProjects")
+  matches       UniversityMatch[]
+
+  @@index([state])
+  @@index([city])
+  @@index([district])
+}
+
+model UniversityDepartment {
+  id           String     @id @default(uuid())
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  name         String
+  description  String?
+  domain       String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Relations
+  experts  Expert[]
+  students StudentProfile[]
+
+  @@index([universityId])
+  @@index([domain])
+}
+
+model Expert {
+  id                 String               @id @default(uuid())
+  userId             String               @unique
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  universityId       String
+  university         University           @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  departmentId       String
+  department         UniversityDepartment @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  designation        String
+  bio                String?
+  yearsExperience    Int                  @default(0)
+  expertise          String[]
+  verificationStatus VerificationStatus   @default(VERIFIED)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  // Relations
+  matches ExpertMatch[]
+
+  @@index([universityId])
+  @@index([departmentId])
+}
+
+model StudentProfile {
+  id           String               @id @default(uuid())
+  userId       String               @unique
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  universityId String
+  university   University           @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  departmentId String
+  department   UniversityDepartment @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  course       String
+  year         Int
+  skills       String[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@index([universityId])
+  @@index([departmentId])
+}
+
+model IndustryPartner {
+  id                 String             @id @default(uuid())
+  userId             String             @unique
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  organizationName   String
+  organizationType   OrgType            @default(CORPORATION)
+  description        String?
+  website            String?
+  email              String?
+  phone              String?
+  address            String?
+  city               String
+  district           String
+  state              String
+  verificationStatus VerificationStatus @default(VERIFIED)
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  partnerships Partnership[]
+  matches      IndustryMatch[]
+
+  @@index([organizationType])
+  @@index([state])
+  @@index([city])
+}
+
+model GovernmentDepartment {
+  id           String   @id @default(uuid())
+  name         String
+  description  String?
+  state        String
+  district     String
+  contactEmail String?
+  contactPhone String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([state])
+  @@index([district])
+}
+
+// ── CHALLENGES & EVIDENCE ─────────────────────────────────────────────
+
+model Challenge {
+  id                 String          @id @default(uuid())
+  title              String
+  description        String
+  createdByUserId    String
+  createdByUser      User            @relation("UserCreatedChallenges", fields: [createdByUserId], references: [id], onDelete: Cascade)
+  category           String
+  subcategory        String?
+  status             ChallengeStatus @default(SUBMITTED)
+  priority           Priority        @default(MEDIUM)
+  severity           Int             @default(50) // 0-100
+  affectedPopulation Int?
+  locationName       String
+  city               String
+  district           String
+  state              String
+  pincode            String?
+  latitude           Float
+  longitude          Float
+  aiAnalyzed         Boolean         @default(false)
+  aiConfidence       Float?
+  isDeleted          Boolean         @default(false)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+  resolvedAt         DateTime?
+
+  // Relations
+  evidence         ChallengeEvidence[]
+  statusHistory    ChallengeStatusHistory[]
+  aiAnalysis       AIAnalysis?
+  duplicateMatches DuplicateMatch[]         @relation("SourceChallengeDuplicates")
+  matchedBy        DuplicateMatch[]         @relation("TargetChallengeDuplicates")
+  universityMatches UniversityMatch[]
+  expertMatches    ExpertMatch[]
+  industryMatches  IndustryMatch[]
+  projects         Project[]
+
+  @@index([status])
+  @@index([category])
+  @@index([severity])
+  @@index([priority])
+  @@index([state])
+  @@index([district])
+  @@index([city])
+  @@index([createdAt])
+  @@index([latitude, longitude])
+}
+
+model ChallengeEvidence {
+  id          String       @id @default(uuid())
+  challengeId String
+  challenge   Challenge    @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  type        EvidenceType @default(IMAGE)
+  fileName    String
+  fileUrl     String
+  mimeType    String
+  fileSize    Int
+  uploadedBy  String
+  uploader    User         @relation("UserUploadedEvidence", fields: [uploadedBy], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+
+  @@index([challengeId])
+}
+
+model ChallengeStatusHistory {
+  id             String          @id @default(uuid())
+  challengeId    String
+  challenge      Challenge       @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  previousStatus ChallengeStatus
+  newStatus      ChallengeStatus
+  changedBy      String
+  changer        User            @relation("UserStatusChanges", fields: [changedBy], references: [id], onDelete: Cascade)
+  comment        String?
+  createdAt      DateTime        @default(now())
+
+  @@index([challengeId])
+}
+
+// ── AI ANALYSIS & MATCHING STORAGE ────────────────────────────────────
+
+model AIAnalysis {
+  id                    String    @id @default(uuid())
+  challengeId           String    @unique
+  challenge             Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  language              String?
+  transcription         String?
+  translatedText        String?
+  problemSummary        String?
+  category              String?
+  subcategory           String?
+  severity              Int?
+  urgency               Int?
+  populationImpact      String?
+  healthImpact          String?
+  economicImpact        String?
+  aiConfidence          Float?
+  duplicateProbability  Float?
+  governmentDepartment  String?
+  recommendedUniversity String?
+  recommendedExperts    String[]
+  recommendedIndustry   String?
+  analysisVersion       String    @default("v1.0")
+  rawResponse           Json?
+  createdAt             DateTime  @default(now())
+
+  @@index([challengeId])
+}
+
+model DuplicateMatch {
+  id                 String    @id @default(uuid())
+  challengeId        String
+  challenge          Challenge @relation("SourceChallengeDuplicates", fields: [challengeId], references: [id], onDelete: Cascade)
+  matchedChallengeId String
+  matchedChallenge   Challenge @relation("TargetChallengeDuplicates", fields: [matchedChallengeId], references: [id], onDelete: Cascade)
+  similarityScore    Float
+  isLikelyDuplicate  Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+
+  @@index([challengeId])
+  @@index([matchedChallengeId])
+}
+
+model UniversityMatch {
+  id           String      @id @default(uuid())
+  challengeId  String
+  challenge    Challenge   @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  universityId String
+  university   University  @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  score        Float
+  reason       String?
+  status       MatchStatus @default(SUGGESTED)
+  createdAt    DateTime    @default(now())
+
+  @@index([challengeId])
+  @@index([universityId])
+}
+
+model ExpertMatch {
+  id          String      @id @default(uuid())
+  challengeId String
+  challenge   Challenge   @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  expertId    String
+  expert      Expert      @relation(fields: [expertId], references: [id], onDelete: Cascade)
+  score       Float
+  reason      String?
+  status      MatchStatus @default(SUGGESTED)
+  createdAt   DateTime    @default(now())
+
+  @@index([challengeId])
+  @@index([expertId])
+}
+
+model IndustryMatch {
+  id                String          @id @default(uuid())
+  challengeId       String
+  challenge         Challenge       @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  industryPartnerId String
+  industryPartner   IndustryPartner @relation(fields: [industryPartnerId], references: [id], onDelete: Cascade)
+  score             Float
+  reason            String?
+  status            MatchStatus     @default(SUGGESTED)
+  createdAt         DateTime        @default(now())
+
+  @@index([challengeId])
+  @@index([industryPartnerId])
+}
+
+// ── PROJECTS, TEAMS, SOLUTIONS & DEPLOYMENTS ──────────────────────────
+
+model Project {
+  id                     String        @id @default(uuid())
+  challengeId            String
+  challenge              Challenge     @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  name                   String
+  description            String
+  status                 ProjectStatus @default(PLANNING)
+  startDate              DateTime?
+  targetDate             DateTime?
+  completedAt            DateTime?
+  createdByUniversityId  String
+  createdByUniversity    University    @relation("UniversityProjects", fields: [createdByUniversityId], references: [id], onDelete: Cascade)
+  budget                 Float?
+  fundingSource          String?
+  createdAt              DateTime      @default(now())
+  updatedAt              DateTime      @updatedAt
+
+  // Relations
+  teams         ResearchTeam[]
+  solutions     Solution[]
+  partnerships  Partnership[]
+  impactMetrics ImpactMetric[]
+
+  @@index([challengeId])
+  @@index([createdByUniversityId])
+  @@index([status])
+}
+
+model ResearchTeam {
+  id          String   @id @default(uuid())
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  members ResearchTeamMember[]
+
+  @@index([projectId])
+}
+
+model ResearchTeamMember {
+  id       String       @id @default(uuid())
+  teamId   String
+  team     ResearchTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId   String
+  user     User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role     TeamRole     @default(STUDENT)
+  joinedAt DateTime     @default(now())
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+}
+
+model Solution {
+  id                String        @id @default(uuid())
+  projectId         String
+  project           Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title             String
+  description       String
+  solutionType      String
+  estimatedCost     Float?
+  estimatedDuration String?
+  feasibilityScore  Float?
+  expectedImpact    String?
+  status            String        @default("PROPOSED")
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  // Relations
+  deployments Deployment[]
+
+  @@index([projectId])
+}
+
+model Deployment {
+  id              String    @id @default(uuid())
+  solutionId      String
+  solution        Solution  @relation(fields: [solutionId], references: [id], onDelete: Cascade)
+  location        String
+  latitude        Float
+  longitude       Float
+  startDate       DateTime?
+  completionDate  DateTime?
+  status          String    @default("ACTIVE")
+  peopleImpacted  Int       @default(0)
+  deploymentNotes String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  impactMetrics ImpactMetric[]
+
+  @@index([solutionId])
+}
+
+model Partnership {
+  id                String          @id @default(uuid())
+  projectId         String
+  project           Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  industryPartnerId String
+  industryPartner   IndustryPartner @relation(fields: [industryPartnerId], references: [id], onDelete: Cascade)
+  type              PartnershipType @default(CSR)
+  fundingAmount     Float?
+  status            String          @default("PROPOSED")
+  startDate         DateTime?
+  endDate           DateTime?
+  notes             String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([projectId])
+  @@index([industryPartnerId])
+}
+
+model ImpactMetric {
+  id                       String      @id @default(uuid())
+  projectId                String
+  project                  Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  deploymentId             String?
+  deployment               Deployment? @relation(fields: [deploymentId], references: [id], onDelete: SetNull)
+  peopleImpacted           Int         @default(0)
+  economicImpact           Float?      // In Lakhs INR
+  environmentalImpact      String?
+  socialImpact             String?
+  responseTimeImprovement  Float?      // In %
+  costReduction            Float?      // In %
+  measurementDate          DateTime    @default(now())
+  notes                    String?
+  createdAt                DateTime    @default(now())
+  updatedAt                DateTime    @updatedAt
+
+  @@index([projectId])
+  @@index([deploymentId])
+}
+
+// ── NOTIFICATIONS & AUDIT LOGGING ─────────────────────────────────────
+
+model Notification {
+  id                 String   @id @default(uuid())
+  userId             String
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type               String
+  title              String
+  message            String
+  read               Boolean  @default(false)
+  relatedChallengeId String?
+  relatedProjectId   String?
+  createdAt          DateTime @default(now())
+
+  @@index([userId])
+  @@index([read])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String
+  entityType String
+  entityId   String?
+  metadata   Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+}

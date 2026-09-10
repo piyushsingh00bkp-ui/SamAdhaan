@@ -1,0 +1,17 @@
+﻿# AI Engine .gitignore (ai-engine)
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+.env
+.env.*
+!.env.example
+generated_reports/
+*.pdf
+.pytest_cache/
+*.log
+.DS_Store

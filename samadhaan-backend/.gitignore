@@ -1,0 +1,11 @@
+﻿# Backend .gitignore (samadhaan-backend)
+node_modules/
+dist/
+build/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+*.sqlite
+coverage/
