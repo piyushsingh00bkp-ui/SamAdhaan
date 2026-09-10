@@ -313,7 +313,7 @@ export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { activeRole } = useAppStore();
+  const { activeRole, isAuthenticated, user } = useAppStore();
   const config = useActiveRoleConfig();
   const navItems = NAV_ITEMS[activeRole];
 
@@ -407,10 +407,27 @@ export default function Navbar() {
               <RoleSwitcher />
 
               {/* Notifications */}
-              <NotificationBell />
+              {isAuthenticated && <NotificationBell />}
 
-              {/* User Menu */}
-              <UserMenu />
+              {/* User Menu or Auth Buttons */}
+              {isAuthenticated && user ? (
+                <UserMenu />
+              ) : (
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <Link
+                    to="/login"
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-white/8 transition-all"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    to="/signup"
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/30 transition-all"
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              )}
 
               {/* Mobile hamburger */}
               <button
@@ -457,7 +474,7 @@ export default function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
-                <div className="mt-2 pt-2 border-t border-white/6">
+                <div className="mt-2 pt-2 border-t border-white/6 flex flex-col gap-2">
                   <Link
                     to="/problems/new"
                     className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 transition-all"
@@ -465,6 +482,22 @@ export default function Navbar() {
                     <Plus size={14} />
                     Report a Problem
                   </Link>
+                  {!isAuthenticated && (
+                    <div className="flex gap-2 pt-1">
+                      <Link
+                        to="/login"
+                        className="flex-1 text-center py-2 rounded-xl text-xs font-semibold bg-white/6 text-white border border-white/10"
+                      >
+                        Log In
+                      </Link>
+                      <Link
+                        to="/signup"
+                        className="flex-1 text-center py-2 rounded-xl text-xs font-semibold bg-indigo-600 text-white"
+                      >
+                        Sign Up
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

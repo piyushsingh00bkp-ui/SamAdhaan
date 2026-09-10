@@ -30,22 +30,27 @@ export const useAppStore = create<AppState>()(
       activeRole: 'citizen',
       setActiveRole: (role) => set({ activeRole: role }),
 
-      // Seed with mock user for demo
-      user: MOCK_USER,
-      isAuthenticated: true,
+      // Clean default for new devices
+      user: null,
+      isAuthenticated: false,
       login: (user) => set({ user, isAuthenticated: true }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      logout: () => {
+        localStorage.removeItem('samadhaan_token');
+        localStorage.removeItem('samadhaan_email');
+        localStorage.removeItem('samadhaan_role');
+        set({ user: null, isAuthenticated: false });
+      },
 
       sidebarOpen: false,
       setSidebarOpen: (open) => set({ sidebarOpen: open }),
       toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
 
-      unreadCount: 2,
+      unreadCount: 0,
       setUnreadCount: (count) => set({ unreadCount: count }),
     }),
     {
       name: 'samadhaan-store',
-      partialize: (s) => ({ activeRole: s.activeRole }),
+      partialize: (s) => ({ activeRole: s.activeRole, user: s.user, isAuthenticated: s.isAuthenticated }),
     }
   )
 );
