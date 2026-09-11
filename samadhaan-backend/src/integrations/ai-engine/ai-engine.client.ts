@@ -620,58 +620,160 @@ Over the last reporting period, the SAMADHAAN platform triaged **142 civic chall
   }
 
   // 12. Project & R&D Copilot
-  async copilotChat(payload: AICopilotChatRequest): Promise<AICopilotChatResponse> {
+  async copilotChat(payload: any): Promise<AICopilotChatResponse> {
+    const rawQuery = (payload?.query || payload?.message || payload?.question || payload?.prompt || '').trim();
+    const history = payload?.history || payload?.conversationHistory || [];
+
+    // 1. Try FastAPI AI Engine if online
     try {
-      const res = await this.client.post('/api/v1/copilot/chat', payload);
-      return res.data;
-    } catch (error) {
-      this.handleAIError('copilotChat', error);
-      const q = (payload.query || '').toLowerCase();
-      let answer = `Hello! I am your **SAMADHAAN AI Copilot**. I assist municipal authorities, researchers, CSR partners, and citizens in solving civic problems with real data, AI models, and structured execution frameworks.\n\n`;
-
-      if (q.includes('csr') || q.includes('fund') || q.includes('grant') || q.includes('budget')) {
-        answer += `### 💼 CSR Funding & Grant Formulation Guidance
-1. **Eligibility Criteria:** Under Section 135 & Schedule VII of the Companies Act, grants can be channeled directly into accredited University incubation centres and pilot civic projects.
-2. **Recommended Slab:** ₹10L - ₹50L for Phase-1 Rapid Prototyping & Field Validation.
-3. **Milestone Governance:** Funds are disbursed in 3 tranches: 40% upon lab prototype validation, 40% upon municipal field installation, and 20% post 90-day impact verification audit.`;
-      } else if (q.includes('pothole') || q.includes('road') || q.includes('asphalt') || q.includes('traffic')) {
-        answer += `### 🏗️ Road Infrastructure & Mobility Action Plan
-1. **Rapid Fix:** Cold-mix polymer bituminous patch for immediate safety (SLA: <24 hrs).
-2. **Long-Term R&D:** Collaborate with COEP / IIT Civil Dept to deploy Geopolymer Concrete overlays with 3x durability in high-rainfall zones.
-3. **Cost Estimate:** ₹3,200 per sq. meter with 3-year maintenance warranty.`;
-      } else if (q.includes('water') || q.includes('drain') || q.includes('flood') || q.includes('sewage')) {
-        answer += `### 💧 Water & Drainage Engineering Blueprint
-1. **AI Sensor Placement:** Deploy ultrasonic water level sensors at critical stormwater outfalls.
-2. **Immediate Action:** Desilt primary stormwater trunk lines in Wards 8 & 12 before seasonal monsoon surges.
-3. **Community Impact:** Mitigates waterborne contamination risk for ~25,000 residents.`;
-      } else {
-        answer += `How can I help you advance this civic initiative?
-- **Draft an R&D Grant Proposal** for University-CSR matching
-- **Formulate a Municipal SLA & Action Plan** for problem resolution
-- **Simulate Societal & Economic Impact (SROI)** for project deployment
-- **Analyze Geographic Hotspots** across city wards`;
-      }
-
+      const res = await this.client.post('/api/v1/copilot/chat', {
+        query: rawQuery,
+        message: rawQuery,
+        question: rawQuery,
+        history,
+        project_id: payload?.projectId || 'global',
+      });
+      const d = res.data;
+      const answer = d.answer || d.reply || d.response || 'I have processed your request.';
+      const followUps = d.suggestedFollowUps || [
+        'How do I report a monsoon drainage issue?',
+        'What CSR schemes fund solar water filtration?',
+        'Which university labs work on asphalt durability?',
+      ];
+      const links = (d.links || d.actionableLinks || []).map((l: any) => ({
+        label: l.title || l.label || 'View Link',
+        title: l.title || l.label || 'View Link',
+        url: l.url || '/',
+      }));
       return {
         answer,
-        suggestedFollowUps: [
-          'Generate CSR Grant Proposal template',
-          'Calculate SROI for this civic project',
-          'Find top matching university research labs',
-          'Review Municipal Department Escalation SOP',
-        ],
-        actionableLinks: [
-          { label: 'Explore Open Civic Problems', url: '/problems' },
-          { label: 'Browse University Research Hub', url: '/universities' },
-          { label: 'View CSR Funding Portal', url: '/industry' },
-        ],
-        groundingSources: [
-          'National Municipal GovTech Framework (NURM)',
-          'Ministry of Housing & Urban Affairs (MoHUA) Guidelines',
-          'Samadhaan PostGIS Geospatial Database',
-        ],
-      };
+        suggestedFollowUps: followUps,
+        actionableLinks: links,
+        links,
+        groundingSources: d.groundingSources || ['SAMADHAAN GovTech Intelligence Framework', 'MoHUA Guidelines'],
+      } as any;
+    } catch (error) {
+      this.handleAIError('copilotChat', error);
     }
+
+    // 2. Try Direct Google Gemini API if GEMINI_API_KEY is available
+    const geminiKey = process.env.GEMINI_API_KEY || payload?.geminiApiKey;
+    if (geminiKey && rawQuery) {
+      try {
+        const geminiRes = await axios.post(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+          {
+            contents: [
+              {
+                role: 'user',
+                parts: [
+                  {
+                    text: `You are SAMADHAAN AI Copilot, an expert AI advisor for Indian civic governance, municipal issue tracking, university R&D, and CSR funding under Companies Act Section 135. Answer concisely, helpfully, and with markdown bullet points.\nUser query: ${rawQuery}`,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.4,
+              maxOutputTokens: 600,
+            },
+          },
+          { timeout: 10000 }
+        );
+        const text = geminiRes.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text && text.trim()) {
+          const defaultLinks = [
+            { label: 'Report Civic Issue', title: 'Report Civic Issue', url: '/problems/new' },
+            { label: 'Explore Solutions', title: 'Explore Solutions', url: '/solutions' },
+            { label: 'CSR Portal', title: 'CSR Portal', url: '/industry' },
+          ];
+          return {
+            answer: text.trim(),
+            suggestedFollowUps: [
+              'How do I track municipal SLA status?',
+              'What CSR grants are available for civic prototypes?',
+              'How to collaborate with university engineering labs?',
+            ],
+            actionableLinks: defaultLinks,
+            links: defaultLinks,
+            groundingSources: ['Google Gemini Live Model', 'SamAdhaan Intelligence Base'],
+          } as any;
+        }
+      } catch (geminiErr) {
+        console.warn('Gemini REST call fallback:', (geminiErr as any)?.message);
+      }
+    }
+
+    // 3. Ultra-Smart Contextual Fallback Engine
+    const q = rawQuery.toLowerCase();
+    let answer = '';
+    let links = [
+      { label: 'Explore Civic Problems', title: 'Explore Civic Problems', url: '/problems' },
+      { label: 'University Research Hub', title: 'University Research Hub', url: '/universities' },
+      { label: 'CSR Funding Portal', title: 'CSR Funding Portal', url: '/industry' },
+    ];
+
+    if (!q || q.includes('hi') || q.includes('hello') || q.includes('hey') || q === 'help') {
+      answer = `Hello! 👋 Welcome to **SAMADHAAN AI Copilot** — your intelligent civic, municipal, and university innovation advisor.\n\nHere is how I can assist you:\n- 📝 **Report & Triage Issues:** Report potholes, drainage overflow, or electrical hazards with automatic AI SLA routing.\n- 🏛️ **Municipal Escalation:** Find your local municipal nodal officer and track statutory turnaround times.\n- 🎓 **University Collaboration:** Connect with labs at COEP, IIT, and engineering institutes building civic prototypes.\n- 💼 **CSR Grant Matching:** Access corporate CSR funds under Section 135 & Schedule VII of the Companies Act.\n\nWhat would you like to explore or solve today?`;
+      links = [
+        { label: 'Report a Problem', title: 'Report a Problem', url: '/problems/new' },
+        { label: 'Browse Solutions', title: 'Browse Solutions', url: '/solutions' },
+        { label: 'Industry & CSR Portal', title: 'Industry & CSR Portal', url: '/industry' },
+      ];
+    } else if (q.includes('what is samadhaan') || q.includes('about') || q.includes('how does') || q.includes('who are')) {
+      answer = `### 🌟 About SAMADHAAN\n**SAMADHAAN** (समाधान) is India's unified AI GovTech Platform that bridges the gap between **Citizens**, **Municipal Corporations**, **University R&D Labs**, and **CSR Sponsors**.\n\n- **1. Citizen Reporting:** Multi-modal AI Vision and Regional Voice (Hindi/Marathi/English) grievance logging.\n- **2. Automatic Triage:** Real-time AI classification, urgency scoring (0-100), and municipal department routing.\n- **3. Academic Innovation:** Engineering universities build validated prototypes to solve recurring civic issues.\n- **4. CSR Co-funding:** Corporate CSR grants fund university pilots under Schedule VII of the Companies Act.`;
+    } else if (q.includes('csr') || q.includes('fund') || q.includes('grant') || q.includes('budget') || q.includes('schedule vii') || q.includes('section 135')) {
+      answer = `### 💼 CSR Funding & Grant Opportunities under Companies Act\nUnder **Section 135 & Schedule VII of the Companies Act, 2013**, corporate CSR capital can be allocated to:\n1. **Drinking Water & Sanitation:** Stormwater drainage, sewage treatment, and clean drinking water IoT filters.\n2. **Technology Incubators:** Grants to academic incubators at universities (IITs, NITs, State Universities) for civic innovations.\n3. **Slum Area & Urban Infrastructure:** Road durability, waste management, and solar street illumination.\n\n💡 *Grant slabs typically range from ₹10 Lakhs to ₹50 Lakhs with structured 3-tranche milestone governance.*`;
+      links = [
+        { label: 'Explore CSR Portal', title: 'Explore CSR Portal', url: '/industry' },
+        { label: 'University Innovation Projects', title: 'University Innovation Projects', url: '/universities' },
+      ];
+    } else if (q.includes('pothole') || q.includes('road') || q.includes('asphalt') || q.includes('traffic') || q.includes('bridge')) {
+      answer = `### 🏗️ Road Infrastructure & Pothole Resolution Protocol\n1. **AI Severity Detection:** Our Vision AI detects asphalt erosion, defect perimeter, and traffic risk.\n2. **Immediate Remediation (SLA <24-48 hrs):** Deployment of polymer-modified cold-mix asphalt for fast weather-resistant patching.\n3. **Engineered Longevity:** Collaboration with University Civil Engineering departments to test geopolymer concrete overlays.\n4. **Work Order Dispatch:** Automated routing directly to the Municipal Road Development Department.`;
+      links = [
+        { label: 'Report Road Defect', title: 'Report Road Defect', url: '/problems/new' },
+        { label: 'View Road Solutions', title: 'View Road Solutions', url: '/solutions' },
+      ];
+    } else if (q.includes('water') || q.includes('drain') || q.includes('flood') || q.includes('sewage') || q.includes('pipe') || q.includes('monsoon')) {
+      answer = `### 💧 Water & Drainage Infrastructure Management\n1. **Telemetry & Sensor Nodes:** Ultrasonic IoT water-level sensors deployed at flood bottlenecks.\n2. **Department Routing:** Directly routed to the Municipal Water Supply & Sewerage Board.\n3. **Emergency Escalation:** Monsoon rapid-response teams with desilting suction units dispatched for high-urgency blockage reports.\n4. **Public Health Protection:** Prevents vector-borne contamination and safeguards residential zones.`;
+      links = [
+        { label: 'Report Drainage Issue', title: 'Report Drainage Issue', url: '/problems/new' },
+        { label: 'Water Solutions Portfolio', title: 'Water Solutions Portfolio', url: '/solutions' },
+      ];
+    } else if (q.includes('garbage') || q.includes('waste') || q.includes('dump') || q.includes('trash') || q.includes('clean')) {
+      answer = `### ♻️ Solid Waste Management & Sanitation\n1. **Geo-tagged Reporting:** Pinpoint illegal dumpsites with live GPS and Vision AI verification.\n2. **Municipal Routing:** Automated work order to the Solid Waste Management & Health Department.\n3. **University Composting & Recycling Pilots:** Connect with college biochemistry labs for organic bio-waste composting.`;
+      links = [
+        { label: 'Report Sanitation Defect', title: 'Report Sanitation Defect', url: '/problems/new' },
+        { label: 'Waste Management Solutions', title: 'Waste Management Solutions', url: '/solutions' },
+      ];
+    } else if (q.includes('university') || q.includes('college') || q.includes('student') || q.includes('research') || q.includes('lab') || q.includes('coep') || q.includes('iit')) {
+      answer = `### 🎓 University R&D & Student Innovation Hub\nSAMADHAAN empowers faculty and student researchers to solve real municipal challenges:\n- **Submit Prototypes:** Build IoT sensors, drone surveillance algorithms, or asphalt materials.\n- **Apply for Grants:** Receive up to ₹25 Lakhs in CSR innovation funding.\n- **Municipal Pilot Deployment:** Test innovations in actual city wards with government certification.`;
+      links = [
+        { label: 'Explore Universities Hub', title: 'Explore Universities Hub', url: '/universities' },
+        { label: 'Submit R&D Solution', title: 'Submit R&D Solution', url: '/solutions' },
+      ];
+    } else {
+      answer = `Hello! I have analyzed your query regarding **"${rawQuery}"**.\n\n### 🤖 SAMADHAAN Intelligence Advisory\n- **Problem Triage:** You can log civic issues on the [Report Problem](/problems/new) page where our AI performs automatic vision defect analysis, urgency scoring, and department routing.\n- **Municipal Action Plan:** Escalates grievances directly to responsible municipal officers with SLA accountability.\n- **University & CSR Matching:** Explores technological prototypes and corporate grant co-funding.\n\nHow would you like to proceed with this inquiry?`;
+    }
+
+    return {
+      answer,
+      reply: answer,
+      suggestedFollowUps: [
+        'How do I report a civic problem with GPS?',
+        'What CSR grants are open for urban infrastructure?',
+        'How can universities apply for municipal pilot testing?',
+        'What are the statutory SLA timelines for road repairs?',
+      ],
+      actionableLinks: links,
+      links,
+      groundingSources: [
+        'National Municipal GovTech Framework (NURM)',
+        'Ministry of Housing & Urban Affairs (MoHUA) Guidelines',
+        'Companies Act 2013 (Section 135 & Schedule VII)',
+        'SamAdhaan Spatial Intelligence Database',
+      ],
+    } as any;
   }
 
   // 4. 🔍 Duplicate Detection
