@@ -21,6 +21,7 @@ router.post('/duplicates/analyze', AIController.detectDuplicates);
 
 // 5. 🎯 AI Matching Engine (Embeddings + pgvector)
 router.post('/match', AIController.findMatches);
+router.post('/assign-stakeholders', AIController.assignStakeholders);
 
 // 6. 💡 Solution Generator (Gemini)
 router.post('/solutions/generate', AIController.generateSolutions);

@@ -63,6 +63,16 @@ export class AIController {
     }
   }
 
+  // 5.1 AI Assign Stakeholders
+  static async assignStakeholders(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await AIService.assignStakeholders(req.body);
+      sendSuccess(res, result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   // 6. Solution Generator
   static async generateSolutions(req: Request, res: Response, next: NextFunction) {
     try {
