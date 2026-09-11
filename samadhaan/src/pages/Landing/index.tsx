@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
@@ -11,6 +11,7 @@ import { StatCard } from '@/components/ui/StatCard';
 import { Button } from '@/components/ui/Button';
 import { PLATFORM_STATS, TREND_DATA } from '@/mock';
 import { formatNumber, formatCrore } from '@/utils';
+import apiClient from '@/api/client';
 import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
@@ -169,6 +170,16 @@ function CustomTooltip({ active, payload, label }: any) {
 
 // ── Landing page ────────────────────────────────────────────────────────────
 export default function LandingPage() {
+  const [liveTrends, setLiveTrends] = useState<any[]>(TREND_DATA);
+
+  useEffect(() => {
+    apiClient.get('/analytics/trends')
+      .then((res) => {
+        const d = res.data?.data || res.data;
+        if (Array.isArray(d) && d.length > 0) setLiveTrends(d);
+      })
+      .catch(() => {});
+  }, []);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
@@ -282,7 +293,7 @@ export default function LandingPage() {
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={TREND_DATA}>
+                <AreaChart data={liveTrends}>
                   <defs>
                     <linearGradient id="gProblems" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#6366f1" stopOpacity={0.3} />
@@ -310,7 +321,7 @@ export default function LandingPage() {
                     {l.label}
                   </div>
                 ))}
-                <div className="ml-auto text-xs text-slate-600">Demo data</div>
+                <div className="ml-auto text-xs text-emerald-400 font-medium flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Telemetry</div>
               </div>
             </div>
           </motion.div>

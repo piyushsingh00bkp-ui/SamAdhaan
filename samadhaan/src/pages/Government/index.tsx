@@ -5,20 +5,47 @@ import {
   ShieldCheck, ArrowRight, FileText, Send, Sparkles,
   BarChart2, Users, Building, Download, Loader2, RefreshCw,
   Printer, ChevronDown, Check, FileCheck, Layers, Award,
-  Key, Bot
+  Key, Bot, PieChart as PieIcon
 } from 'lucide-react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { Button } from '@/components/ui/Button';
 import { StatusBadge, UrgencyBadge, Badge } from '@/components/ui/Badge';
 import { MOCK_PROBLEMS } from '@/mock';
 import apiClient from '@/api/client';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell, Legend
+} from 'recharts';
 
 const WARD_METRICS = [
-  { ward: 'Ward 47 (Hinjewadi-Wakad)', state: 'Maharashtra', totalIssues: 142, resolved: 118, slaCompliance: '94%', alertStatus: 'Normal' },
-  { ward: 'Ward A (Dharavi-Sion)', state: 'Maharashtra', totalIssues: 389, resolved: 245, slaCompliance: '81%', alertStatus: 'High Alert' },
-  { ward: 'Ward 84 (Whitefield)', state: 'Karnataka', totalIssues: 210, resolved: 172, slaCompliance: '88%', alertStatus: 'Moderate' },
-  { ward: 'Ward 3 (Jaipur Heritage)', state: 'Rajasthan', totalIssues: 94, resolved: 82, slaCompliance: '96%', alertStatus: 'Normal' },
+  { ward: 'Ward 47 (Hinjewadi)', totalIssues: 142, resolved: 118, active: 24, compliance: 94, alertStatus: 'Normal' },
+  { ward: 'Ward A (Dharavi)', totalIssues: 389, resolved: 245, active: 144, compliance: 81, alertStatus: 'High Alert' },
+  { ward: 'Ward 84 (Whitefield)', totalIssues: 210, resolved: 172, active: 38, compliance: 88, alertStatus: 'Moderate' },
+  { ward: 'Ward 3 (Jaipur Heritage)', totalIssues: 94, resolved: 82, active: 12, compliance: 96, alertStatus: 'Normal' },
+  { ward: 'Ward 12 (Cyberabad)', totalIssues: 165, resolved: 140, active: 25, compliance: 92, alertStatus: 'Normal' },
 ];
+
+const SLA_STATUS_DATA = [
+  { name: 'Within SLA (<48h)', value: 68, color: '#34d399' },
+  { name: 'Approaching SLA (48-72h)', value: 21, color: '#f59e0b' },
+  { name: 'SLA Escalated (>72h)', value: 11, color: '#ef4444' },
+];
+
+function CustomGovTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="glass rounded-xl px-3 py-2 border border-white/10 text-xs shadow-xl backdrop-blur-md">
+      {label && <p className="text-slate-400 mb-1">{label}</p>}
+      {payload.map((p: any) => (
+        <div key={p.dataKey || p.name} className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color || p.fill || '#6366f1' }} />
+          <span className="text-slate-300">{p.name || p.dataKey}:</span>
+          <span className="text-white font-bold">{p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function GovernmentPage() {
   const [selectedProblemId, setSelectedProblemId] = useState<string>(MOCK_PROBLEMS[0]?.id || 'PRB-001');
@@ -47,14 +74,12 @@ export default function GovernmentPage() {
     localStorage.setItem('gemini_api_key', key);
   };
 
-  // Update selected problem when dropdown changes
   const handleSelectProblem = (probId: string) => {
     setSelectedProblemId(probId);
     const prob = allProblems.find(p => p.id === probId) || MOCK_PROBLEMS[0];
     setSelectedProblem(prob);
   };
 
-  // Trigger Live AI Report Generation for Selected Problem
   const handleGenerateReport = async () => {
     setReportLoading(true);
     const prob = selectedProblem || MOCK_PROBLEMS[0];
@@ -149,7 +174,7 @@ export default function GovernmentPage() {
             </div>
             <h1 className="text-3xl font-black text-white">Ward Analytics & Executive Intelligence</h1>
             <p className="text-slate-400 mt-1 max-w-2xl text-sm">
-              Real-time multi-departmental escalation console, SLA compliance radar, and Gemini AI-powered problem dossier generator.
+              Real-time multi-departmental escalation console, SLA compliance graphs, and Gemini AI-powered problem dossier generator.
             </p>
           </div>
 
@@ -168,7 +193,7 @@ export default function GovernmentPage() {
           </div>
         </motion.div>
 
-        {/* Gemini API Key Configuration Drawer */}
+        {/* Gemini API Key Drawer */}
         <AnimatePresence>
           {showKeyInput && (
             <motion.div
@@ -178,224 +203,172 @@ export default function GovernmentPage() {
               className="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 mb-6 space-y-2"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-indigo-300 flex items-center gap-1.5">
-                  <Bot size={14} className="text-indigo-400" /> Google Gemini API Key
-                </span>
-                <span className="text-[10px] text-slate-400">Used for live generative executive summaries</span>
+                <div className="flex items-center gap-2">
+                  <Bot size={15} className="text-indigo-400" />
+                  <span className="text-xs font-bold text-white">Custom Google Gemini API Key</span>
+                </div>
+                <button onClick={() => setShowKeyInput(false)} className="text-xs text-slate-400 hover:text-white">Close</button>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex gap-2">
                 <input
                   type="password"
+                  placeholder="AIzaSy..."
                   value={geminiApiKey}
                   onChange={(e) => handleSaveApiKey(e.target.value)}
-                  placeholder="Paste your Gemini API key"
-                  className="flex-1 bg-slate-900 border border-white/15 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono"
+                  className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
                 />
-                <button
-                  onClick={() => setShowKeyInput(false)}
-                  className="px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs"
-                >
-                  Save Key
-                </button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Command Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'Active Urban Local Bodies', val: '312 ULBs', icon: Building, color: '#fbbf24' },
-            { label: 'Avg Municipal SLA Response', val: '4.2 Hrs', icon: Clock, color: '#34d399' },
-            { label: 'Escalations Auto-Resolved', val: '84.6%', icon: CheckCircle2, color: '#38bdf8' },
-            { label: 'Inter-Agency Directives Issued', val: '1,280', icon: FileText, color: '#a78bfa' },
-          ].map((item, i) => (
-            <motion.div
-              key={item.label}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="glass rounded-2xl p-4 border border-white/8"
-            >
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs text-slate-400">{item.label}</p>
-                <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${item.color}15`, color: item.color }}>
-                  <item.icon size={15} />
-                </div>
-              </div>
-              <p className="text-2xl font-black text-white">{item.val}</p>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Interactive Problem-Specific Executive Report Generator Console */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass rounded-3xl p-6 sm:p-8 border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-slate-900/90 to-surface-2/70 mb-8 space-y-6"
-        >
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-amber-500/20 pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
-                <FileText size={20} />
-              </div>
+        {/* Top Visual Graphs & SLA Charts */}
+        <div className="grid lg:grid-cols-3 gap-5 mb-8">
+          {/* Ward SLA Resolution Bar Chart */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="lg:col-span-2 glass rounded-3xl p-5 border border-white/8 space-y-4">
+            <div className="flex items-center justify-between">
               <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-lg font-bold text-white">AI Problem Dossier & Official PDF Generator</h3>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                    Gemini 2.5 Flash
-                  </span>
-                </div>
-                <p className="text-xs text-slate-400">Select any citizen grievance to synthesize AI root-cause analysis, budget sanction orders, and inter-agency SLAs.</p>
+                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Municipal Ward Workload</p>
+                <p className="text-base font-bold text-white mt-0.5">Reported vs. Resolved per Ward</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs">
+                <span className="flex items-center gap-1.5 text-indigo-400"><span className="w-2.5 h-2.5 rounded-full bg-indigo-500" /> Total</span>
+                <span className="flex items-center gap-1.5 text-emerald-400"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Resolved</span>
               </div>
             </div>
 
-            <Button
-              onClick={handleGenerateReport}
-              disabled={reportLoading}
-              className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shrink-0 flex items-center gap-2 shadow-lg shadow-amber-500/20"
-            >
-              {reportLoading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
-              <span>{reportResult ? 'Re-Generate with Gemini AI' : 'Generate Executive PDF Dossier'}</span>
-            </Button>
-          </div>
+            <ResponsiveContainer width="100%" height={210}>
+              <BarChart data={WARD_METRICS} barGap={4}>
+                <XAxis dataKey="ward" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip content={<CustomGovTooltip />} />
+                <Bar dataKey="totalIssues" name="Total Issues" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="resolved" name="Resolved" fill="#34d399" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </motion.div>
 
-          {/* Problem Selector Bar */}
-          <div className="grid md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
-              <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block mb-1.5 flex items-center gap-1.5">
-                <span>Select Target Civic Problem for Dossier:</span>
-              </label>
+          {/* Municipal SLA Compliance Donut / Pie Chart */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass rounded-3xl p-5 border border-white/8 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">SLA Health</p>
+                  <p className="text-base font-bold text-white mt-0.5">Escalation Status</p>
+                </div>
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                  <PieIcon size={14} />
+                </div>
+              </div>
+
+              <ResponsiveContainer width="100%" height={145}>
+                <PieChart>
+                  <Pie
+                    data={SLA_STATUS_DATA}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={40}
+                    outerRadius={62}
+                    paddingAngle={4}
+                    dataKey="value"
+                  >
+                    {SLA_STATUS_DATA.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomGovTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="flex flex-col gap-1.5 mt-1 pt-3 border-t border-white/6">
+              {SLA_STATUS_DATA.map((item) => (
+                <div key={item.name} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: item.color }} />
+                    <span className="text-slate-400 truncate">{item.name}</span>
+                  </div>
+                  <span className="text-white font-bold">{item.value}%</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+
+        {/* AI Municipal Dossier Section */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-6 sm:p-8 border border-amber-500/30 bg-gradient-to-br from-amber-950/20 via-surface-1 to-surface-2/80 mb-8 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400">
+                <Sparkles size={18} />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-white">AI Executive Municipal Dossier Engine</h3>
+                <p className="text-xs text-slate-400">Select any grievance to generate an official inter-agency resolution brief with financial sanction breakdowns.</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
               <select
                 value={selectedProblemId}
                 onChange={(e) => handleSelectProblem(e.target.value)}
-                className="w-full bg-slate-900 border border-white/15 rounded-2xl px-4 py-3 text-sm text-white font-medium focus:outline-none focus:border-amber-500 transition-colors"
+                className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer max-w-[220px] truncate"
               >
-                {allProblems.map((prob) => (
-                  <option key={prob.id} value={prob.id} className="bg-slate-900 text-white">
-                    [{prob.id}] {prob.title} — ({prob.category || 'General'})
+                {allProblems.map((p) => (
+                  <option key={p.id} value={p.id} className="bg-slate-900 text-white">
+                    {p.id} - {p.title?.slice(0, 30)}...
                   </option>
                 ))}
               </select>
-            </div>
-
-            <div className="p-3.5 rounded-2xl bg-white/4 border border-white/8 flex flex-col justify-center">
-              <p className="text-[11px] text-slate-400 uppercase font-semibold">Selected Target Summary</p>
-              <p className="text-xs font-bold text-white mt-1 truncate">{selectedProblem?.title || 'Severe Pothole Cluster'}</p>
-              <div className="flex items-center gap-2 mt-1.5 text-[11px] text-amber-300">
-                <span>Urgency: {selectedProblem?.aiUrgencyScore || selectedProblem?.severity || 85}/100</span>
-                <span>•</span>
-                <span>{selectedProblem?.locationName || 'Pune'}</span>
-              </div>
+              <Button
+                size="sm"
+                onClick={handleGenerateReport}
+                disabled={reportLoading}
+                className="bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shrink-0"
+              >
+                {reportLoading ? <Loader2 size={14} className="animate-spin" /> : <FileText size={14} />}
+                <span>{reportLoading ? 'Synthesizing...' : 'Generate Dossier'}</span>
+              </Button>
             </div>
           </div>
 
-          {/* Generated Official Municipal Dossier (Printable PDF View) */}
+          {/* Dossier Output */}
           {reportResult && (
             <motion.div
-              id="printable-executive-dossier"
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="mt-6 rounded-3xl bg-slate-950/90 border border-amber-500/40 p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden print:bg-white print:text-black print:p-0 print:border-none"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-5 rounded-2xl bg-surface-2/90 border border-amber-500/30 space-y-4 mt-4"
             >
-              {/* Official Gazette Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-amber-500/30 pb-5 gap-4">
-                <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl font-black">
-                    🏛️
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold tracking-widest text-amber-400 uppercase">Government of Maharashtra • Urban Development Department</span>
-                    <h2 className="text-lg sm:text-xl font-black text-white">{reportResult.title}</h2>
-                    <p className="text-xs text-slate-400 mt-0.5">Ref: {reportResult.reportId} • Engine: {reportResult.aiModel || 'Gemini 2.5 Flash'}</p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={() => window.print()}
-                  className="px-4 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-2 hover:bg-amber-400 transition-all cursor-pointer shadow-lg shadow-amber-500/30 print:hidden shrink-0"
-                >
-                  <Printer size={15} />
-                  <span>Download / Print Official PDF</span>
-                </button>
-              </div>
-
-              {/* Problem Dossier Metadata Row */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-white/4 border border-white/8 text-xs">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
                 <div>
-                  <span className="text-slate-500 text-[10px] uppercase font-bold block">Problem Reference</span>
-                  <span className="text-amber-400 font-mono font-bold">{reportResult.problemId}</span>
+                  <span className="text-[10px] font-mono text-amber-400 tracking-wider font-bold">SANCTION ORDER #{reportResult.reportId}</span>
+                  <h4 className="text-sm font-black text-white">{reportResult.title}</h4>
                 </div>
-                <div>
-                  <span className="text-slate-500 text-[10px] uppercase font-bold block">Civic Category</span>
-                  <span className="text-white font-semibold">{reportResult.category}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 text-[10px] uppercase font-bold block">Time of Generation</span>
-                  <span className="text-slate-300 font-medium">{reportResult.generatedAt}</span>
-                </div>
-                <div>
-                  <span className="text-slate-500 text-[10px] uppercase font-bold block">Gazette Status</span>
-                  <span className="text-emerald-400 font-bold flex items-center gap-1">
-                    <CheckCircle2 size={12} /> SANCTIONED
-                  </span>
+                <div className="text-xs text-slate-400 flex items-center gap-2">
+                  <span>Jurisdiction: <strong className="text-white">{reportResult.jurisdiction}</strong></span>
+                  <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold text-[10px]">{reportResult.category}</span>
                 </div>
               </div>
 
-              {/* Executive Summary */}
-              <div className="space-y-1.5">
-                <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider">1. Executive Overview & Strategic Intent</h4>
-                <p className="text-xs text-slate-300 leading-relaxed bg-white/2 p-3.5 rounded-2xl border border-white/6">
-                  {reportResult.executiveSummary}
-                </p>
+              <div className="space-y-2 text-xs">
+                <p className="text-slate-300 leading-relaxed"><strong className="text-amber-400">1. Executive Summary:</strong> {reportResult.executiveSummary}</p>
               </div>
 
-              {/* Root Cause & Hazard Diagnosis */}
-              {reportResult.rootCauseAnalysis && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider">2. AI Root Cause & Engineering Hazard Assessment</h4>
+              {/* Department Directives */}
+              {reportResult.departmentalDirectives && (
+                <div className="space-y-2 pt-2">
+                  <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider">2. Authorized Inter-Agency Directives</h4>
                   <div className="grid sm:grid-cols-3 gap-3">
-                    {reportResult.rootCauseAnalysis.map((rc: string, idx: number) => (
-                      <div key={idx} className="p-3.5 rounded-2xl bg-white/3 border border-white/6 text-xs text-slate-300">
-                        <span className="text-amber-400 font-bold block mb-1">Diagnostic #{idx + 1}</span>
-                        {rc}
+                    {reportResult.departmentalDirectives.map((dir: any, idx: number) => (
+                      <div key={idx} className="p-3 rounded-xl bg-white/3 border border-white/6 space-y-1 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-white">{dir.officer}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 font-bold">{dir.slaHours} SLA</span>
+                        </div>
+                        <p className="text-[11px] text-slate-400">{dir.department}</p>
+                        <p className="text-[11px] text-slate-300">{dir.action}</p>
                       </div>
                     ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Departmental Directives & Mandatory SLAs */}
-              {reportResult.departmentalDirectives && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-emerald-400 uppercase tracking-wider">3. Statutory Inter-Agency Orders & SLA Deadlines</h4>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left text-xs">
-                      <thead className="text-[10px] text-slate-400 uppercase tracking-wider bg-white/4 border-b border-white/8">
-                        <tr>
-                          <th className="p-3 font-bold">Assigned Department</th>
-                          <th className="p-3 font-bold">Nodal Officer</th>
-                          <th className="p-3 font-bold">Mandated Action</th>
-                          <th className="p-3 font-bold">SLA Target</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/6 text-slate-200">
-                        {reportResult.departmentalDirectives.map((dir: any, idx: number) => (
-                          <tr key={idx} className="hover:bg-white/2">
-                            <td className="p-3 font-bold text-white flex items-center gap-1.5">
-                              <span>🏛️</span> {dir.department}
-                            </td>
-                            <td className="p-3 text-slate-300">{dir.officer}</td>
-                            <td className="p-3 text-slate-300">{dir.action}</td>
-                            <td className="p-3">
-                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/15 text-amber-300 border border-amber-500/30">
-                                {dir.slaHours}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
                   </div>
                 </div>
               )}
@@ -404,7 +377,7 @@ export default function GovernmentPage() {
               {reportResult.financialAndCSRSanction && (
                 <div className="grid sm:grid-cols-2 gap-4 pt-2">
                   <div className="p-4 rounded-2xl bg-indigo-950/40 border border-indigo-500/30 space-y-2">
-                    <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider">4. Financial Sanction Breakdown</h4>
+                    <h4 className="text-xs font-bold text-indigo-300 uppercase tracking-wider">3. Financial Sanction Breakdown</h4>
                     <div className="space-y-1 text-xs">
                       <div className="flex justify-between"><span className="text-slate-400">Total Sanctioned Budget:</span><strong className="text-white">{reportResult.financialAndCSRSanction.recommendedBudget}</strong></div>
                       <div className="flex justify-between"><span className="text-slate-400">CSR Grant Allocation:</span><strong className="text-emerald-400">{reportResult.financialAndCSRSanction.csrGrantOpportunity}</strong></div>
@@ -413,7 +386,7 @@ export default function GovernmentPage() {
                   </div>
 
                   <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 space-y-2">
-                    <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wider">5. Societal Impact & SROI Multiplier</h4>
+                    <h4 className="text-xs font-bold text-emerald-300 uppercase tracking-wider">4. Societal Impact & SROI Multiplier</h4>
                     <div className="space-y-1 text-xs">
                       <div className="flex justify-between"><span className="text-slate-400">SROI Return Ratio:</span><strong className="text-emerald-400">{reportResult.financialAndCSRSanction.sroiMultiplier}</strong></div>
                       <div className="flex justify-between"><span className="text-slate-400">Direct Citizen Beneficiaries:</span><strong className="text-white">{reportResult.kpiTargets?.beneficiariesProtected || '15,000+'}</strong></div>
@@ -422,127 +395,38 @@ export default function GovernmentPage() {
                   </div>
                 </div>
               )}
-
-              {/* Digital Verification & Seal */}
-              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10 text-[11px] text-slate-400">
-                <div>
-                  <p className="text-slate-300 font-bold">Digitally Sealed by: {reportResult.digitalVerification?.verifiedBy}</p>
-                  <p className="font-mono text-[10px] text-slate-500 mt-0.5">{reportResult.digitalVerification?.cryptographicHash}</p>
-                </div>
-                <div className="text-right">
-                  <span className="px-3 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold uppercase tracking-wider">
-                    ✓ Official Gazette Validated
-                  </span>
-                </div>
-              </div>
             </motion.div>
           )}
         </motion.div>
 
-        {/* Ward SLA & Escalations Table */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          {/* Main 2 Columns */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <BarChart2 size={18} className="text-amber-400" />
-                  Ward Performance & SLA Command Radar
-                </h3>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="text-[10px] text-slate-400 uppercase tracking-wider border-b border-white/8">
-                    <tr>
-                      <th className="pb-3 font-semibold">Ward & Jurisdiction</th>
-                      <th className="pb-3 font-semibold">Total / Resolved</th>
-                      <th className="pb-3 font-semibold">SLA Compliance</th>
-                      <th className="pb-3 font-semibold">Risk Alert</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/6 text-slate-300">
-                    {WARD_METRICS.map((row) => (
-                      <tr key={row.ward} className="hover:bg-white/3 transition-colors">
-                        <td className="py-3 font-medium text-white">
-                          {row.ward}
-                          <span className="block text-[10px] text-slate-500">{row.state}</span>
-                        </td>
-                        <td className="py-3">{row.totalIssues} / <strong className="text-emerald-400">{row.resolved}</strong></td>
-                        <td className="py-3 font-bold text-slate-200">{row.slaCompliance}</td>
-                        <td className="py-3">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            row.alertStatus === 'High Alert' ? 'bg-red-500/15 text-red-400 border border-red-500/30' :
-                            row.alertStatus === 'Moderate' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30' :
-                            'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
-                          }`}>
-                            {row.alertStatus}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Direct Problem Escalation Pipeline */}
-            <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <AlertTriangle size={16} className="text-red-400" />
-                Critical Citizen Reports Requiring Municipal Sanction
-              </h3>
-              <div className="space-y-3">
-                {allProblems.filter(p => (p.aiUrgencyScore ?? p.severity ?? 0) >= 85).slice(0, 4).map((prob) => (
-                  <div key={prob.id} className="p-4 rounded-2xl bg-white/3 border border-white/6 flex flex-wrap items-center justify-between gap-3">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <UrgencyBadge score={prob.aiUrgencyScore ?? prob.severity ?? 87} />
-                        <span className="text-xs text-slate-400">{prob.locationName || 'Pune'}</span>
-                      </div>
-                      <p className="text-sm font-bold text-white truncate">{prob.title}</p>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        handleSelectProblem(prob.id);
-                        handleGenerateReport();
-                      }}
-                      className="bg-amber-600 hover:bg-amber-500 text-white text-xs"
-                    >
-                      Generate Dossier
-                    </Button>
+        {/* Critical Grievances Feed */}
+        <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
+          <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <AlertTriangle size={16} className="text-red-400" />
+            Active Critical Reports Requiring Municipal Sanction
+          </h3>
+          <div className="grid md:grid-cols-2 gap-3">
+            {allProblems.filter(p => (p.aiUrgencyScore ?? p.severity ?? 0) >= 75).slice(0, 4).map((prob) => (
+              <div key={prob.id} className="p-4 rounded-2xl bg-white/3 border border-white/6 flex items-center justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <UrgencyBadge score={prob.aiUrgencyScore ?? prob.severity ?? 87} />
+                    <span className="text-xs text-slate-400">{prob.locationName || 'Pune'}</span>
                   </div>
-                ))}
+                  <p className="text-sm font-bold text-white truncate">{prob.title}</p>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    handleSelectProblem(prob.id);
+                    handleGenerateReport();
+                  }}
+                  className="bg-amber-600 hover:bg-amber-500 text-white text-xs shrink-0"
+                >
+                  Generate Dossier
+                </Button>
               </div>
-            </div>
-          </div>
-
-          {/* Right Column: AI Policy Briefs & Trends */}
-          <div className="space-y-6">
-            <div className="glass rounded-3xl p-6 border border-amber-500/30 bg-gradient-to-b from-amber-950/20 to-surface-2/60 space-y-4">
-              <div className="flex items-center gap-2 text-amber-400">
-                <Sparkles size={18} />
-                <h4 className="text-sm font-bold text-white uppercase tracking-wider">AI Predictive Policy Advisory</h4>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                <strong>Pre-Monsoon Drainage Policy (Pune & Mumbai):</strong> AI clustering indicates a 42% correlation between blocked feeder culverts and drainage choke points across 12 low-lying wards.
-              </p>
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
-                Action: Issue automated inter-agency desilting work orders before monsoon peak.
-              </div>
-              <Button
-                size="sm"
-                onClick={() => {
-                  handleSelectProblem(selectedProblemId);
-                  handleGenerateReport();
-                }}
-                disabled={reportLoading}
-                className="w-full bg-amber-600 hover:bg-amber-500 text-white"
-              >
-                {reportLoading ? 'Analyzing...' : 'Generate Official Ward Dossier'}
-              </Button>
-            </div>
+            ))}
           </div>
         </div>
       </div>

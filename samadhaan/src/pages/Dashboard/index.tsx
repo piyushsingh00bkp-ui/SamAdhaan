@@ -395,55 +395,11 @@ export default function DashboardPage() {
             </div>
           </motion.div>
 
-          {/* AI Automated Triage & Hotspots Panel */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-            className="glass rounded-3xl p-5 border border-white/8 border-l-4 border-l-indigo-500 shadow-xl space-y-3.5"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-                  <Sparkles size={16} />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white">AI Hotspot Alerts</h3>
-                  <p className="text-[11px] text-slate-400">Live Municipal Clustering</p>
-                </div>
-              </div>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                Live AI
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-2.5">
-              {insights.map((insight, i) => (
-                <div
-                  key={i}
-                  className="flex gap-2.5 p-3 rounded-2xl text-xs leading-relaxed"
-                  style={{ backgroundColor: `${insight.color}0a`, border: `1px solid ${insight.color}25` }}
-                >
-                  <span style={{ color: insight.color }} className="mt-0.5 shrink-0">
-                    {insight.icon}
-                  </span>
-                  <p className="text-slate-300 text-[11px]">{insight.text}</p>
-                </div>
-              ))}
-            </div>
-
-            <Link to="/ai-insights" className="block pt-1">
-              <Button variant="outline" size="sm" className="w-full text-xs font-semibold" rightIcon={<ArrowRight size={12} />}>
-                View Full AI Intelligence Suite
-              </Button>
-            </Link>
-          </motion.div>
-
           {/* Recent Live Problems Feed from Database */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.25 }}
             className="lg:col-span-2 glass rounded-3xl p-5 border border-white/8 shadow-xl space-y-4"
           >
             <div className="flex items-center justify-between border-b border-white/8 pb-3">
@@ -509,6 +465,52 @@ export default function DashboardPage() {
                 ))
               )}
             </div>
+          </motion.div>
+
+          {/* AI Automated Triage & Hotspots Panel */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="glass rounded-3xl p-5 border border-white/8 border-l-4 border-l-indigo-500 shadow-xl space-y-3.5 flex flex-col justify-between"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
+                    <Sparkles size={16} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">AI Hotspot Alerts</h3>
+                    <p className="text-[11px] text-slate-400">Live Municipal Clustering</p>
+                  </div>
+                </div>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  Live AI
+                </span>
+              </div>
+
+              <div className="flex flex-col gap-2.5">
+                {insights.map((insight, i) => (
+                  <div
+                    key={i}
+                    className="flex gap-2.5 p-3 rounded-2xl text-xs leading-relaxed"
+                    style={{ backgroundColor: `${insight.color}0a`, border: `1px solid ${insight.color}25` }}
+                  >
+                    <span style={{ color: insight.color }} className="mt-0.5 shrink-0">
+                      {insight.icon}
+                    </span>
+                    <p className="text-slate-300 text-[11px]">{insight.text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <Link to="/ai-insights" className="block pt-2">
+              <Button variant="outline" size="sm" className="w-full text-xs font-semibold" rightIcon={<ArrowRight size={12} />}>
+                View Full AI Intelligence Suite
+              </Button>
+            </Link>
           </motion.div>
 
           {/* Active University Solutions & CSR Grants */}

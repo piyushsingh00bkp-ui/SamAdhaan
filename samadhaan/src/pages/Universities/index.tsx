@@ -4,12 +4,16 @@ import { Link } from 'react-router-dom';
 import {
   GraduationCap, BookOpen, Award, Sparkles,
   ArrowRight, Users, CheckCircle2, Search, Filter,
-  Building, FlaskConical, Trophy
+  Building, FlaskConical, Trophy, PieChart as PieIcon
 } from 'lucide-react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { MOCK_PROBLEMS } from '@/mock';
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
+  BarChart, Bar, XAxis, YAxis
+} from 'recharts';
 
 const UNIVERSITY_CHALLENGES = [
   {
@@ -43,6 +47,37 @@ const UNIVERSITY_CHALLENGES = [
     sdg: [3, 7]
   }
 ];
+
+const DOMAIN_DISTRIBUTION = [
+  { name: 'IoT & Sensors', value: 32, color: '#8b5cf6' },
+  { name: 'Civil & Materials', value: 28, color: '#38bdf8' },
+  { name: 'Clean Energy', value: 22, color: '#34d399' },
+  { name: 'AI & Vision Models', value: 18, color: '#f59e0b' },
+];
+
+const UNIVERSITY_GRANTS_DATA = [
+  { name: 'IIT Bombay', teams: 42, grantsLakhs: 85 },
+  { name: 'COEP Pune', teams: 36, grantsLakhs: 68 },
+  { name: 'JNTU Kakinada', teams: 28, grantsLakhs: 52 },
+  { name: 'Anna University', teams: 31, grantsLakhs: 60 },
+  { name: 'BITS Pilani', teams: 25, grantsLakhs: 48 },
+];
+
+function CustomUnivTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="glass rounded-xl px-3 py-2 border border-white/10 text-xs shadow-xl backdrop-blur-md">
+      {label && <p className="text-slate-400 mb-1">{label}</p>}
+      {payload.map((p: any) => (
+        <div key={p.dataKey || p.name} className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color || p.fill || '#8b5cf6' }} />
+          <span className="text-slate-300">{p.name || p.dataKey}:</span>
+          <span className="text-white font-bold">{p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function UniversitiesPage() {
   const [selectedDomain, setSelectedDomain] = useState('all');
@@ -91,87 +126,108 @@ export default function UniversitiesPage() {
           ))}
         </div>
 
-        {/* Live Problem Feed for Universities */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          {/* Main 2 Columns: Challenge Board */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Trophy size={18} className="text-amber-400" />
-                  Live Civic R&D Challenges
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Government & Industry funded hack challenges open for HEIs</p>
+        {/* Visual Charts: Domain Donut & HEI Grants BarChart */}
+        <div className="grid lg:grid-cols-3 gap-5 mb-8">
+          {/* Research Domains Pie Chart */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-5 border border-white/8 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Research Disciplines</p>
+                  <p className="text-base font-bold text-white mt-0.5">Prototype Domains</p>
+                </div>
+                <div className="w-7 h-7 rounded-lg bg-violet-500/15 text-violet-400 flex items-center justify-center">
+                  <PieIcon size={14} />
+                </div>
               </div>
-              <span className="text-xs text-emerald-400 font-semibold px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                ● 3 Open Calls
-              </span>
+
+              <ResponsiveContainer width="100%" height={150}>
+                <PieChart>
+                  <Pie
+                    data={DOMAIN_DISTRIBUTION}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={42}
+                    outerRadius={65}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {DOMAIN_DISTRIBUTION.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomUnivTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
             </div>
 
-            <div className="space-y-4">
-              {UNIVERSITY_CHALLENGES.map((challenge) => (
-                <div key={challenge.id} className="glass rounded-2xl p-5 border border-white/8 hover:border-violet-500/30 transition-all space-y-4">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <span className="text-xs font-mono text-violet-400 font-semibold">{challenge.id} • {challenge.domain}</span>
-                      <h4 className="text-base font-bold text-white mt-1 leading-snug">{challenge.title}</h4>
-                      <p className="text-xs text-slate-400 mt-1">Partners: <strong className="text-slate-200">{challenge.partner}</strong></p>
-                    </div>
-                    <span className="px-3 py-1.5 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 text-xs font-bold shrink-0">
-                      {challenge.bounty}
-                    </span>
+            <div className="flex flex-col gap-1.5 mt-2 pt-3 border-t border-white/6">
+              {DOMAIN_DISTRIBUTION.map((d) => (
+                <div key={d.name} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: d.color }} />
+                    <span className="text-slate-400 truncate">{d.name}</span>
                   </div>
-
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/6 text-xs text-slate-400">
-                    <div className="flex items-center gap-4">
-                      <span>Deadline: <strong className="text-slate-200">{challenge.deadline}</strong></span>
-                      <span><strong>{challenge.teamsApplied}</strong> Student Teams Applied</span>
-                    </div>
-                    <Button size="sm" variant="outline" rightIcon={<ArrowRight size={13} />}>
-                      Submit Proposal
-                    </Button>
-                  </div>
+                  <span className="text-white font-bold">{d.value}%</span>
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right Column: Lab Matching & AI Recommendation */}
-          <div className="space-y-6">
-            <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-              <div className="flex items-center gap-2 text-indigo-400">
-                <FlaskConical size={18} />
-                <h4 className="text-sm font-bold text-white uppercase tracking-wider">AI Lab Resource Matcher</h4>
+          {/* Academic Grants Bar Chart */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2 glass rounded-3xl p-5 border border-white/8 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Academic Performance</p>
+                <p className="text-base font-bold text-white mt-0.5">Active Student Teams & Seed Grants (₹ Lakhs)</p>
               </div>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Connect your university's testing facilities (spectrometry, wind tunnels, water testing) to nearby municipal needs for paid testing contracts.
-              </p>
-              <div className="p-3.5 rounded-xl bg-white/3 border border-white/6 space-y-2">
-                <p className="text-xs font-semibold text-white">Suggested Match:</p>
-                <p className="text-xs text-slate-300">Dharavi Coliform Water Testing & Sensor Calibration (BMC Zone 2)</p>
-                <div className="flex justify-end pt-1">
-                  <span className="text-[11px] text-indigo-400 font-bold hover:underline cursor-pointer">Accept Work Order →</span>
+              <div className="flex items-center gap-4 text-xs">
+                <span className="flex items-center gap-1.5 text-violet-400"><span className="w-2.5 h-2.5 rounded-full bg-violet-500" /> Teams</span>
+                <span className="flex items-center gap-1.5 text-emerald-400"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Grants (₹ L)</span>
+              </div>
+            </div>
+
+            <ResponsiveContainer width="100%" height={210}>
+              <BarChart data={UNIVERSITY_GRANTS_DATA} barGap={4}>
+                <XAxis dataKey="name" tick={{ fontSize: 10, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip content={<CustomUnivTooltip />} />
+                <Bar dataKey="teams" name="Student Teams" fill="#8b5cf6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="grantsLakhs" name="Grants (₹ Lakhs)" fill="#34d399" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </motion.div>
+        </div>
+
+        {/* Live Problem Feed for Universities */}
+        <div className="space-y-4">
+          <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <FlaskConical size={16} className="text-violet-400" />
+            Active University R&D Grand Challenges
+          </h3>
+          <div className="grid md:grid-cols-3 gap-4">
+            {UNIVERSITY_CHALLENGES.map((uc) => (
+              <div key={uc.id} className="glass rounded-3xl p-5 border border-white/8 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-violet-400 font-mono font-bold">{uc.id}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-violet-500/20 text-violet-300 font-bold">{uc.bounty}</span>
+                  </div>
+                  <h4 className="text-sm font-bold text-white leading-snug">{uc.title}</h4>
+                  <p className="text-xs text-slate-400">{uc.domain}</p>
                 </div>
-              </div>
-            </div>
 
-            <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider">Institutional Benefits</h4>
-              <ul className="space-y-2.5 text-xs text-slate-300">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
-                  NIRF Innovation Ranking accreditation credits
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
-                  Direct CSR funding channels from top 500 Indian corporates
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 size={14} className="text-emerald-400 shrink-0" />
-                  Co-publishing with municipal commissioners & IAS officers
-                </li>
-              </ul>
-            </div>
+                <div className="space-y-1.5 pt-2 border-t border-white/6 text-xs">
+                  <div className="flex justify-between"><span className="text-slate-400">Collaborator:</span><strong className="text-white">{uc.partner}</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-400">Applications:</span><strong className="text-indigo-300">{uc.teamsApplied} Teams</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-400">Submission Due:</span><span className="text-amber-400 font-medium">{uc.deadline}</span></div>
+                </div>
+
+                <Button size="sm" className="w-full bg-violet-600 hover:bg-violet-500 text-white text-xs font-bold">
+                  Submit Research Proposal
+                </Button>
+              </div>
+            ))}
           </div>
         </div>
       </div>

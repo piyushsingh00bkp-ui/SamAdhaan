@@ -3,13 +3,17 @@ import { motion } from 'framer-motion';
 import {
   Building2, DollarSign, TrendingUp, ShieldCheck,
   CheckCircle2, ArrowRight, Award, PieChart as PieIcon,
-  Search, HeartHandshake, FileBadge, Sparkles, Calculator, Loader2
+  Search, HeartHandshake, FileBadge, Sparkles, Calculator, Loader2, BarChart2
 } from 'lucide-react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { MOCK_SOLUTIONS } from '@/mock';
 import apiClient from '@/api/client';
+import {
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip,
+  BarChart, Bar, XAxis, YAxis
+} from 'recharts';
 
 const CSR_OPPORTUNITIES = [
   {
@@ -49,6 +53,37 @@ const CSR_OPPORTUNITIES = [
     completionDays: '90 Days'
   }
 ];
+
+const SDG_ALLOCATION = [
+  { name: 'SDG 6: Clean Water', value: 38, color: '#38bdf8' },
+  { name: 'SDG 9: Resilient Infra', value: 27, color: '#6366f1' },
+  { name: 'SDG 11: Sustainable Cities', value: 18, color: '#34d399' },
+  { name: 'SDG 3: Health & Wellbeing', value: 11, color: '#f59e0b' },
+  { name: 'SDG 4: Education', value: 6, color: '#ec4899' },
+];
+
+const SROI_BENCHMARK = [
+  { sector: 'Clean Water', capitalCr: 12.4, socialValueCr: 54.5, multiplier: 4.4 },
+  { sector: 'Pothole R&D', capitalCr: 8.2, socialValueCr: 39.3, multiplier: 4.8 },
+  { sector: 'Solar Cold-Chain', capitalCr: 6.5, socialValueCr: 27.3, multiplier: 4.2 },
+  { sector: 'Smart Lighting', capitalCr: 4.8, socialValueCr: 18.2, multiplier: 3.8 },
+];
+
+function CustomCSRTooltip({ active, payload, label }: any) {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="glass rounded-xl px-3 py-2 border border-white/10 text-xs shadow-xl backdrop-blur-md">
+      {label && <p className="text-slate-400 mb-1">{label}</p>}
+      {payload.map((p: any) => (
+        <div key={p.dataKey || p.name} className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color || p.fill || '#10b981' }} />
+          <span className="text-slate-300">{p.name || p.dataKey}:</span>
+          <span className="text-white font-bold">{p.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function IndustryPage() {
   const [budgetInput, setBudgetInput] = useState('500000');
@@ -99,7 +134,7 @@ export default function IndustryPage() {
           </div>
           <h1 className="text-3xl font-black text-white">Corporate Social Responsibility & MSME Hub</h1>
           <p className="text-slate-400 mt-1 max-w-2xl text-sm">
-            Deploy corporate CSR capital with audited transparency, direct MCA compliance, and AI-predicted SROI impact metrics.
+            Deploy corporate CSR capital with audited transparency, direct MCA compliance, and AI-predicted SROI impact graphs.
           </p>
         </motion.div>
 
@@ -129,6 +164,79 @@ export default function IndustryPage() {
           ))}
         </div>
 
+        {/* CSR Analytics: SDG Donut & SROI BarChart */}
+        <div className="grid lg:grid-cols-3 gap-5 mb-8">
+          {/* SDG Goal Capital Allocation Donut / Pie Chart */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-5 border border-white/8 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Capital Allocation</p>
+                  <p className="text-base font-bold text-white mt-0.5">CSR Grants by SDG Goal</p>
+                </div>
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center">
+                  <PieIcon size={14} />
+                </div>
+              </div>
+
+              <ResponsiveContainer width="100%" height={150}>
+                <PieChart>
+                  <Pie
+                    data={SDG_ALLOCATION}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={42}
+                    outerRadius={65}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {SDG_ALLOCATION.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip content={<CustomCSRTooltip />} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="flex flex-col gap-1.5 mt-2 pt-3 border-t border-white/6">
+              {SDG_ALLOCATION.map((s) => (
+                <div key={s.name} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                    <span className="text-slate-400 truncate">{s.name}</span>
+                  </div>
+                  <span className="text-white font-bold">{s.value}%</span>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* SROI Multiplier Bar Chart */}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2 glass rounded-3xl p-5 border border-white/8 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Social Return on Investment</p>
+                <p className="text-base font-bold text-white mt-0.5">Grant Capital Invested vs. Societal Value Generated (₹ Cr)</p>
+              </div>
+              <div className="flex items-center gap-4 text-xs">
+                <span className="flex items-center gap-1.5 text-slate-400"><span className="w-2.5 h-2.5 rounded-full bg-slate-500" /> Capital (₹ Cr)</span>
+                <span className="flex items-center gap-1.5 text-emerald-400"><span className="w-2.5 h-2.5 rounded-full bg-emerald-400" /> Social ROI (₹ Cr)</span>
+              </div>
+            </div>
+
+            <ResponsiveContainer width="100%" height={210}>
+              <BarChart data={SROI_BENCHMARK} barGap={4}>
+                <XAxis dataKey="sector" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
+                <YAxis hide />
+                <Tooltip content={<CustomCSRTooltip />} />
+                <Bar dataKey="capitalCr" name="Capital Invested (₹ Cr)" fill="#64748b" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="socialValueCr" name="Social Value Created (₹ Cr)" fill="#10b981" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </motion.div>
+        </div>
+
         {/* AI CSR SROI Simulator Card */}
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-6 sm:p-8 border border-emerald-500/30 bg-gradient-to-br from-emerald-950/30 via-slate-900/80 to-surface-2/70 mb-8 space-y-4">
           <div className="flex items-center gap-3">
@@ -148,129 +256,81 @@ export default function IndustryPage() {
                 type="number"
                 value={budgetInput}
                 onChange={(e) => setBudgetInput(e.target.value)}
-                placeholder="500000"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
-              <label className="text-[11px] text-slate-400 font-semibold block mb-1">Target Citizens / Beneficiaries</label>
+              <label className="text-[11px] text-slate-400 font-semibold block mb-1">Beneficiary Population</label>
               <input
                 type="number"
                 value={populationInput}
                 onChange={(e) => setPopulationInput(e.target.value)}
-                placeholder="10000"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div className="flex items-end">
-              <Button type="submit" disabled={calcLoading} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs h-9">
-                {calcLoading ? <Loader2 size={14} className="animate-spin mr-1" /> : <Calculator size={14} className="mr-1" />}
-                Run AI Simulation
+              <Button
+                type="submit"
+                disabled={calcLoading}
+                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5"
+              >
+                {calcLoading ? <Loader2 size={14} className="animate-spin" /> : <Calculator size={14} />}
+                <span>{calcLoading ? 'Calculating SROI...' : 'Run SROI Simulation'}</span>
               </Button>
             </div>
           </form>
 
           {calcResult && (
-            <div className="grid sm:grid-cols-3 gap-3 pt-3 border-t border-emerald-500/20">
-              <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
-                <p className="text-[10px] text-emerald-300 uppercase tracking-wider font-bold">Predicted SROI Multiplier</p>
-                <p className="text-2xl font-black text-emerald-400 mt-0.5">{calcResult.sroiRatio || '4.2'}x</p>
-                <p className="text-[10px] text-slate-400">High social yield index</p>
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-4 p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 grid sm:grid-cols-3 gap-4 text-xs"
+            >
+              <div>
+                <p className="text-slate-400 text-[11px]">Predicted SROI Ratio</p>
+                <p className="text-xl font-black text-emerald-400">{calcResult.sroiRatio}x</p>
               </div>
-              <div className="p-3 rounded-2xl bg-white/4 border border-white/8">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Economic Civic Value</p>
-                <p className="text-2xl font-black text-white mt-0.5">{calcResult.economicValueGenerated || '₹21 Lakhs'}</p>
-                <p className="text-[10px] text-slate-500">Long-term infrastructure benefit</p>
+              <div>
+                <p className="text-slate-400 text-[11px]">Total Economic Value Generated</p>
+                <p className="text-xl font-black text-white">{calcResult.economicValueGenerated}</p>
               </div>
-              <div className="p-3 rounded-2xl bg-white/4 border border-white/8">
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider font-bold">MCA Schedule VII</p>
-                <p className="text-2xl font-black text-indigo-300 mt-0.5">100% Eligible</p>
-                <p className="text-[10px] text-slate-500">Tax Deductible u/s 80G</p>
+              <div>
+                <p className="text-slate-400 text-[11px]">Citizen Beneficiaries</p>
+                <p className="text-xl font-black text-indigo-300">{calcResult.beneficiaries?.toLocaleString('en-IN')}</p>
               </div>
-            </div>
+            </motion.div>
           )}
         </motion.div>
 
-        {/* CSR Matching Matrix */}
-        <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          {/* Main 2 Columns: Opportunities List */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <HeartHandshake size={18} className="text-emerald-400" />
-                  High-Impact CSR Investment Portfolios
-                </h3>
-                <p className="text-xs text-slate-400 mt-0.5">Pre-vetted university solutions awaiting corporate funding</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              {CSR_OPPORTUNITIES.map((opp) => (
-                <div key={opp.id} className="glass rounded-2xl p-5 border border-white/8 hover:border-emerald-500/30 transition-all space-y-4">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <span className="text-xs font-mono text-emerald-400 font-semibold">{opp.id} • {opp.location}</span>
-                      <h4 className="text-base font-bold text-white mt-1 leading-snug">{opp.title}</h4>
-                      <p className="text-xs text-slate-400 mt-1">Research Lead: <strong className="text-slate-200">{opp.leadHEI}</strong></p>
-                    </div>
-                    <span className="text-xs px-3 py-1 rounded-xl bg-indigo-500/10 border border-indigo-500/25 text-indigo-300 font-semibold">
-                      {opp.sdgGoal}
-                    </span>
+        {/* Opportunities Feed */}
+        <div className="space-y-4">
+          <h3 className="text-base font-bold text-white flex items-center gap-2">
+            <Award size={16} className="text-emerald-400" />
+            Vetted CSR Co-Funding Opportunities
+          </h3>
+          <div className="grid md:grid-cols-3 gap-4">
+            {CSR_OPPORTUNITIES.map((item) => (
+              <div key={item.id} className="glass rounded-3xl p-5 border border-white/8 flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-emerald-400 font-mono font-bold">{item.id}</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded bg-white/5 text-slate-300">{item.completionDays}</span>
                   </div>
-
-                  <div className="grid sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-white/3 text-xs">
-                    <div>
-                      <p className="text-slate-500 text-[10px] uppercase font-bold">Funding Status</p>
-                      <p className="text-white font-bold mt-0.5">{opp.budgetCommitted} / {opp.budgetRequired}</p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500 text-[10px] uppercase font-bold">Civic Beneficiaries</p>
-                      <p className="text-emerald-400 font-bold mt-0.5">{opp.impactScore}</p>
-                    </div>
-                    <div>
-                      <p className="text-slate-500 text-[10px] uppercase font-bold">Tax Exemption</p>
-                      <p className="text-amber-400 font-bold mt-0.5">80G Verified</p>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-slate-400">
-                    <span>{opp.taxBenefit}</span>
-                    <Button size="sm" variant="saffron" rightIcon={<ArrowRight size={13} />}>
-                      Pledge CSR Funds
-                    </Button>
-                  </div>
+                  <h4 className="text-sm font-bold text-white leading-snug">{item.title}</h4>
+                  <p className="text-xs text-slate-400">{item.location}</p>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Right Column: MSME Procurement & Tax Exemption */}
-          <div className="space-y-6">
-            <div className="glass rounded-3xl p-6 border border-white/10 space-y-4">
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                <FileBadge size={16} className="text-emerald-400" />
-                Automated MCA CSR-1 Dossier
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Download pre-populated Ministry of Corporate Affairs compliant CSR expenditure certificates with geo-tagged proof of deployment.
-              </p>
-              <Button size="sm" variant="outline" className="w-full">
-                Download Annual CSR Summary
-              </Button>
-            </div>
+                <div className="space-y-1.5 pt-2 border-t border-white/6 text-xs">
+                  <div className="flex justify-between"><span className="text-slate-400">Budget:</span><strong className="text-white">{item.budgetRequired}</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-400">Impact:</span><strong className="text-emerald-400">{item.impactScore}</strong></div>
+                  <div className="flex justify-between"><span className="text-slate-400">Academic Lead:</span><span className="text-indigo-300 font-medium">{item.leadHEI}</span></div>
+                </div>
 
-            <div className="glass rounded-3xl p-6 border border-white/10 space-y-3">
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider">MSME Execution Marketplace</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Local MSMEs can bid for execution contracts (drain desilting, road patching, solar installation) validated by university engineering plans.
-              </p>
-              <div className="pt-2">
-                <Button size="sm" variant="secondary" className="w-full">
-                  Register as MSME Supplier
+                <Button size="sm" className="w-full bg-white/5 hover:bg-emerald-600 hover:text-white text-slate-200 border border-white/10 text-xs">
+                  Pledge CSR Grant
                 </Button>
               </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>
