@@ -6,22 +6,24 @@ const apiClient = axios.create({
   timeout: 45_000,
   headers: {
     'Content-Type': 'application/json',
-    'x-dev-user-id': 'arjun.mehta@citizen.in',
-    'x-dev-role': 'CITIZEN',
   },
 });
 
-// Request interceptor — attach auth token & user headers
+// Request interceptor — attach auth token & user headers only when authenticated
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('samadhaan_token');
-  const activeRole = localStorage.getItem('samadhaan_role') || 'CITIZEN';
-  const userEmail = localStorage.getItem('samadhaan_email') || 'arjun.mehta@citizen.in';
+  const activeRole = localStorage.getItem('samadhaan_role');
+  const userEmail = localStorage.getItem('samadhaan_email');
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  config.headers['x-dev-user-id'] = userEmail;
-  config.headers['x-dev-role'] = activeRole.toUpperCase();
+  if (userEmail) {
+    config.headers['x-dev-user-id'] = userEmail;
+  }
+  if (activeRole) {
+    config.headers['x-dev-role'] = activeRole.toUpperCase();
+  }
 
   return config;
 });
@@ -32,6 +34,8 @@ apiClient.interceptors.response.use(
   (err) => {
     if (err.response?.status === 401) {
       localStorage.removeItem('samadhaan_token');
+      localStorage.removeItem('samadhaan_email');
+      localStorage.removeItem('samadhaan_role');
     }
     return Promise.reject(err);
   }

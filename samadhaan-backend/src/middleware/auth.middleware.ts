@@ -14,7 +14,7 @@ export async function authenticateUser(
   try {
     // 1. Check for Development / Test Auth / Permissive Auth when ALLOW_DEV_AUTH=true
     if (env.ALLOW_DEV_AUTH) {
-      const devUserId = (req.headers['x-dev-user-id'] as string) || 'arjun.mehta@citizen.in';
+      const devUserId = req.headers['x-dev-user-id'] as string;
       const devRole = (req.headers['x-dev-role'] as string) || 'CITIZEN';
 
       if (devUserId) {
@@ -35,7 +35,7 @@ export async function authenticateUser(
               data: {
                 firebaseUid: devUserId,
                 email: devUserId.includes('@') ? devUserId : `${devUserId}@dev.samadhaan.in`,
-                name: `Dev User (${assignedRole})`,
+                name: `User (${devUserId.split('@')[0]})`,
                 role: assignedRole,
                 status: 'ACTIVE',
               },
@@ -50,7 +50,7 @@ export async function authenticateUser(
             id: devUserId,
             firebaseUid: devUserId,
             email: `${devUserId}@dev.samadhaan.in`,
-            name: `Dev User (${assignedRole})`,
+            name: `User (${devUserId.split('@')[0]})`,
             role: assignedRole,
             status: 'ACTIVE',
             createdAt: new Date(),
