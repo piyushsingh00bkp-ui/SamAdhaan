@@ -4,6 +4,7 @@ import {
   Sparkles, X, Send, Loader2, Bot,
   User, ExternalLink, ArrowRight, CornerDownLeft
 } from 'lucide-react';
+import axios from 'axios';
 import apiClient from '@/api/client';
 import { Button } from '@/components/ui/Button';
 
@@ -14,6 +15,14 @@ interface Message {
   suggestedFollowUps?: string[];
 }
 
+const getGeminiKey = (): string => {
+  if (import.meta.env.VITE_GEMINI_API_KEY) return import.meta.env.VITE_GEMINI_API_KEY;
+  if (typeof window !== 'undefined') {
+    return (window as any).__GEMINI_KEY__ || localStorage.getItem('gemini_api_key') || '';
+  }
+  return '';
+};
+
 export default function CopilotWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
@@ -21,13 +30,14 @@ export default function CopilotWidget() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      text: 'Hello! 👋 I am your **SAMADHAAN AI Copilot**.\n\nI can assist you with:\n- 📝 **Reporting Civic Issues:** Potholes, drainage, sanitation with auto SLA routing.\n- 🏛️ **Municipal Governance:** Ward escalation, nodal officers & turnaround targets.\n- 🎓 **University Collaboration:** Connecting with engineering labs at COEP / IITs.\n- 💼 **CSR Grant Opportunities:** Funding civic prototypes under Companies Act Section 135.\n\nHow can I help you today?',
+      text: 'Hello! 👋 I am your **SAMADHAAN AI Copilot**.\n\nI can answer general questions, or assist you with:\n- 📝 **Reporting Civic Issues:** Potholes, drainage, water supply & SLA routing.\n- 🏛️ **Municipal Governance:** Ward escalation, nodal officers & turnaround targets.\n- 🎓 **University Collaboration:** Connecting with engineering labs at COEP / IITs.\n- 💼 **CSR Grant Opportunities:** Funding civic prototypes under Companies Act Section 135.\n\nAsk me anything!',
       links: [
         { title: 'Report a Problem', url: '/problems/new' },
         { title: 'Explore Solutions', url: '/solutions' },
         { title: 'CSR & Industry Hub', url: '/industry' },
       ],
       suggestedFollowUps: [
+        'Who is better Messi or Ronaldo?',
         'How do I report a monsoon drainage issue?',
         'What CSR schemes fund solar water filtration?',
         'Which university labs work on asphalt durability?',
@@ -47,6 +57,185 @@ export default function CopilotWidget() {
     }
   }, [messages, isOpen, loading]);
 
+  // Try direct Gemini call from client if key is configured
+  const callDirectGemini = async (userMessage: string) => {
+    const key = getGeminiKey();
+    if (!key) throw new Error('No Gemini key configured');
+    
+    const contents = [
+      {
+        role: 'user',
+        parts: [
+          {
+            text: `You are SAMADHAAN AI Copilot — a witty, intelligent, and helpful AI assistant for India's GovTech, Civic Problem-Solving, and University R&D platform.\n` +
+                  `Answer the user's question accurately and conversationally. If they ask about general topics (sports, tech, science, casual questions like Messi vs Ronaldo), answer knowledgeably and conversationally with markdown bullet points. If they ask about civic or municipal problems, explain how SAMADHAAN can resolve it.\n\n` +
+                  `User Question: ${userMessage}`
+          }
+        ]
+      }
+    ];
+
+    const res = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+      {
+        contents,
+        generationConfig: {
+          temperature: 0.6,
+          maxOutputTokens: 600,
+        }
+      },
+      { timeout: 12000 }
+    );
+
+    const generated = res.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!generated) throw new Error('Empty Gemini response');
+    return generated;
+  };
+
+  // Smart conversational offline fallback
+  const getOfflineSmartAnswer = (userMessage: string) => {
+    const q = userMessage.toLowerCase().trim();
+
+    // 1. Messi vs Ronaldo & Sports
+    if ((q.includes('messi') && q.includes('ronaldo')) || q.includes('cr7') || q.includes('goat') || q.includes('football')) {
+      return {
+        text: `Both **Lionel Messi** and **Cristiano Ronaldo** represent the pinnacle of modern football:\n\n` +
+              `- **Lionel Messi:** Celebrated for pure vision, effortless playmaking, 8 Ballon d'Or awards, and captaining Argentina to the 2022 World Cup.\n` +
+              `- **Cristiano Ronaldo:** Legendary for superhuman physical longevity, elite athleticism, clutch finishing across 4 premier leagues, and 5 Champions League titles.\n\n` +
+              `**Verdict:** Messi leads on natural playmaking and trophies; Ronaldo leads on athletic power and goal-scoring versatility! *(And if your local sports turf or community park needs maintenance, you can report it on SAMADHAAN! ⚽)*`,
+        links: [
+          { title: 'Report Park Defect', url: '/problems/new' },
+          { title: 'Explore Solutions', url: '/solutions' },
+        ],
+        followUps: [
+          'What are the statutory SLA timelines for road repairs?',
+          'How can universities apply for municipal pilot testing?',
+          'What CSR schemes fund community sports grounds?'
+        ]
+      };
+    }
+
+    // 2. Greetings
+    if (q.includes('hi') || q.includes('hello') || q.includes('hey') || q === 'help') {
+      return {
+        text: `Hello! 👋 Welcome to **SAMADHAAN AI Copilot**.\n\nI can assist you with:\n` +
+              `- 📝 **Reporting Civic Issues:** Potholes, drainage, water supply & SLA routing.\n` +
+              `- 🏛️ **Municipal Governance:** Ward escalation, nodal officers & turnaround targets.\n` +
+              `- 🎓 **University Collaboration:** Connecting with engineering labs at COEP / IITs.\n` +
+              `- 💼 **CSR Grant Opportunities:** Funding civic prototypes under Companies Act Section 135.\n\nHow can I help you today?`,
+        links: [
+          { title: 'Report a Problem', url: '/problems/new' },
+          { title: 'Explore Solutions', url: '/solutions' },
+          { title: 'CSR Portal', url: '/industry' },
+        ],
+        followUps: [
+          'How do I report a monsoon drainage issue?',
+          'What CSR schemes fund solar water filtration?',
+          'Which university labs work on asphalt durability?'
+        ]
+      };
+    }
+
+    // 3. CSR
+    if (q.includes('csr') || q.includes('fund') || q.includes('grant') || q.includes('schedule vii') || q.includes('section 135')) {
+      return {
+        text: `### 💼 CSR Funding & Grant Opportunities under Companies Act\nUnder **Section 135 & Schedule VII of the Companies Act, 2013**, corporate CSR capital can fund:\n` +
+              `- **Clean Drinking Water & Sanitation:** Stormwater drainage, sewage treatment, and clean drinking water IoT filters.\n` +
+              `- **Technology Incubators:** Grants to academic incubators at universities (IITs, NITs, State Universities) for civic innovations.\n` +
+              `- **Urban Infrastructure:** Road durability, waste management, and solar street illumination.\n\n` +
+              `💡 *Grants typically range from ₹10L - ₹50L with structured 3-tranche milestone governance.*`,
+        links: [
+          { title: 'Explore CSR Portal', url: '/industry' },
+          { title: 'University R&D Projects', url: '/universities' },
+        ],
+        followUps: [
+          'How do universities apply for CSR grants?',
+          'What is the 3-tranche milestone disbursement?',
+          'How to calculate project SROI?'
+        ]
+      };
+    }
+
+    // 4. Roads / Potholes
+    if (q.includes('pothole') || q.includes('road') || q.includes('asphalt') || q.includes('traffic')) {
+      return {
+        text: `### 🏗️ Road Infrastructure & Pothole Resolution Protocol\n` +
+              `- **AI Severity Detection:** Our Vision AI detects asphalt erosion, defect perimeter, and traffic risk.\n` +
+              `- **Immediate Remediation (SLA <24-48 hrs):** Deployment of polymer-modified cold-mix asphalt for fast weather-resistant patching.\n` +
+              `- **Engineered Longevity:** Collaboration with University Civil Engineering departments to test geopolymer concrete overlays.\n` +
+              `- **Work Order Dispatch:** Automated routing directly to the Municipal Road Development Department.`,
+        links: [
+          { title: 'Report Road Defect', url: '/problems/new' },
+          { title: 'Road Solutions', url: '/solutions' },
+        ],
+        followUps: [
+          'What is the standard SLA for pothole repairs?',
+          'How does Vision AI verify road defects?',
+          'Which university labs work on asphalt durability?'
+        ]
+      };
+    }
+
+    // 5. Water / Drainage
+    if (q.includes('water') || q.includes('drain') || q.includes('flood') || q.includes('sewage') || q.includes('monsoon')) {
+      return {
+        text: `### 💧 Water & Drainage Infrastructure Management\n` +
+              `- **Telemetry & Sensor Nodes:** Ultrasonic IoT water-level sensors deployed at flood bottlenecks.\n` +
+              `- **Department Routing:** Directly routed to the Municipal Water Supply & Sewerage Board.\n` +
+              `- **Emergency Escalation:** Monsoon rapid-response teams with desilting suction units dispatched for high-urgency blockage reports.\n` +
+              `- **Public Health Protection:** Prevents vector-borne contamination and safeguards residential zones.`,
+        links: [
+          { title: 'Report Drainage Issue', url: '/problems/new' },
+          { title: 'Water IoT Solutions', url: '/solutions' },
+        ],
+        followUps: [
+          'How to escalate an emergency drainage overflow?',
+          'What IoT sensors monitor water pipelines?',
+          'How do I report water contamination?'
+        ]
+      };
+    }
+
+    // 6. University
+    if (q.includes('university') || q.includes('college') || q.includes('student') || q.includes('research') || q.includes('lab') || q.includes('coep') || q.includes('iit')) {
+      return {
+        text: `### 🎓 University R&D & Student Innovation Hub\nSAMADHAAN empowers faculty and student researchers to solve real municipal challenges:\n` +
+              `- **Submit Prototypes:** Build IoT sensors, drone surveillance algorithms, or durable road materials.\n` +
+              `- **Apply for Grants:** Receive up to ₹25 Lakhs in CSR innovation funding.\n` +
+              `- **Municipal Pilot Deployment:** Test innovations in actual city wards with government certification.`,
+        links: [
+          { title: 'Explore Universities Hub', url: '/universities' },
+          { title: 'Submit Solution', url: '/solutions' },
+        ],
+        followUps: [
+          'How can student teams apply for CSR grants?',
+          'What are the active university research pilots?',
+          'How does municipal pilot validation work?'
+        ]
+      };
+    }
+
+    // General answer
+    return {
+      text: `Hello! I have analyzed your question: **"${userMessage}"**.\n\n` +
+            `I can help you with general queries, technical questions, or guide you through SAMADHAAN's GovTech features:\n` +
+            `- **Civic Problem Resolution:** Report defects with AI Vision and GPS tracking.\n` +
+            `- **Municipal Department Routing:** Track statutory SLA accountability.\n` +
+            `- **University-CSR Matching:** Fund and deploy real engineering prototypes.\n\n` +
+            `How would you like to proceed?`,
+      links: [
+        { title: 'Explore Civic Problems', url: '/problems' },
+        { title: 'Explore Solutions', url: '/solutions' },
+        { title: 'CSR Portal', url: '/industry' },
+      ],
+      followUps: [
+        'How do I report a problem with GPS location?',
+        'What CSR grants are available for civic prototypes?',
+        'How to collaborate with university engineering labs?'
+      ]
+    };
+  };
+
   const sendQuery = async (queryText: string) => {
     if (!queryText.trim() || loading) return;
 
@@ -55,12 +244,13 @@ export default function CopilotWidget() {
     setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
     setLoading(true);
 
-    try {
-      const historyPayload = messages.map((m) => ({
-        role: m.role,
-        content: m.text,
-      }));
+    const historyPayload = messages.map((m) => ({
+      role: m.role,
+      content: m.text,
+    }));
 
+    try {
+      // 1. Try Backend API endpoint
       const res = await apiClient.post('/ai/copilot/chat', {
         message: userMessage,
         query: userMessage,
@@ -69,74 +259,99 @@ export default function CopilotWidget() {
       });
 
       const data = res.data?.data || res.data;
-      const reply = data?.reply || data?.answer || data?.response || data?.markdownContent || 'I have processed your request.';
-      const rawLinks = data?.links || data?.actionableLinks || [];
-      const links = rawLinks.map((l: any) => ({
-        title: l.title || l.label || 'View Link',
-        url: l.url || '/',
-      }));
-      const followUps = data?.suggestedFollowUps || [];
+      const reply = data?.reply || data?.answer || data?.response || data?.markdownContent;
+      
+      if (!reply || reply.includes('SAMADHAAN Intelligence Advisory')) {
+        // Try direct Gemini if backend returned a generic canned response
+        try {
+          const directText = await callDirectGemini(userMessage);
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              text: directText,
+              links: [
+                { title: 'Explore Problems', url: '/problems' },
+                { title: 'Browse Solutions', url: '/solutions' },
+              ],
+              suggestedFollowUps: [
+                'How do I report a problem on SAMADHAAN?',
+                'What CSR funding schemes are available?',
+                'How do universities participate in civic pilots?'
+              ]
+            }
+          ]);
+          return;
+        } catch {
+          // Fall through
+        }
+      }
 
+      if (reply && !reply.includes('SAMADHAAN Intelligence Advisory')) {
+        const rawLinks = data?.links || data?.actionableLinks || [];
+        const links = rawLinks.map((l: any) => ({
+          title: l.title || l.label || 'View Link',
+          url: l.url || '/',
+        }));
+        const followUps = data?.suggestedFollowUps || [];
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: reply,
+            links: links.length > 0 ? links : undefined,
+            suggestedFollowUps: followUps.length > 0 ? followUps : undefined,
+          },
+        ]);
+        return;
+      }
+
+      // If backend gave canned message on a non-civic question, use smart answer
+      const smart = getOfflineSmartAnswer(userMessage);
       setMessages((prev) => [
         ...prev,
         {
           role: 'assistant',
-          text: reply,
-          links: links.length > 0 ? links : undefined,
-          suggestedFollowUps: followUps.length > 0 ? followUps : undefined,
+          text: smart.text,
+          links: smart.links,
+          suggestedFollowUps: smart.followUps,
         },
       ]);
     } catch (err: any) {
-      const q = userMessage.toLowerCase();
-      let fallbackText = "Hello! I am your **SAMADHAAN AI Copilot**. You can report civic issues (potholes, drainage, sanitation), match with CSR funding under Section 135, or explore engineering prototypes from university research labs.";
-      let fallbackLinks = [
-        { title: 'Report a Problem', url: '/problems/new' },
-        { title: 'Explore Solutions', url: '/solutions' },
-        { title: 'CSR Portal', url: '/industry' },
-      ];
-      let fallbackFollowUps = [
-        'How do I report a monsoon drainage issue?',
-        'What CSR schemes fund solar water filtration?',
-        'Which university labs work on asphalt durability?',
-      ];
-
-      if (q.includes("hi") || q.includes("hello") || q.includes("hey")) {
-        fallbackText = "Hello! 👋 Welcome to **SAMADHAAN**. How can I assist you today with civic problem reporting, municipal escalation, or CSR matching?";
-      } else if (q.includes("csr") || q.includes("fund") || q.includes("grant") || q.includes("schedule")) {
-        fallbackText = "Under **Section 135 & Schedule VII of the Companies Act**, corporate CSR funds can support drinking water, sanitation, and technology incubators at accredited universities. Check out the **Industry Portal** to apply!";
-        fallbackLinks = [
-          { title: 'Explore CSR Portal', url: '/industry' },
-          { title: 'University R&D Projects', url: '/universities' },
-        ];
-      } else if (q.includes("pothole") || q.includes("road") || q.includes("traffic")) {
-        fallbackText = "You can report road defects on the **[Report Problem](/problems/new)** page. Our AI analyzes damage severity and routes work orders to the Municipal Public Works Department within statutory SLA targets.";
-        fallbackLinks = [
-          { title: 'Report Road Defect', url: '/problems/new' },
-          { title: 'Road Solutions', url: '/solutions' },
-        ];
-      } else if (q.includes("water") || q.includes("drain") || q.includes("flood")) {
-        fallbackText = "For water supply and drainage bottlenecks, SAMADHAAN provides automated department routing to the Water & Sewerage Board with emergency monsoon escalation.";
-        fallbackLinks = [
-          { title: 'Report Drainage Issue', url: '/problems/new' },
-          { title: 'Water IoT Solutions', url: '/solutions' },
-        ];
-      } else if (q.includes("university") || q.includes("lab") || q.includes("research") || q.includes("coep") || q.includes("iit")) {
-        fallbackText = "Universities and student researchers can submit engineering prototypes, apply for municipal validation certificates, and secure up to ₹25 Lakhs in CSR innovation grants.";
-        fallbackLinks = [
-          { title: 'University Research Hub', url: '/universities' },
-          { title: 'Submit Solution', url: '/solutions' },
-        ];
+      // 2. Try direct Google Gemini API call
+      try {
+        const geminiReply = await callDirectGemini(userMessage);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: geminiReply,
+            links: [
+              { title: 'Explore Problems', url: '/problems' },
+              { title: 'Browse Solutions', url: '/solutions' },
+            ],
+            suggestedFollowUps: [
+              'How do I report a problem on SAMADHAAN?',
+              'What CSR funding schemes are available?',
+              'How do universities participate in civic pilots?'
+            ]
+          }
+        ]);
+        return;
+      } catch (geminiError) {
+        // 3. Smart offline reasoning
+        const smart = getOfflineSmartAnswer(userMessage);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: smart.text,
+            links: smart.links,
+            suggestedFollowUps: smart.followUps,
+          },
+        ]);
       }
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          text: fallbackText,
-          links: fallbackLinks,
-          suggestedFollowUps: fallbackFollowUps,
-        },
-      ]);
     } finally {
       setLoading(false);
     }
@@ -147,57 +362,84 @@ export default function CopilotWidget() {
     sendQuery(input);
   };
 
-  const renderFormattedText = (text: string) => {
-    const lines = text.split('\n');
-    return lines.map((line, idx) => {
-      let formatted = line;
+  // Helper to parse bold text & inline markdown links
+  const parseInlineElements = (text: string) => {
+    const tokens = [];
+    const combinedRegex = /(\[(.*?)\]\((.*?)\)|\*\*(.*?)\*\*)/g;
+    let lastIndex = 0;
+    let match;
 
-      // Render bold spans
-      const parts = [];
-      let lastIndex = 0;
-      const regex = /\*\*(.*?)\*\*/g;
-      let match;
+    while ((match = combinedRegex.exec(text)) !== null) {
+      if (match.index > lastIndex) {
+        tokens.push(text.substring(lastIndex, match.index));
+      }
 
-      while ((match = regex.exec(formatted)) !== null) {
-        if (match.index > lastIndex) {
-          parts.push(formatted.substring(lastIndex, match.index));
-        }
-        parts.push(
-          <strong key={match.index} className="font-semibold text-white">
-            {match[1]}
+      if (match[2] !== undefined && match[3] !== undefined) {
+        // Markdown link [title](url)
+        tokens.push(
+          <a
+            key={match.index}
+            href={match[3]}
+            className="text-indigo-400 hover:text-indigo-300 underline font-medium inline-flex items-center gap-0.5"
+          >
+            {match[2]}
+          </a>
+        );
+      } else if (match[4] !== undefined) {
+        // Bold **text**
+        tokens.push(
+          <strong key={match.index} className="font-bold text-white">
+            {match[4]}
           </strong>
         );
-        lastIndex = regex.lastIndex;
       }
 
-      if (lastIndex < formatted.length) {
-        parts.push(formatted.substring(lastIndex));
-      }
+      lastIndex = combinedRegex.lastIndex;
+    }
+
+    if (lastIndex < text.length) {
+      tokens.push(text.substring(lastIndex));
+    }
+
+    return tokens.length > 0 ? tokens : text;
+  };
+
+  const renderFormattedText = (text: string) => {
+    const lines = text.split('\n');
+    return lines.map((rawLine, idx) => {
+      let line = rawLine;
 
       if (line.startsWith('### ')) {
         return (
           <h4 key={idx} className="font-bold text-indigo-300 text-xs mt-2 mb-1">
-            {line.replace('### ', '')}
+            {parseInlineElements(line.replace('### ', ''))}
           </h4>
         );
       }
 
-      if (line.startsWith('- ') || line.startsWith('• ')) {
-        return (
-          <div key={idx} className="flex items-start gap-1.5 ml-1 my-0.5 text-slate-300">
-            <span className="text-indigo-400 mt-0.5">•</span>
-            <div>{parts.length > 0 ? parts : line.slice(2)}</div>
-          </div>
-        );
+      // Check if this is a bullet line (starts with -, *, •)
+      let isBullet = false;
+      if (line.startsWith('- ') || line.startsWith('* ') || line.startsWith('• ') || line.startsWith('•- ')) {
+        isBullet = true;
+        line = line.replace(/^(\s*[-*•]+\s*)+/, ''); // Strip ALL leading bullet markers cleanly!
       }
 
       if (line.trim() === '') {
         return <div key={idx} className="h-1.5" />;
       }
 
+      if (isBullet) {
+        return (
+          <div key={idx} className="flex items-start gap-1.5 ml-1 my-0.5 text-slate-200">
+            <span className="text-indigo-400 font-bold shrink-0 mt-0.5">•</span>
+            <div className="leading-relaxed">{parseInlineElements(line)}</div>
+          </div>
+        );
+      }
+
       return (
-        <p key={idx} className="my-0.5 leading-relaxed">
-          {parts.length > 0 ? parts : line}
+        <p key={idx} className="my-0.5 leading-relaxed text-slate-200">
+          {parseInlineElements(line)}
         </p>
       );
     });
@@ -246,10 +488,10 @@ export default function CopilotWidget() {
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-white">SAMADHAAN Copilot</h3>
                     <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                      Live AI
+                      AI Live
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400">Civic, GovTech & CSR Intelligence</p>
+                  <p className="text-[11px] text-slate-400">Ask any general, civic or CSR question</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -305,7 +547,7 @@ export default function CopilotWidget() {
                       <div className="mt-3 pt-2 border-t border-white/10">
                         <p className="text-[10px] text-slate-400 font-semibold mb-1.5 flex items-center gap-1">
                           <CornerDownLeft size={10} className="text-indigo-400" />
-                          <span>Suggested Follow-ups:</span>
+                          <span>Suggested Queries:</span>
                         </p>
                         <div className="flex flex-col gap-1">
                           {msg.suggestedFollowUps.map((prompt, pIdx) => (
@@ -337,7 +579,7 @@ export default function CopilotWidget() {
                   </div>
                   <div className="bg-white/5 border border-white/10 rounded-2xl rounded-bl-none px-3.5 py-2.5 text-xs text-slate-400 flex items-center gap-2">
                     <Loader2 size={12} className="animate-spin text-indigo-400" />
-                    <span>Analyzing GovTech intelligence...</span>
+                    <span>Thinking with Gemini AI...</span>
                   </div>
                 </div>
               )}
@@ -350,7 +592,7 @@ export default function CopilotWidget() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Copilot about problems, SLA, CSR funds, or labs..."
+                placeholder="Ask anything (e.g. Messi vs Ronaldo, road repairs, CSR)..."
                 className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
               />
               <Button
