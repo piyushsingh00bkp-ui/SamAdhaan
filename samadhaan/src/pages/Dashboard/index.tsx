@@ -245,10 +245,10 @@ export default function DashboardPage() {
                 PostgreSQL Live Connected
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {user?.name ? `Welcome back, ${user.name.split(' ')[0]} 👋` : 'National Civic Intelligence Dashboard'}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 mt-1">
               {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • Direct Supabase Telemetry
             </p>
           </div>
@@ -258,7 +258,7 @@ export default function DashboardPage() {
             <button
               onClick={() => fetchLiveDatabaseData(true)}
               disabled={refreshing}
-              className="px-3.5 py-2 rounded-xl bg-stone-50 hover:bg-white/10 border border-stone-200 text-xs font-semibold text-slate-300 hover:text-white flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-2 transition-all cursor-pointer shadow-sm"
               title="Sync latest live data from PostgreSQL database"
             >
               <RefreshCw size={13} className={refreshing ? 'animate-spin text-indigo-400' : 'text-slate-400'} />
@@ -321,12 +321,12 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="lg:col-span-2 glass rounded-3xl p-5 border border-stone-200 shadow-xl space-y-4"
+            className="lg:col-span-2 bg-white rounded-3xl p-5 border border-stone-200 shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">National Resolution Trend</p>
-                <p className="text-base font-bold text-white mt-0.5">2026 Live Monthly Progress</p>
+                <p className="text-base font-bold text-slate-900 mt-0.5">2026 Live Monthly Progress</p>
               </div>
               <div className="flex items-center gap-4 text-xs font-medium text-slate-400">
                 <div className="flex items-center gap-1.5">
@@ -366,7 +366,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="glass rounded-3xl p-5 border border-stone-200 shadow-xl flex flex-col justify-between"
+            className="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm flex flex-col justify-between"
           >
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Category Distribution</p>
@@ -413,11 +413,11 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="lg:col-span-2 glass rounded-3xl p-5 border border-stone-200 shadow-xl space-y-4"
+            className="lg:col-span-2 bg-white rounded-3xl p-5 border border-stone-200 shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <span>Recent Problems Feed</span>
                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
                     Live DB
@@ -494,7 +494,7 @@ export default function DashboardPage() {
                     <Sparkles size={16} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">AI Hotspot Alerts</h3>
+                    <h3 className="text-sm font-bold text-slate-900">AI Hotspot Alerts</h3>
                     <p className="text-[11px] text-slate-400">Live Municipal Clustering</p>
                   </div>
                 </div>
@@ -535,7 +535,7 @@ export default function DashboardPage() {
           >
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <span>🎓 Active University Solutions & CSR Co-Funding</span>
                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">
                     Schedule VII

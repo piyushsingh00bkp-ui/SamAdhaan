@@ -341,8 +341,8 @@ export default function ImpactPage() {
                   Live Stream Active
                 </span>
               </div>
-              <h1 className="text-3xl font-black text-white tracking-tight">National Impact & Hotspot Tracker</h1>
-              <p className="text-slate-400 text-sm mt-1">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">National Impact & Hotspot Tracker</h1>
+              <p className="text-slate-600 text-xs sm:text-sm mt-1">
                 Real-time geospatial intelligence, municipal SLA tracking, and multi-stakeholder civic resolution across India.
               </p>
             </div>
@@ -375,7 +375,7 @@ export default function ImpactPage() {
             className={`px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-all border cursor-pointer ${
               selectedCity === null
                 ? 'bg-indigo-600 text-white border-indigo-400 shadow-lg shadow-indigo-600/40'
-                : 'bg-white/4 text-slate-400 border-white/8 hover:text-white hover:bg-white/8'
+                : 'bg-white text-slate-700 border-stone-200 hover:text-emerald-900 hover:bg-emerald-50'
             }`}
           >
             🇮🇳 All India ({allProblems.length})
@@ -390,7 +390,7 @@ export default function ImpactPage() {
                 className={`px-3.5 py-2 rounded-xl text-xs font-semibold shrink-0 transition-all border cursor-pointer flex items-center gap-1.5 ${
                   isSelected
                     ? 'bg-indigo-600 text-white border-indigo-400 shadow-lg shadow-indigo-600/40'
-                    : 'bg-white/4 text-slate-400 border-white/8 hover:text-white hover:bg-white/8'
+                    : 'bg-white text-slate-700 border-stone-200 hover:text-emerald-900 hover:bg-emerald-50'
                 }`}
               >
                 <span>{c.name}</span>
@@ -716,7 +716,7 @@ export default function ImpactPage() {
         <div className="glass rounded-3xl border border-white/8 overflow-hidden shadow-xl">
           <div className="p-5 border-b border-white/8 flex items-center justify-between flex-wrap gap-3">
             <div>
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
+              <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <span>📍 Mapped Problems & Live Work Orders</span>
                 <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
                   {filteredProblems.length} Result{filteredProblems.length !== 1 ? 's' : ''}
