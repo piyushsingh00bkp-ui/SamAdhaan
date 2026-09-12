@@ -122,10 +122,23 @@ export default function DashboardPage() {
         });
       }
 
-      // 2. Recent Challenges from PostgreSQL
+      // 2. Recent Challenges & Dynamic Calculations from PostgreSQL
       if (challengesRes.status === 'fulfilled') {
-        const items = challengesRes.value.data?.data?.items || challengesRes.value.data?.data;
+        const items = challengesRes.value.data?.data?.items || challengesRes.value.data?.data || [];
         if (Array.isArray(items) && items.length > 0) {
+          const totalCount = items.length;
+          const resolvedCount = items.filter((c: any) => (c.status || '').toLowerCase().includes('resolv')).length;
+          const activeCount = totalCount - resolvedCount;
+          const calculatedRate = totalCount > 0 ? Math.round((resolvedCount / totalCount) * 100) : 66;
+
+          setStats((prev) => ({
+            ...prev,
+            totalProblems: totalCount > 10 ? totalCount : prev.totalProblems,
+            resolvedProblems: resolvedCount > 5 ? resolvedCount : prev.resolvedProblems,
+            activeProblems: activeCount > 5 ? activeCount : prev.activeProblems,
+            resolutionRate: calculatedRate > 0 ? calculatedRate : prev.resolutionRate,
+          }));
+
           setRecentProblems(
             items.slice(0, 6).map((c: any) => ({
               id: c.id,

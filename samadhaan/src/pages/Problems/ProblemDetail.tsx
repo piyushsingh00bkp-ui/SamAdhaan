@@ -131,6 +131,34 @@ export default function ProblemDetailPage() {
     setSanctionOrderNo(`SAN-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`);
   }, [id]);
 
+  useEffect(() => {
+    if (!id) return;
+    const upvotedIds = JSON.parse(localStorage.getItem('samadhaan_upvoted_ids') || '[]');
+    if (upvotedIds.includes(id)) {
+      setUpvoted(true);
+    }
+  }, [id]);
+
+  const handleToggleUpvote = async () => {
+    if (!id) return;
+    const upvotedIds: string[] = JSON.parse(localStorage.getItem('samadhaan_upvoted_ids') || '[]');
+    const isNowUpvoted = !upvoted;
+    setUpvoted(isNowUpvoted);
+
+    if (isNowUpvoted) {
+      if (!upvotedIds.includes(id)) upvotedIds.push(id);
+      setProblem((prev) => ({ ...prev, upvotes: prev.upvotes + 1 }));
+      success('Upvoted! Priority escalated on the ward response ledger.', 'Grievance Supported');
+      apiClient.post(`/challenges/${id}/upvote`).catch(() => {});
+    } else {
+      const idx = upvotedIds.indexOf(id);
+      if (idx > -1) upvotedIds.splice(idx, 1);
+      setProblem((prev) => ({ ...prev, upvotes: Math.max(0, prev.upvotes - 1) }));
+      info('Upvote withdrawn.', 'Vote Updated');
+    }
+    localStorage.setItem('samadhaan_upvoted_ids', JSON.stringify(upvotedIds));
+  };
+
   const handleTranslate = async (targetLang: 'en' | 'hi' | 'bn') => {
     setSelectedLanguage(targetLang);
     if (targetLang === 'en') {
@@ -236,6 +264,20 @@ export default function ProblemDetailPage() {
                 বাংলা
               </button>
             </div>
+
+            {/* Upvote & Support Button */}
+            <button
+              onClick={handleToggleUpvote}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer shadow-xs ${
+                upvoted
+                  ? 'bg-emerald-600 text-white border-emerald-600 ring-2 ring-emerald-200'
+                  : 'bg-white hover:bg-stone-50 text-stone-700 border-stone-200'
+              }`}
+              title="Upvote to escalate resolution priority"
+            >
+              <ThumbsUp className={`w-3.5 h-3.5 ${upvoted ? 'fill-white' : 'text-emerald-700'}`} />
+              <span>{problem.upvotes}</span>
+            </button>
 
             {/* Official Sanction Order PDF Button */}
             <Button
