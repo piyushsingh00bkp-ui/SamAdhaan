@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import {
   ArrowRight, Sparkles, MapPin, Users, TrendingUp,
   Zap, Shield, Globe, CheckCircle, ChevronRight,
   Brain, Building2, GraduationCap, Landmark, User,
+  Search, ShieldCheck, CheckCircle2, Phone, Award,
+  FileText, Clock, Layers, DollarSign, ExternalLink
 } from 'lucide-react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { StatCard } from '@/components/ui/StatCard';
@@ -16,161 +18,26 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer,
 } from 'recharts';
 
-// ── Particle canvas background ─────────────────────────────────────────────
-function ParticleBg() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 30 }).map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: Math.random() * 3 + 1,
-            height: Math.random() * 3 + 1,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            backgroundColor:
-              i % 3 === 0 ? 'rgba(99,102,241,0.4)' :
-              i % 3 === 1 ? 'rgba(167,139,250,0.3)' :
-                            'rgba(245,158,11,0.25)',
-          }}
-          animate={{
-            y: [0, -20, 0],
-            opacity: [0.3, 0.8, 0.3],
-          }}
-          transition={{
-            duration: 4 + Math.random() * 4,
-            delay: Math.random() * 4,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-// ── Flow step component ────────────────────────────────────────────────────
-const FLOW_STEPS = [
-  { icon: User,          label: 'Citizen',       desc: 'Reports problem',          color: '#38bdf8' },
-  { icon: Brain,         label: 'AI Engine',     desc: 'Tags, scores, clusters',   color: '#a78bfa' },
-  { icon: GraduationCap, label: 'Universities',  desc: 'Research & prototyping',   color: '#818cf8' },
-  { icon: Building2,     label: 'Industry',      desc: 'Funding & implementation', color: '#34d399' },
-  { icon: Landmark,      label: 'Government',    desc: 'Policy & execution',       color: '#fbbf24' },
-];
-
-function FlowDiagram() {
-  return (
-    <div className="flex flex-col md:flex-row items-center justify-center gap-0 md:gap-0">
-      {FLOW_STEPS.map((step, i) => (
-        <div key={step.label} className="flex flex-col md:flex-row items-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: i * 0.15, duration: 0.4 }}
-            className="flex flex-col items-center text-center"
-          >
-            <div
-              className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 border"
-              style={{
-                backgroundColor: `${step.color}15`,
-                borderColor: `${step.color}30`,
-                boxShadow: `0 0 24px ${step.color}20`,
-              }}
-            >
-              <step.icon size={24} style={{ color: step.color }} />
-            </div>
-            <p className="text-sm font-semibold text-white">{step.label}</p>
-            <p className="text-xs text-slate-500 mt-0.5 max-w-24">{step.desc}</p>
-          </motion.div>
-          {i < FLOW_STEPS.length - 1 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 + 0.3 }}
-              className="flex items-center justify-center md:mx-3 my-3 md:my-0"
-            >
-              <div className="hidden md:flex items-center gap-1">
-                <div className="w-8 h-px bg-gradient-to-r from-white/10 to-white/30" />
-                <ChevronRight size={14} className="text-slate-500" />
-              </div>
-              <div className="md:hidden w-px h-8 bg-gradient-to-b from-white/10 to-white/30" />
-            </motion.div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ── Feature cards ──────────────────────────────────────────────────────────
-const FEATURES = [
-  {
-    icon: Brain,
-    title: 'AI-Powered Triage',
-    desc: 'Every problem is auto-tagged, urgency-scored (0–100), and clustered with geospatially similar issues — reducing duplicate reports by 68%.',
-    color: '#a78bfa',
-    tag: 'AI',
-  },
-  {
-    icon: MapPin,
-    title: 'Geo-Intelligence',
-    desc: 'Real-time heatmaps across 487 cities identify problem density zones, enabling proactive resource allocation before crises escalate.',
-    color: '#38bdf8',
-    tag: 'Maps',
-  },
-  {
-    icon: Users,
-    title: 'Collaborative Solutions',
-    desc: 'Universities, industry partners, and government bodies co-create solutions. Track team composition, funding, and delivery milestones.',
-    color: '#34d399',
-    tag: 'Ecosystem',
-  },
-  {
-    icon: Shield,
-    title: 'Transparency Engine',
-    desc: 'Every problem gets a public audit trail. Citizens track status in real-time. Government bodies publish resolution reports automatically.',
-    color: '#fbbf24',
-    tag: 'Governance',
-  },
-  {
-    icon: TrendingUp,
-    title: 'Impact Analytics',
-    desc: 'SDG-aligned impact scoring, beneficiary counts, and funding mobilisation metrics — aligned to India\'s development agenda.',
-    color: '#fb923c',
-    tag: 'Analytics',
-  },
-  {
-    icon: Zap,
-    title: 'Predictive Alerts',
-    desc: 'AI models predict problem hotspots 30 days in advance using seasonal patterns, historical data, and infrastructure stress indicators.',
-    color: '#f87171',
-    tag: 'Prediction',
-  },
-];
-
-// ── Custom chart tooltip ───────────────────────────────────────────────────
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="glass rounded-xl px-3 py-2.5 border border-white/10 text-xs">
-      <p className="text-slate-400 mb-1.5 font-medium">{label} 2026</p>
+    <div className="glass rounded-xl px-3 py-2 border border-white/10 text-xs shadow-xl backdrop-blur-md">
+      <p className="text-slate-400 mb-1">{label} 2026</p>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
-          <span className="text-slate-400">{p.name}:</span>
-          <span className="text-white font-semibold">{p.value.toLocaleString('en-IN')}</span>
+          <span className="text-slate-300 capitalize">{p.name}:</span>
+          <span className="text-white font-bold">{p.value.toLocaleString('en-IN')}</span>
         </div>
       ))}
     </div>
   );
 }
 
-// ── Landing page ────────────────────────────────────────────────────────────
 export default function LandingPage() {
   const [liveTrends, setLiveTrends] = useState<any[]>(TREND_DATA);
+  const [trackingId, setTrackingId] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     apiClient.get('/analytics/trends')
@@ -180,417 +47,355 @@ export default function LandingPage() {
       })
       .catch(() => {});
   }, []);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const heroY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
+  const handleTrackGrievance = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (trackingId.trim()) {
+      navigate(`/problems/${trackingId.trim().toUpperCase()}`);
+    } else {
+      navigate('/problems');
+    }
+  };
 
   return (
     <PageWrapper>
-      {/* ── HERO ─────────────────────────────────────────────────────── */}
-      <section ref={heroRef} className="relative min-h-[92vh] flex items-center hero-gradient overflow-hidden">
-        <ParticleBg />
-        <div className="dot-pattern absolute inset-0 opacity-30" />
+      {/* ── 1. OFFICIAL NATIONAL HERO BANNER ───────────────────────────── */}
+      <section className="relative min-h-[85vh] flex items-center bg-gradient-to-b from-gov-navy-950 via-gov-navy-900 to-gov-navy-800 border-b border-blue-900/30 overflow-hidden py-16">
+        {/* Subtle tricolor background glow */}
+        <div className="absolute top-0 left-1/4 w-[500px] h-[300px] rounded-full bg-amber-500/10 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[300px] rounded-full bg-emerald-500/10 blur-[120px] pointer-events-none" />
 
-        {/* Glow orbs */}
-        <div className="absolute top-1/4 -left-32 w-96 h-96 rounded-full bg-indigo-600/10 blur-3xl" />
-        <div className="absolute bottom-1/4 -right-32 w-80 h-80 rounded-full bg-violet-600/8 blur-3xl" />
-        <div className="absolute top-3/4 left-1/3 w-64 h-64 rounded-full bg-amber-500/5 blur-3xl" />
-
-        <motion.div
-          style={{ y: heroY, opacity: heroOpacity }}
-          className="relative max-w-screen-xl mx-auto px-4 lg:px-6 py-20 grid lg:grid-cols-2 gap-12 items-center"
-        >
-          <div>
-            {/* Label badge */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-12 gap-10 items-center">
+          {/* Left Hero Column: Official Title & Grievance Tracker */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* National Ministry Badge */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass border border-white/10 text-xs font-medium text-slate-400 mb-6"
+              className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-xs font-bold text-amber-300"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Smart India Hackathon 2026
-              <span className="text-slate-600">·</span>
-              <span className="text-indigo-400">AI GovTech Platform</span>
+              <span>🇮🇳</span>
+              <span>भारत सरकार • Ministry of Housing & Urban Affairs (MoHUA)</span>
+              <span className="text-amber-500">•</span>
+              <span className="text-emerald-400 font-semibold">Live 24x7 CPGRAMS Aligned</span>
             </motion.div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
+            {/* Main National Headlines */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-5xl lg:text-6xl font-black leading-[1.05] tracking-tight"
+              transition={{ delay: 0.1 }}
+              className="space-y-2"
             >
-              <span className="text-white">From Local</span>
-              <br />
-              <span className="gradient-text">Problems</span>
-              <br />
-              <span className="text-white">to Lasting</span>
-              <br />
-              <span className="gradient-text-saffron">Solutions.</span>
-            </motion.h1>
+              <p className="text-sm md:text-base font-bold text-slate-300 tracking-wider">
+                राष्ट्रीय नागरिक समाधान एवं बहु-हितधारक नवाचार मंच
+              </p>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">
+                National Multi-Stakeholder <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-amber-300">
+                  GovTech Civic Redressal
+                </span> Portal
+              </h1>
+            </motion.div>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-slate-400 text-lg leading-relaxed mt-6 max-w-lg"
+              transition={{ delay: 0.2 }}
+              className="text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl"
             >
-              SamAdhaan bridges citizens, universities, industry, and government through an AI-powered collaboration platform — turning grassroots problems into measurable national impact.
+              Uniting 1.4 Billion Indian Citizens, Municipal Corporations, Academic R&D Labs (IIT/COEP/NIT), and Corporate CSR Funds under Section 135 to resolve urban infrastructure grievances with statutory SLA accountability.
             </motion.p>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
+            {/* Official Citizen Grievance Tracking Search Box */}
+            <motion.form
+              initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-wrap items-center gap-3 mt-8"
+              transition={{ delay: 0.25 }}
+              onSubmit={handleTrackGrievance}
+              className="p-2.5 rounded-2xl bg-gov-navy-950/90 border border-blue-500/30 flex flex-col sm:flex-row gap-2 max-w-xl shadow-xl"
             >
-              <Button size="lg" leftIcon={<MapPin size={16} />} rightIcon={<ArrowRight size={16} />}>
-                <Link to="/problems/new">Report a Problem</Link>
+              <div className="flex-1 flex items-center gap-2.5 px-3 py-1.5 text-slate-300">
+                <Search size={16} className="text-amber-400 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Enter Grievance ID (e.g. PRB-001, PRB-PUN-01)..."
+                  value={trackingId}
+                  onChange={(e) => setTrackingId(e.target.value)}
+                  className="w-full bg-transparent text-xs text-white placeholder-slate-400 focus:outline-none"
+                />
+              </div>
+              <Button
+                type="submit"
+                className="bg-amber-500 hover:bg-amber-400 text-gov-navy-950 text-xs font-black py-2.5 px-5 shrink-0 shadow-md shadow-amber-500/30"
+              >
+                Track Grievance Status
               </Button>
-              <Button size="lg" variant="secondary">
-                <Link to="/dashboard">View Dashboard</Link>
-              </Button>
-            </motion.div>
+            </motion.form>
 
-            {/* Quick stats */}
+            {/* Quick Action Navigation Buttons */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="flex flex-wrap items-center gap-6 mt-10"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="flex flex-wrap items-center gap-3 pt-2"
             >
-              {[
-                { value: '48K+', label: 'Problems' },
-                { value: '234', label: 'Universities' },
-                { value: '28', label: 'States' },
-                { value: `₹${PLATFORM_STATS.totalFundingMobilised}Cr`, label: 'Mobilised' },
-              ].map((s) => (
-                <div key={s.label} className="text-center">
-                  <p className="text-xl font-black text-white">{s.value}</p>
-                  <p className="text-xs text-slate-600">{s.label}</p>
-                </div>
-              ))}
+              <Link to="/problems/new">
+                <Button size="lg" className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-gov-navy-950 font-black text-sm shadow-xl shadow-orange-500/20 border border-amber-300/40">
+                  <span className="flex items-center gap-2">
+                    <span>Log Citizen Grievance</span>
+                    <ArrowRight size={16} />
+                  </span>
+                </Button>
+              </Link>
+              <Link to="/government">
+                <Button size="lg" variant="secondary" className="bg-gov-navy-800 hover:bg-gov-navy-700 text-white border border-blue-500/30 text-sm font-bold">
+                  <span>Municipal Command Desk</span>
+                </Button>
+              </Link>
+              <Link to="/impact">
+                <Button size="lg" variant="ghost" className="text-slate-300 hover:text-white text-sm font-semibold">
+                  <span>National Impact Map →</span>
+                </Button>
+              </Link>
             </motion.div>
           </div>
 
-          {/* Hero chart */}
+          {/* Right Hero Column: Official Telemetry Card */}
           <motion.div
-            initial={{ opacity: 0, x: 30 }}
+            initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="hidden lg:block"
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-5"
           >
-            <div className="glass rounded-3xl p-6 border border-white/8 glow-brand">
-              <div className="flex items-center justify-between mb-4">
+            <div className="gov-card rounded-3xl p-6 border border-blue-500/30 space-y-4">
+              <div className="flex items-center justify-between border-b border-white/8 pb-3">
                 <div>
-                  <p className="text-xs text-slate-500 uppercase tracking-widest">Problem Resolution Trend</p>
-                  <p className="text-lg font-bold text-white mt-0.5">2026 · All States</p>
+                  <p className="text-[10px] text-amber-400 uppercase tracking-widest font-bold">National Telemetry</p>
+                  <h3 className="text-base font-black text-white mt-0.5">2026 Grievance Resolution Trend</h3>
                 </div>
-                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs text-emerald-400 font-medium">Live</span>
+                  <span>SLA Live</span>
                 </div>
               </div>
-              <ResponsiveContainer width="100%" height={200}>
+
+              {/* Area Chart */}
+              <ResponsiveContainer width="100%" height={190}>
                 <AreaChart data={liveTrends}>
                   <defs>
-                    <linearGradient id="gProblems" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#6366f1" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                    <linearGradient id="govReported" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.0} />
                     </linearGradient>
-                    <linearGradient id="gResolved" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#34d399" stopOpacity={0.3} />
-                      <stop offset="100%" stopColor="#34d399" stopOpacity={0} />
+                    <linearGradient id="govResolved" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.4} />
+                      <stop offset="100%" stopColor="#10b981" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#475569' }} axisLine={false} tickLine={false} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#94a3b8' }} axisLine={false} tickLine={false} />
                   <YAxis hide />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="problems" name="Reported" stroke="#6366f1" fill="url(#gProblems)" strokeWidth={2} dot={false} />
-                  <Area type="monotone" dataKey="resolved" name="Resolved" stroke="#34d399" fill="url(#gResolved)" strokeWidth={2} dot={false} />
+                  <Area type="monotone" dataKey="problems" name="Reported" stroke="#3b82f6" fill="url(#govReported)" strokeWidth={2.5} dot={false} />
+                  <Area type="monotone" dataKey="resolved" name="Resolved" stroke="#10b981" fill="url(#govResolved)" strokeWidth={2.5} dot={false} />
                 </AreaChart>
               </ResponsiveContainer>
-              <div className="flex items-center gap-6 mt-3">
-                {[
-                  { color: '#6366f1', label: 'Reported' },
-                  { color: '#34d399', label: 'Resolved' },
-                ].map((l) => (
-                  <div key={l.label} className="flex items-center gap-2 text-xs text-slate-500">
-                    <span className="w-2.5 h-0.5 rounded-full" style={{ backgroundColor: l.color }} />
-                    {l.label}
-                  </div>
-                ))}
-                <div className="ml-auto text-xs text-emerald-400 font-medium flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Live Telemetry</div>
+
+              <div className="grid grid-cols-2 gap-3 pt-2 border-t border-white/6 text-xs">
+                <div className="p-2.5 rounded-xl bg-white/3 border border-white/6">
+                  <p className="text-slate-400 text-[11px]">Total Grievances</p>
+                  <p className="text-lg font-black text-white">48,293</p>
+                </div>
+                <div className="p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
+                  <p className="text-emerald-300 text-[11px]">SLA Resolution Rate</p>
+                  <p className="text-lg font-black text-emerald-400">94.2%</p>
+                </div>
               </div>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </section>
 
-      {/* ── STATS STRIP ──────────────────────────────────────────────── */}
-      <section className="border-y border-white/6 bg-white/[0.02]">
-        <div className="max-w-screen-xl mx-auto px-4 lg:px-6 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6">
+      {/* ── 2. OFFICIAL FOUR-STAKEHOLDER SERVICES GRID ───────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+        <div className="text-center max-w-3xl mx-auto mb-14 space-y-2">
+          <span className="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">
+            Multi-Stakeholder Framework
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-white">
+            Dedicated Portals for Every Civic Pillar
+          </h2>
+          <p className="text-slate-400 text-sm leading-relaxed">
+            Seamlessly integrating citizen reports with municipal governance, university research, and corporate capital.
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {[
+            {
+              title: 'Citizen Grievance Redressal',
+              hindi: 'नागरिक शिकायत निवारण',
+              desc: 'Log civic defects with AI computer vision triage, auto-generated location pins, and transparent SLA tracking.',
+              icon: User,
+              color: '#3b82f6',
+              link: '/problems',
+              btn: 'Browse Grievances'
+            },
+            {
+              title: 'Municipal Ward Command',
+              hindi: 'नगर निगम कमान केंद्र',
+              desc: 'Official ULB console for Ward Nodal Officers to issue emergency polymer work-orders and digital sanction gazettes.',
+              icon: Landmark,
+              color: '#f59e0b',
+              link: '/government',
+              btn: 'Open Ward Center'
+            },
+            {
+              title: 'University R&D Hub',
+              hindi: 'विश्वविद्यालय अनुसंधान केंद्र',
+              desc: 'Connect IIT, COEP, and NIT engineering faculty and student labs with funded real-world civic grand challenges.',
+              icon: GraduationCap,
+              color: '#8b5cf6',
+              link: '/universities',
+              btn: 'View R&D Challenges'
+            },
+            {
+              title: 'Corporate CSR Gateway',
+              hindi: 'कॉर्पोरेट सामाजिक उत्तरदायित्व',
+              desc: 'Deploy corporate CSR funds under Section 135 & Schedule VII with 100% tax exemption and verifiable SROI multipliers.',
+              icon: Building2,
+              color: '#10b981',
+              link: '/industry',
+              btn: 'Pledge CSR Grant'
+            },
+          ].map((card, idx) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 15 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.08 }}
+              className="gov-card rounded-3xl p-6 border border-white/8 hover:border-blue-500/40 transition-all flex flex-col justify-between space-y-4 group"
+            >
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div
+                    className="w-10 h-10 rounded-2xl flex items-center justify-center"
+                    style={{ backgroundColor: `${card.color}20`, color: card.color }}
+                  >
+                    <card.icon size={20} />
+                  </div>
+                  <span className="text-[10px] text-slate-400 font-bold">{card.hindi}</span>
+                </div>
+
+                <h3 className="text-base font-bold text-white group-hover:text-blue-300 transition-colors">
+                  {card.title}
+                </h3>
+                <p className="text-xs text-slate-400 leading-relaxed">
+                  {card.desc}
+                </p>
+              </div>
+
+              <Link to={card.link}>
+                <Button size="sm" className="w-full bg-white/5 hover:bg-blue-600 text-slate-200 hover:text-white border border-white/10 text-xs font-bold transition-all">
+                  <span>{card.btn}</span>
+                  <ArrowRight size={13} className="ml-1" />
+                </Button>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── 3. STATUTORY 4-STAGE REDRESSAL WORKFLOW ──────────────────── */}
+      <section className="bg-gov-navy-900 border-y border-blue-900/30 py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center max-w-3xl mx-auto mb-14 space-y-2">
+            <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
+              Statutory 4-Stage Redressal Process
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-white">
+              From Citizen Report to Deployed Solution
+            </h2>
+            <p className="text-slate-400 text-sm">
+              Standard operating procedure aligned with Municipal SLA Turnaround Guidelines.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-6">
             {[
-              { label: 'Problems Filed',     value: PLATFORM_STATS.totalProblems,         formatter: formatNumber },
-              { label: 'Resolved',           value: PLATFORM_STATS.resolvedProblems,      formatter: formatNumber },
-              { label: 'Citizens',           value: PLATFORM_STATS.registeredCitizens,    formatter: formatNumber },
-              { label: 'Universities',       value: PLATFORM_STATS.universitiesPartnered, formatter: (n: number) => n.toString() },
-              { label: 'Industry Partners',  value: PLATFORM_STATS.industryPartners,      formatter: formatNumber },
-              { label: 'Cities Active',      value: PLATFORM_STATS.citiesActive,          formatter: (n: number) => n.toString() },
-              { label: 'Avg Resolution',     value: PLATFORM_STATS.avgResolutionDays,     formatter: (n: number) => `${Math.round(n)}d` },
-              { label: 'People Impacted',    value: PLATFORM_STATS.peopleImpacted,        formatter: formatNumber },
-            ].map((stat, i) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.07 }}
-                className="text-center"
-              >
-                <p className="text-2xl font-black text-white">{stat.formatter(stat.value)}</p>
-                <p className="text-xs text-slate-600 mt-1">{stat.label}</p>
-              </motion.div>
+              {
+                step: '01',
+                title: 'Citizen Lodgement',
+                desc: 'Citizen reports grievance with photo and GPS coordinates. AI vision automatically evaluates defect severity and clusters duplicates.',
+                sla: 'Instant (<2 sec)',
+                color: '#3b82f6'
+              },
+              {
+                step: '02',
+                title: 'Municipal Routing',
+                desc: 'Grievance is escalated to the responsible Ward Nodal Officer with automated SLA countdown and inter-agency directive.',
+                sla: 'Within 24 Hours',
+                color: '#f59e0b'
+              },
+              {
+                step: '03',
+                title: 'University R&D Match',
+                desc: 'Academic labs (IIT/COEP/JNTU) are matched to provide geopolymer material mixes, IoT sensors, or drainage designs.',
+                sla: '7-14 Days',
+                color: '#8b5cf6'
+              },
+              {
+                step: '04',
+                title: 'CSR Co-Funding & Sanction',
+                desc: 'Corporate CSR sponsors pledge grant capital under Schedule VII, followed by official digital gazette publication.',
+                sla: 'Full Resolution',
+                color: '#10b981'
+              },
+            ].map((step, idx) => (
+              <div key={step.step} className="p-6 rounded-3xl bg-gov-navy-950 border border-white/8 space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-black font-mono text-amber-400">{step.step}</span>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/5 text-slate-300">
+                    {step.sla}
+                  </span>
+                </div>
+                <h4 className="text-sm font-bold text-white">{step.title}</h4>
+                <p className="text-xs text-slate-400 leading-relaxed">{step.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────────────────── */}
-      <section id="how-it-works" className="max-w-screen-xl mx-auto px-4 lg:px-6 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <span className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">The SamAdhaan Flow</span>
-          <h2 className="text-4xl font-black text-white mt-3">How Problems Become Solutions</h2>
-          <p className="text-slate-500 mt-4 max-w-2xl mx-auto text-lg">
-            A 5-stakeholder pipeline powered by AI, where every citizen report triggers a collaborative resolution journey.
-          </p>
-        </motion.div>
-        <FlowDiagram />
-
-        {/* Step details */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16">
-          {[
-            {
-              step: '01',
-              title: 'Citizen Reports',
-              desc: 'Fill a simple form with photo, location, and description. AI instantly tags, categorises, and scores urgency. Similar problems are clustered automatically.',
-              color: '#38bdf8',
-              items: ['Photo & location upload', 'AI auto-tagging in <2 seconds', 'Duplicate detection', 'Real-time status tracking'],
-            },
-            {
-              step: '02',
-              title: 'AI + Expert Analysis',
-              desc: 'Our AI engine analyses the problem, suggests solutions from a global database, and routes it to the most relevant universities and industry partners.',
-              color: '#a78bfa',
-              items: ['NLP categorisation', 'Urgency scoring 0–100', 'Solution matching', 'Stakeholder routing'],
-            },
-            {
-              step: '03',
-              title: 'Collaborative Resolution',
-              desc: 'Universities contribute research, industry provides execution, government allocates resources. A transparent timeline keeps every stakeholder accountable.',
-              color: '#34d399',
-              items: ['Multi-stakeholder teams', 'Funding tracker', 'Progress milestones', 'Impact measurement'],
-            },
-          ].map((card, i) => (
-            <motion.div
-              key={card.step}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.15 }}
-              className="glass rounded-2xl p-6 border border-white/8 hover:border-white/15 transition-colors group"
-            >
-              <div
-                className="text-5xl font-black mb-4 tabular-nums"
-                style={{ color: `${card.color}40` }}
-              >
-                {card.step}
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">{card.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed mb-5">{card.desc}</p>
-              <ul className="flex flex-col gap-2">
-                {card.items.map((item) => (
-                  <li key={item} className="flex items-center gap-2 text-sm text-slate-400">
-                    <CheckCircle size={13} style={{ color: card.color }} />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── FEATURES GRID ────────────────────────────────────────────── */}
-      <section className="max-w-screen-xl mx-auto px-4 lg:px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <span className="text-xs font-semibold text-indigo-400 uppercase tracking-widest">Platform Capabilities</span>
-          <h2 className="text-4xl font-black text-white mt-3">Built for India's Scale</h2>
-        </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08 }}
-              whileHover={{ y: -3 }}
-              className="glass rounded-2xl p-6 border border-white/8 hover:border-white/15 transition-all cursor-default group"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
-                  style={{ backgroundColor: `${f.color}15`, border: `1px solid ${f.color}25` }}
-                >
-                  <f.icon size={18} style={{ color: f.color }} />
-                </div>
-                <span
-                  className="text-xs px-2 py-0.5 rounded-full font-medium"
-                  style={{ backgroundColor: `${f.color}15`, color: f.color, border: `1px solid ${f.color}25` }}
-                >
-                  {f.tag}
-                </span>
-              </div>
-              <h3 className="text-base font-bold text-white mb-2">{f.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── STAKEHOLDER CTAs ─────────────────────────────────────────── */}
-      <section className="max-w-screen-xl mx-auto px-4 lg:px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-black text-white">Your Role in the Ecosystem</h2>
-          <p className="text-slate-500 mt-3 text-lg">Every stakeholder has a powerful place in SamAdhaan.</p>
-        </motion.div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {[
-            {
-              emoji: '👤', role: 'Citizen', color: '#38bdf8',
-              title: 'Your voice matters',
-              desc: 'Report problems in your neighbourhood. Track resolution in real-time. Vote on priority. Make your city better.',
-              href: '/dashboard', cta: 'Start Reporting',
-              items: ['Problem reporting', 'Real-time tracking', 'Community upvoting', 'Impact score'],
-            },
-            {
-              emoji: '🎓', role: 'University / HEI', color: '#a78bfa',
-              title: 'Research meets reality',
-              desc: 'Access real-world problem datasets. Deploy student projects. Publish impactful research backed by measurable outcomes.',
-              href: '/universities', cta: 'Join as Researcher',
-              items: ['Live problem feed', 'Student challenge board', 'Research metrics', 'Industry connect'],
-            },
-            {
-              emoji: '🏭', role: 'Industry / MSME', color: '#34d399',
-              title: 'CSR with verified impact',
-              desc: 'Discover aligned CSR opportunities. Partner with universities. Track funding impact. Build brand credibility through transparent outcomes.',
-              href: '/industry', cta: 'Explore CSR Hub',
-              items: ['CSR matching', 'SDG alignment', 'Impact reports', 'MSME opportunities'],
-            },
-            {
-              emoji: '🏛️', role: 'Government', color: '#fbbf24',
-              title: 'Govern with intelligence',
-              desc: 'Real-time ward-level analytics. AI-powered policy insights. Transparent escalation centre. Measurable governance outcomes.',
-              href: '/government', cta: 'Access Gov Portal',
-              items: ['Ward analytics', 'Escalation center', 'Policy AI', 'SDG dashboard'],
-            },
-          ].map((card, i) => (
-            <motion.div
-              key={card.role}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="glass rounded-2xl p-6 border border-white/8 hover:border-white/15 transition-all group"
-              style={{ borderLeftColor: `${card.color}40`, borderLeftWidth: 3 }}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">{card.emoji}</span>
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: card.color }}>{card.role}</p>
-                  <h3 className="text-lg font-bold text-white">{card.title}</h3>
-                </div>
-              </div>
-              <p className="text-sm text-slate-500 leading-relaxed mb-5">{card.desc}</p>
-              <div className="flex flex-wrap gap-2 mb-5">
-                {card.items.map((item) => (
-                  <span
-                    key={item}
-                    className="text-xs px-2.5 py-1 rounded-lg"
-                    style={{ backgroundColor: `${card.color}12`, color: card.color, border: `1px solid ${card.color}20` }}
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-              <Link
-                to={card.href}
-                className="inline-flex items-center gap-1.5 text-sm font-medium transition-colors hover:gap-2.5"
-                style={{ color: card.color }}
-              >
-                {card.cta} <ArrowRight size={14} />
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── CTA BANNER ──────────────────────────────────────────────── */}
-      <section className="max-w-screen-xl mx-auto px-4 lg:px-6 py-16">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="relative rounded-3xl overflow-hidden p-12 text-center"
-          style={{
-            background: 'linear-gradient(135deg, rgba(79,70,229,0.2) 0%, rgba(124,58,237,0.15) 50%, rgba(245,158,11,0.1) 100%)',
-            border: '1px solid rgba(99,102,241,0.3)',
-          }}
-        >
-          <div className="absolute inset-0 dot-pattern opacity-20" />
-          <div className="relative">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass border border-white/10 text-xs font-medium text-indigo-400 mb-6">
-              <Sparkles size={12} />
-              Demo Version Available Now
-            </div>
-            <h2 className="text-4xl font-black text-white mb-4">
-              Ready to Transform Governance?
+      {/* ── 4. OFFICIAL CALL TO ACTION BANNER ────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-20">
+        <div className="gov-card rounded-3xl p-8 sm:p-12 border border-amber-500/30 bg-gradient-to-r from-amber-950/30 via-gov-navy-900 to-blue-950/40 text-center space-y-6">
+          <div className="max-w-2xl mx-auto space-y-2">
+            <span className="text-xs font-bold text-amber-300 uppercase tracking-widest">
+              Digital India Civic Infrastructure Cell
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-black text-white">
+              Ready to Resolve Your Ward's Civic Grievances?
             </h2>
-            <p className="text-slate-400 text-lg max-w-xl mx-auto mb-8">
-              Join thousands of citizens, researchers, and policymakers building a better India together.
+            <p className="text-slate-300 text-sm leading-relaxed">
+              Join thousands of active citizens, municipal engineers, university researchers, and corporate CSR officers building India's smart urban future.
             </p>
-            <div className="flex items-center justify-center gap-4 flex-wrap">
-              <Link to="/problems/new">
-                <Button size="lg" rightIcon={<ArrowRight size={16} />}>
-                  Report Your First Problem
-                </Button>
-              </Link>
-              <Link to="/dashboard">
-                <Button size="lg" variant="secondary">
-                  Explore Dashboard
-                </Button>
-              </Link>
-            </div>
           </div>
-        </motion.div>
+
+          <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <Link to="/problems/new">
+              <Button size="lg" className="bg-amber-500 hover:bg-amber-400 text-gov-navy-950 font-black text-sm px-8 shadow-xl shadow-amber-500/25">
+                Log a Grievance Now
+              </Button>
+            </Link>
+            <Link to="/dashboard">
+              <Button size="lg" variant="secondary" className="bg-white/10 hover:bg-white/15 text-white border border-white/20 text-sm font-bold">
+                Access National Dashboard
+              </Button>
+            </Link>
+          </div>
+        </div>
       </section>
     </PageWrapper>
   );
