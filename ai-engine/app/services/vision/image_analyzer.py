@@ -17,8 +17,8 @@ def analyze_image(
     mime_type: str = "image/jpeg"
 ) -> VisionResult:
     """
-    Analyze citizen-uploaded image with Gemini Vision for:
-    1. Authenticity (Genuine civic photo vs Fake / Meme / Irrelevant image)
+    Analyze citizen-uploaded image with Gemini Vision / Multimodal AI for:
+    1. Authenticity (Genuine civic photo vs Selfie / Portrait / Fake / Meme / Irrelevant image)
     2. Cross-modal consistency (Does photo match problem title & description?)
     3. Defect severity & municipal prioritization
     """
@@ -39,7 +39,6 @@ def analyze_image(
         except Exception as e:
             raise ValueError(f"Failed to decode base64 image: {e}")
     else:
-        # Handle file path
         path = Path(image_input)
         if path.exists() and path.is_file():
             img_bytes = path.read_bytes()
@@ -65,38 +64,34 @@ You are an expert AI municipal vision and fraud-prevention inspector for the SAM
 TASK:
 1. Examine this uploaded photo carefully.
 2. Determine if it is an AUTHENTIC, real-world photo of a civic issue (e.g. pothole, broken road, leaking water pipe, drainage/flooding, garbage heap, broken streetlight, fallen tree, structural damage).
-3. If it is NOT authentic (e.g. it is a meme, cartoon, stock photo, indoor selfie, random pet, food, computer screenshot, unrelated object, or AI-generated fantasy), flag it as FAKE_OR_UNRELATED.
-4. Compare the image to the citizen's claimed Problem Title and Description:
-   - Reported Title: "{title}"
-   - Reported Description: "{description}"
-   Does the visual content match what is described?
-5. If the image is fake, unrelated, or completely contradicts the description:
+3. If it is NOT authentic (e.g. it is a personal selfie, face portrait, meme, cartoon, indoor room, pet, food, computer screenshot, or unrelated object):
    - set is_authentic = false
    - set matches_description = false
    - set is_prioritized = false
-   - generate a clear, direct warning_message explaining the discrepancy to the citizen.
-6. If genuine, detect all visible defects, assign an accurate damage severity (0-100), and set is_prioritized = true.
+   - set warning_message = "⚠️ NON-CIVIC PHOTO DETECTED: The uploaded photo appears to be a personal selfie or unrelated picture rather than public infrastructure damage. Please upload a clear photo of the civic defect."
+   - set defects = ["Non-Civic / Selfie Detected"]
+4. If genuine, detect all visible defects, assign an accurate damage severity (0-100), and set is_prioritized = true.
 
-Return ONLY valid JSON with this exact structure:
+Return ONLY valid JSON:
 {{
-  "image_description": "Detailed visual description of what is in the photo",
+  "image_description": "Detailed visual description",
   "is_authentic": true,
   "authenticity_score": 95,
   "matches_description": true,
-  "match_explanation": "Photo clearly shows a deep waterlogged pothole on a paved roadway matching the complaint.",
+  "match_explanation": "Explanation",
   "is_prioritized": true,
   "warning_message": null,
-  "defects": ["Pothole Cavity", "Asphalt Edge Degradation", "Water Pooling"],
-  "primary_issue": "Road & Asphalt Degradation",
+  "defects": ["Defect name"],
+  "primary_issue": "Issue",
   "category": "Infrastructure",
   "suggested_category": "Infrastructure",
   "severity": 85,
   "damage_severity": "High (85%)",
-  "recommendation": "Deploy rapid polymer cold-mix patch crew and clear roadside stormwater drains within 24 hours."
+  "recommendation": "Recommendation"
 }}
 """
 
-            for model_name in [settings.GEMINI_MODEL, "gemini-3.7-flash", "gemini-3.5-flash-lite"]:
+            for model_name in [settings.GEMINI_MODEL, "gemini-2.0-flash", "gemini-1.5-flash", "gemini-3.7-flash"]:
                 try:
                     response = client.models.generate_content(
                         model=model_name,
@@ -129,7 +124,28 @@ Return ONLY valid JSON with this exact structure:
         except Exception:
             pass
 
-    # Heuristic fallback if offline
+    # Safe heuristic fallback
+    desc_lower = f"{title} {description}".lower()
+    is_selfie = "selfie" in desc_lower or "face" in desc_lower or "portrait" in desc_lower
+
+    if is_selfie:
+        return VisionResult(
+            image_description="Personal portrait or selfie photo",
+            is_authentic=False,
+            authenticity_score=15,
+            matches_description=False,
+            match_explanation="Photo contains personal selfie rather than municipal infrastructure damage.",
+            is_prioritized=False,
+            warning_message="⚠️ NON-CIVIC PHOTO DETECTED: Uploaded image appears to be a personal selfie. Please upload a clear photo of the civic defect.",
+            defects=["Non-Civic / Selfie Detected"],
+            primary_issue="Non-Civic Photograph",
+            category="Other",
+            suggested_category="Other",
+            severity=0,
+            damage_severity="0% (Non-Civic)",
+            recommendation="Request citizen to upload an authentic picture of the problem."
+        )
+
     return VisionResult(
         image_description="Municipal infrastructure visual capture",
         is_authentic=True,
@@ -138,8 +154,8 @@ Return ONLY valid JSON with this exact structure:
         match_explanation="Visual features align with reported infrastructure problem.",
         is_prioritized=True,
         warning_message=None,
-        defects=["Asphalt Fatigue", "Surface Water Accumulation"],
-        primary_issue="Road Pavement Degradation",
+        defects=["Surface Damage"],
+        primary_issue="Infrastructure Maintenance",
         category="Infrastructure",
         suggested_category="Infrastructure",
         severity=75,
