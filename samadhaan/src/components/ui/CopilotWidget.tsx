@@ -476,28 +476,28 @@ export default function CopilotWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="w-[380px] sm:w-[440px] h-[580px] bg-slate-900/95 backdrop-blur-xl rounded-3xl border border-white/15 shadow-2xl shadow-black/80 flex flex-col overflow-hidden"
+            className="w-[380px] sm:w-[440px] h-[580px] bg-white rounded-3xl border border-slate-200 shadow-2xl shadow-slate-900/20 flex flex-col overflow-hidden z-50"
           >
             {/* Header */}
-            <div className="p-4 bg-gradient-to-r from-indigo-950/80 via-slate-900/90 to-violet-950/80 border-b border-white/10 flex items-center justify-between">
+            <div className="p-4 bg-gradient-to-r from-slate-900 via-[#1e3a8a] to-slate-900 border-b border-slate-700 flex items-center justify-between text-white">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 shadow-inner">
+                <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-300 shadow-inner">
                   <Sparkles size={18} />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-white">SAMADHAAN Copilot</h3>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                      AI Live
+                    <h3 className="text-sm font-bold text-white tracking-wide">SAMADHAAN Copilot</h3>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                      GovAI Live
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-400">Ask any general, civic or CSR question</p>
+                  <p className="text-[11px] text-slate-300">National Civic & R&D AI Assistant</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
                   title="Close Copilot"
                 >
                   <X size={18} />
@@ -506,34 +506,34 @@ export default function CopilotWidget() {
             </div>
 
             {/* Message Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 scrollbar-thin scrollbar-thumb-white/10">
+            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50 scrollbar-thin scrollbar-thumb-slate-200">
               {messages.map((msg, i) => (
                 <div
                   key={i}
                   className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {msg.role === 'assistant' && (
-                    <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0 mt-0.5">
+                    <div className="w-7 h-7 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-700 shrink-0 mt-0.5">
                       <Bot size={14} />
                     </div>
                   )}
                   <div
                     className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
                       msg.role === 'user'
-                        ? 'bg-indigo-600 text-white rounded-br-none shadow-md shadow-indigo-600/20'
-                        : 'bg-white/5 border border-white/10 text-slate-200 rounded-bl-none'
+                        ? 'bg-blue-600 text-white rounded-br-none shadow-sm font-medium'
+                        : 'bg-white border border-slate-200 text-slate-800 rounded-bl-none shadow-sm'
                     }`}
                   >
                     <div>{renderFormattedText(msg.text)}</div>
 
                     {/* Actionable Deep Links */}
                     {msg.links && msg.links.length > 0 && (
-                      <div className="mt-2.5 pt-2 border-t border-white/10 flex flex-wrap gap-1.5">
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap gap-1.5">
                         {msg.links.map((link, idx) => (
                           <a
                             key={idx}
                             href={link.url}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-500/30 text-[11px] font-medium text-indigo-300 hover:text-white transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[11px] font-semibold text-blue-700 transition-colors"
                           >
                             <span>{link.title}</span>
                             <ExternalLink size={10} className="shrink-0" />
@@ -544,9 +544,9 @@ export default function CopilotWidget() {
 
                     {/* Suggested Follow-up Chips */}
                     {msg.suggestedFollowUps && msg.suggestedFollowUps.length > 0 && (
-                      <div className="mt-3 pt-2 border-t border-white/10">
-                        <p className="text-[10px] text-slate-400 font-semibold mb-1.5 flex items-center gap-1">
-                          <CornerDownLeft size={10} className="text-indigo-400" />
+                      <div className="mt-3 pt-2 border-t border-slate-100">
+                        <p className="text-[10px] text-slate-500 font-semibold mb-1.5 flex items-center gap-1">
+                          <CornerDownLeft size={10} className="text-blue-600" />
                           <span>Suggested Queries:</span>
                         </p>
                         <div className="flex flex-col gap-1">
@@ -554,10 +554,10 @@ export default function CopilotWidget() {
                             <button
                               key={pIdx}
                               onClick={() => sendQuery(prompt)}
-                              className="text-left text-[11px] text-indigo-300 hover:text-white bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 rounded-lg px-2.5 py-1 transition-all cursor-pointer flex items-center justify-between group"
+                              className="text-left text-[11px] text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100/80 border border-blue-100 rounded-lg px-2.5 py-1 transition-all cursor-pointer flex items-center justify-between group"
                             >
                               <span>💡 {prompt}</span>
-                              <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 text-indigo-400 transition-opacity" />
+                              <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 text-blue-600 transition-opacity" />
                             </button>
                           ))}
                         </div>
@@ -565,7 +565,7 @@ export default function CopilotWidget() {
                     )}
                   </div>
                   {msg.role === 'user' && (
-                    <div className="w-7 h-7 rounded-lg bg-white/10 border border-white/15 flex items-center justify-center text-white shrink-0 mt-0.5">
+                    <div className="w-7 h-7 rounded-lg bg-slate-200 border border-slate-300 flex items-center justify-center text-slate-700 shrink-0 mt-0.5">
                       <User size={14} />
                     </div>
                   )}
@@ -574,11 +574,11 @@ export default function CopilotWidget() {
 
               {loading && (
                 <div className="flex gap-2.5 justify-start">
-                  <div className="w-7 h-7 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 shrink-0">
+                  <div className="w-7 h-7 rounded-lg bg-blue-100 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0">
                     <Loader2 size={14} className="animate-spin" />
                   </div>
-                  <div className="bg-white/5 border border-white/10 rounded-2xl rounded-bl-none px-3.5 py-2.5 text-xs text-slate-400 flex items-center gap-2">
-                    <Loader2 size={12} className="animate-spin text-indigo-400" />
+                  <div className="bg-white border border-slate-200 rounded-2xl rounded-bl-none px-3.5 py-2.5 text-xs text-slate-600 flex items-center gap-2 shadow-sm">
+                    <Loader2 size={12} className="animate-spin text-blue-600" />
                     <span>Thinking with Gemini AI...</span>
                   </div>
                 </div>
@@ -587,19 +587,19 @@ export default function CopilotWidget() {
             </div>
 
             {/* Input Bar */}
-            <form onSubmit={handleSend} className="p-3 bg-slate-950/80 border-t border-white/10 flex items-center gap-2">
+            <form onSubmit={handleSend} className="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask anything (e.g. Messi vs Ronaldo, road repairs, CSR)..."
-                className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors"
+                placeholder="Ask anything (e.g. road repairs, CSR schemes)..."
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:bg-white transition-colors"
               />
               <Button
                 type="submit"
                 size="sm"
                 disabled={!input.trim() || loading}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl px-3 py-2 h-auto cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-3.5 py-2 h-auto cursor-pointer shadow-sm"
               >
                 {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
               </Button>

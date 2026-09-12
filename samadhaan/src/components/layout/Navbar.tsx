@@ -22,7 +22,7 @@ const NAV_ITEMS: Record<Role, { label: string; href: string; icon: React.ReactNo
     { label: 'Citizen Dashboard',   href: '/dashboard',    icon: <LayoutDashboard size={15} /> },
     { label: 'Grievance Redressal', href: '/problems',     icon: <FileText size={15} /> },
     { label: 'R&D Prototypes',      href: '/solutions',    icon: <Lightbulb size={15} /> },
-    { label: 'Geo-Spatial Map',     href: '/impact',       icon: <Map size={15} /> },
+    { label: 'Impact Map',          href: '/impact',       icon: <Map size={15} /> },
     { label: 'AI Intelligence',     href: '/ai-insights',  icon: <Sparkles size={15} /> },
   ],
   university: [
@@ -48,19 +48,18 @@ const NAV_ITEMS: Record<Role, { label: string; href: string; icon: React.ReactNo
   ],
 };
 
-// ── Notification icon helper ─────────────────────────────────────────────
 function NotifIcon({ type }: { type: string }) {
   if (type === 'success' || type === 'RESOLUTION' || type === 'ASSIGNED')
-    return <CheckCircle2 size={14} className="text-emerald-400" />;
+    return <CheckCircle2 size={14} className="text-emerald-600" />;
   if (type === 'warning' || type === 'SLA_ALERT' || type === 'HOTSPOT')
-    return <AlertTriangle size={14} className="text-amber-400" />;
+    return <AlertTriangle size={14} className="text-amber-600" />;
   if (type === 'danger' || type === 'CRITICAL')
-    return <AlertTriangle size={14} className="text-red-400" />;
+    return <AlertTriangle size={14} className="text-red-600" />;
   if (type === 'CSR' || type === 'GRANT')
-    return <Building2 size={14} className="text-emerald-400" />;
+    return <Building2 size={14} className="text-emerald-600" />;
   if (type === 'UNIVERSITY' || type === 'RESEARCH')
-    return <GraduationCap size={14} className="text-violet-400" />;
-  return <Info size={14} className="text-sky-400" />;
+    return <GraduationCap size={14} className="text-indigo-600" />;
+  return <Info size={14} className="text-blue-600" />;
 }
 
 function formatRelativeTime(dateStr?: string) {
@@ -118,7 +117,7 @@ function NationalGovHeader() {
   };
 
   return (
-    <div className="bg-gov-navy-950 border-b border-white/8 text-[11px] text-slate-300 select-none">
+    <div className="bg-[#0a192f] text-white text-[11px] select-none">
       {/* National Tricolor Top Strip */}
       <div className="tricolor-bar" />
 
@@ -127,26 +126,24 @@ function NationalGovHeader() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
             <span className="text-amber-400 font-bold tracking-wide">भारत सरकार</span>
-            <span className="text-slate-500">|</span>
-            <span className="text-slate-200 font-medium">Government of India</span>
+            <span className="text-slate-400">|</span>
+            <span className="text-white font-medium">Government of India</span>
           </div>
-          <span className="hidden md:inline text-slate-600">•</span>
-          <span className="hidden md:inline text-slate-400">
+          <span className="hidden md:inline text-slate-500">•</span>
+          <span className="hidden md:inline text-slate-300">
             आवासन और शहरी कार्य मंत्रालय | Ministry of Housing & Urban Affairs (MoHUA)
           </span>
         </div>
 
         {/* Right: Accessibility Toolbar, Helpline & Language Selector */}
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-          {/* Toll Free Helpline */}
           <div className="hidden sm:flex items-center gap-1 text-emerald-400 font-semibold">
             <Phone size={11} />
             <span>Toll-Free Helpline: <strong>1800-11-2026</strong></span>
           </div>
 
-          {/* Text Size Accessibility Controls (GIGW Compliant) */}
-          <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded border border-white/10 text-[10px]">
-            <span className="text-slate-400 mr-1 hidden sm:inline">Text:</span>
+          <div className="flex items-center gap-1 bg-white/10 px-2 py-0.5 rounded border border-white/15 text-[10px]">
+            <span className="text-slate-300 mr-1 hidden sm:inline">Text:</span>
             <button
               onClick={() => handleFontChange('sm')}
               className={cn('px-1 rounded hover:text-white', fontSize === 'sm' && 'text-amber-400 font-bold')}
@@ -170,13 +167,12 @@ function NationalGovHeader() {
             </button>
           </div>
 
-          {/* Language Selector */}
-          <div className="flex items-center gap-1 text-slate-300">
+          <div className="flex items-center gap-1 text-slate-200">
             <Globe size={11} className="text-amber-400" />
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value)}
-              className="bg-transparent text-slate-200 text-[10px] focus:outline-none cursor-pointer"
+              className="bg-transparent text-white text-[10px] focus:outline-none cursor-pointer"
             >
               <option value="English" className="bg-slate-900 text-white">English</option>
               <option value="Hindi" className="bg-slate-900 text-white">हिंदी (Hindi)</option>
@@ -185,7 +181,7 @@ function NationalGovHeader() {
             </select>
           </div>
 
-          <div className="hidden lg:flex items-center gap-1 text-[10px] text-amber-300/80 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+          <div className="hidden lg:flex items-center gap-1 text-[10px] text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded border border-amber-500/30">
             <ShieldCheck size={11} />
             <span>Digital India Aligned</span>
           </div>
@@ -214,11 +210,11 @@ function RoleSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all duration-200 bg-gov-navy-800/80 border-blue-500/30 text-blue-200 hover:bg-gov-navy-700 cursor-pointer shadow-sm"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all duration-200 bg-blue-50 border-blue-200 text-blue-900 hover:bg-blue-100 cursor-pointer shadow-sm"
       >
         <span className="w-2 h-2 rounded-full" style={{ backgroundColor: config.color }} />
         <span>{config.label} Portal</span>
-        <ChevronDown size={12} className={cn('transition-transform duration-200 opacity-70', open && 'rotate-180')} />
+        <ChevronDown size={12} className={cn('transition-transform duration-200 opacity-70 text-blue-800', open && 'rotate-180')} />
       </button>
 
       <AnimatePresence>
@@ -228,9 +224,9 @@ function RoleSwitcher() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="absolute top-full mt-2 left-0 w-72 glass rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/70 z-50 p-2 space-y-1 bg-gov-navy-900"
+            className="absolute top-full mt-2 left-0 w-72 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xl z-50 p-2 space-y-1"
           >
-            <p className="text-[10px] text-amber-400 uppercase tracking-widest font-bold px-3 py-1.5">
+            <p className="text-[10px] text-amber-700 uppercase tracking-widest font-bold px-3 py-1.5">
               Select Stakeholder Portal
             </p>
             {ROLE_CONFIGS.map((r) => (
@@ -242,7 +238,7 @@ function RoleSwitcher() {
                 }}
                 className={cn(
                   'w-full flex items-start gap-3 p-2.5 rounded-xl text-left transition-all cursor-pointer',
-                  activeRole === r.id ? 'bg-blue-600/20 border border-blue-500/30' : 'hover:bg-white/5'
+                  activeRole === r.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-slate-50'
                 )}
               >
                 <div
@@ -252,11 +248,11 @@ function RoleSwitcher() {
                   <span className="text-xs font-bold">{r.label[0]}</span>
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-white">{r.label} Portal</p>
-                  <p className="text-[11px] text-slate-400 truncate">{r.description}</p>
+                  <p className="text-xs font-bold text-slate-900">{r.label} Portal</p>
+                  <p className="text-[11px] text-slate-500 truncate">{r.description}</p>
                 </div>
                 {activeRole === r.id && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full mt-2 shrink-0 bg-amber-400" />
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full mt-2 shrink-0 bg-blue-600" />
                 )}
               </button>
             ))}
@@ -289,7 +285,7 @@ function NotificationBell() {
         setUnreadCount(unread);
       }
     } catch {
-      // Handled cleanly
+      // Fallback
     } finally {
       setLoading(false);
     }
@@ -345,7 +341,7 @@ function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-gov-navy-800 border border-white/10 hover:bg-gov-navy-700 transition-all text-slate-300 hover:text-white cursor-pointer"
+        className="relative w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 hover:bg-slate-200 transition-all text-slate-700 cursor-pointer"
         aria-label="Official Notifications"
       >
         <Bell size={16} />
@@ -353,7 +349,7 @@ function NotificationBell() {
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-amber-500 text-gov-navy-950 text-[9px] font-black flex items-center justify-center shadow-md shadow-amber-500/50"
+            className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-orange-600 text-white text-[9px] font-black flex items-center justify-center shadow-md shadow-orange-500/50"
           >
             {unreadCount}
           </motion.span>
@@ -367,13 +363,13 @@ function NotificationBell() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="absolute top-full mt-2 right-0 w-84 sm:w-96 glass rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/80 z-50 flex flex-col bg-gov-navy-900"
+            className="absolute top-full mt-2 right-0 w-84 sm:w-96 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-2xl z-50 flex flex-col"
           >
-            <div className="flex items-center justify-between px-4 pt-4 pb-2 border-b border-white/6">
+            <div className="flex items-center justify-between px-4 pt-4 pb-2 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-bold text-white">Official Alerts & Telemetry</h3>
+                <h3 className="text-sm font-bold text-slate-900">Official Alerts & Telemetry</h3>
                 {unreadCount > 0 && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 border border-orange-200">
                     {unreadCount} new
                   </span>
                 )}
@@ -382,7 +378,7 @@ function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1 font-semibold transition-colors cursor-pointer"
+                  className="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-semibold transition-colors cursor-pointer"
                 >
                   <CheckCheck size={13} />
                   <span>Mark all read</span>
@@ -390,12 +386,12 @@ function NotificationBell() {
               )}
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/2 border-b border-white/4 text-xs">
+            <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 border-b border-slate-100 text-xs">
               <button
                 onClick={() => setFilter('all')}
                 className={cn(
                   'px-2.5 py-1 rounded-lg font-medium transition-colors cursor-pointer',
-                  filter === 'all' ? 'bg-blue-600/30 text-white font-bold border border-blue-500/30' : 'text-slate-400 hover:text-white'
+                  filter === 'all' ? 'bg-white text-blue-900 font-bold shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900'
                 )}
               >
                 All ({notifications.length})
@@ -404,7 +400,7 @@ function NotificationBell() {
                 onClick={() => setFilter('unread')}
                 className={cn(
                   'px-2.5 py-1 rounded-lg font-medium transition-colors cursor-pointer',
-                  filter === 'unread' ? 'bg-blue-600/30 text-white font-bold border border-blue-500/30' : 'text-slate-400 hover:text-white'
+                  filter === 'unread' ? 'bg-white text-blue-900 font-bold shadow-sm border border-slate-200' : 'text-slate-600 hover:text-slate-900'
                 )}
               >
                 Unread ({unreadCount})
@@ -413,18 +409,18 @@ function NotificationBell() {
               <button
                 onClick={fetchLiveNotifications}
                 disabled={loading}
-                className="ml-auto text-slate-500 hover:text-slate-300 transition-colors p-1 rounded-md"
+                className="ml-auto text-slate-500 hover:text-slate-800 transition-colors p-1 rounded-md"
                 title="Refresh alerts"
               >
                 <RefreshCw size={12} className={loading ? 'animate-spin' : ''} />
               </button>
             </div>
 
-            <div className="flex flex-col divide-y divide-white/5 max-h-80 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
+            <div className="flex flex-col divide-y divide-slate-100 max-h-80 overflow-y-auto">
               {displayedNotifications.length === 0 ? (
                 <div className="py-8 px-4 text-center text-slate-500 text-xs">
-                  <Bell size={24} className="mx-auto mb-2 opacity-30" />
-                  <p className="font-semibold text-slate-400">No {filter === 'unread' ? 'unread ' : ''}notifications</p>
+                  <Bell size={24} className="mx-auto mb-2 opacity-30 text-slate-400" />
+                  <p className="font-semibold text-slate-700">No {filter === 'unread' ? 'unread ' : ''}notifications</p>
                   <p className="text-[11px] text-slate-500 mt-0.5">You are up to date with municipal and AI dispatch notices.</p>
                 </div>
               ) : (
@@ -435,19 +431,19 @@ function NotificationBell() {
                       key={n.id}
                       onClick={() => handleItemClick(n)}
                       className={cn(
-                        'flex gap-3 px-4 py-3 transition-colors hover:bg-white/6 cursor-pointer relative group',
-                        isUnread ? 'bg-blue-600/10' : 'bg-transparent'
+                        'flex gap-3 px-4 py-3 transition-colors hover:bg-slate-50 cursor-pointer relative group',
+                        isUnread ? 'bg-blue-50/60' : 'bg-transparent'
                       )}
                     >
                       <div className="mt-1 shrink-0">
-                        <div className="w-7 h-7 rounded-xl bg-gov-navy-800 border border-white/8 flex items-center justify-center">
+                        <div className="w-7 h-7 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-center">
                           <NotifIcon type={n.type} />
                         </div>
                       </div>
 
                       <div className="min-w-0 flex-1 space-y-0.5">
                         <div className="flex items-center justify-between gap-1">
-                          <p className={cn('text-xs truncate', isUnread ? 'font-bold text-white' : 'font-medium text-slate-300')}>
+                          <p className={cn('text-xs truncate', isUnread ? 'font-bold text-slate-900' : 'font-medium text-slate-700')}>
                             {n.title}
                           </p>
                           <span className="text-[10px] text-slate-500 shrink-0 flex items-center gap-1">
@@ -455,13 +451,13 @@ function NotificationBell() {
                             {formatRelativeTime(n.createdAt)}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-400 leading-relaxed line-clamp-2">
+                        <p className="text-[11px] text-slate-600 leading-relaxed line-clamp-2">
                           {n.message}
                         </p>
                       </div>
 
                       {isUnread && (
-                        <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0 self-center animate-pulse" />
+                        <span className="w-2 h-2 rounded-full bg-orange-600 shrink-0 self-center" />
                       )}
                     </div>
                   );
@@ -469,18 +465,18 @@ function NotificationBell() {
               )}
             </div>
 
-            <div className="px-4 py-2.5 border-t border-white/6 bg-white/2 flex items-center justify-between text-xs">
+            <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50 flex items-center justify-between text-xs">
               <Link
                 to="/dashboard"
                 onClick={() => setOpen(false)}
-                className="text-slate-400 hover:text-white transition-colors"
+                className="text-slate-600 hover:text-slate-900 transition-colors"
               >
-                View Command Desk
+                View Dashboard
               </Link>
               <Link
                 to="/problems"
                 onClick={() => setOpen(false)}
-                className="text-blue-400 hover:text-blue-300 font-semibold flex items-center gap-1 transition-colors"
+                className="text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1 transition-colors"
               >
                 <span>Live Grievances</span>
                 <ExternalLink size={11} />
@@ -514,15 +510,15 @@ function UserMenu() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-gov-navy-800 border border-white/10 hover:bg-gov-navy-700 transition-all cursor-pointer"
+        className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-xl bg-slate-100 border border-slate-200 hover:bg-slate-200 transition-all cursor-pointer"
       >
-        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-gov-navy-950 text-xs font-black">
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white text-xs font-black shadow-sm">
           {initials}
         </div>
-        <span className="text-xs font-bold text-slate-200 max-w-[85px] truncate hidden sm:block">
+        <span className="text-xs font-bold text-slate-800 max-w-[85px] truncate hidden sm:block">
           {user?.name || 'Officer'}
         </span>
-        <ChevronDown size={12} className={cn('transition-transform duration-200 text-slate-400', open && 'rotate-180')} />
+        <ChevronDown size={12} className={cn('transition-transform duration-200 text-slate-500', open && 'rotate-180')} />
       </button>
 
       <AnimatePresence>
@@ -532,39 +528,39 @@ function UserMenu() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="absolute top-full mt-2 right-0 w-56 glass rounded-2xl border border-white/10 overflow-hidden shadow-2xl shadow-black/80 z-50 p-1.5 space-y-1 bg-gov-navy-900"
+            className="absolute top-full mt-2 right-0 w-56 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xl z-50 p-1.5 space-y-1"
           >
-            <div className="px-3 py-2 border-b border-white/6">
-              <p className="text-xs font-black text-white truncate">{user?.name || 'Citizen User'}</p>
-              <p className="text-[11px] text-amber-400 truncate font-mono">{user?.email || 'citizen@samadhaan.gov.in'}</p>
+            <div className="px-3 py-2 border-b border-slate-100">
+              <p className="text-xs font-black text-slate-900 truncate">{user?.name || 'Citizen User'}</p>
+              <p className="text-[11px] text-blue-700 truncate font-mono">{user?.email || 'citizen@samadhaan.gov.in'}</p>
             </div>
 
             <Link
               to="/profile"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/6 transition-colors"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors font-medium"
             >
-              <User size={14} className="text-slate-400" />
+              <User size={14} className="text-slate-500" />
               <span>Citizen Profile & Score</span>
             </Link>
 
             <Link
               to="/dashboard"
               onClick={() => setOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-300 hover:text-white hover:bg-white/6 transition-colors"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition-colors font-medium"
             >
-              <LayoutDashboard size={14} className="text-slate-400" />
+              <LayoutDashboard size={14} className="text-slate-500" />
               <span>National Dashboard</span>
             </Link>
 
-            <div className="border-t border-white/6 pt-1">
+            <div className="border-t border-slate-100 pt-1">
               <button
                 onClick={() => {
                   logout();
                   setOpen(false);
                   navigate('/login');
                 }}
-                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors cursor-pointer"
+                className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs text-red-600 hover:text-red-700 hover:bg-red-50 transition-colors font-bold cursor-pointer"
               >
                 <LogOut size={14} />
                 <span>Secure Sign Out</span>
@@ -589,26 +585,26 @@ export default function Navbar() {
   }, [location.pathname]);
 
   return (
-    <header className="sticky top-0 z-40 w-full backdrop-blur-xl bg-gov-navy-950/95 border-b border-blue-900/40 shadow-xl">
-      {/* 1. Official National Government Top Header */}
+    <header className="sticky top-0 z-40 w-full bg-white border-b border-slate-200 shadow-sm">
+      {/* 1. Official National Government Top Header Bar */}
       <NationalGovHeader />
 
-      {/* 2. Main GovTech Navigation Bar */}
+      {/* 2. Main Light GovTech Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16 gap-4">
-        {/* Left: Brand Identity & Emblem */}
+        {/* Left: Brand Identity & Official Emblem */}
         <div className="flex items-center gap-4 shrink-0">
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-blue-600 flex items-center justify-center text-gov-navy-950 font-black text-base shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform border border-amber-300/40">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 via-orange-500 to-blue-700 flex items-center justify-center text-white font-black text-lg shadow-md shadow-orange-500/20 group-hover:scale-105 transition-transform border border-amber-300">
               🏛️
             </div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
-                <span className="text-base font-black tracking-tight text-white leading-none">
-                  समा<span className="text-amber-400">धान</span>
+                <span className="text-lg font-black tracking-tight text-slate-900 leading-none">
+                  समा<span className="text-orange-600">धान</span>
                 </span>
-                <span className="text-xs font-bold text-blue-300">SAMADHAAN</span>
+                <span className="text-xs font-black text-blue-900 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">SAMADHAAN</span>
               </div>
-              <span className="text-[9px] font-bold text-amber-300/90 tracking-wider uppercase mt-0.5">
+              <span className="text-[9px] font-bold text-slate-500 tracking-wider uppercase mt-0.5">
                 National Multi-Stakeholder GovTech Platform
               </span>
             </div>
@@ -628,13 +624,13 @@ export default function Navbar() {
                 key={item.href}
                 to={item.href}
                 className={cn(
-                  'flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all',
+                  'flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold transition-all',
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                    : 'text-slate-300 hover:text-white hover:bg-gov-navy-800'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-700 hover:text-blue-700 hover:bg-slate-100'
                 )}
               >
-                <span className={cn('transition-colors', isActive ? 'text-white' : 'text-blue-400')}>
+                <span className={cn('transition-colors', isActive ? 'text-white' : 'text-blue-600')}>
                   {item.icon}
                 </span>
                 <span>{item.label}</span>
@@ -647,7 +643,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2.5">
           <Link
             to="/problems/new"
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-gov-navy-950 text-xs font-black shadow-lg shadow-orange-500/20 transition-all cursor-pointer border border-amber-300/40"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white text-xs font-bold shadow-md shadow-orange-500/20 transition-all cursor-pointer"
           >
             <Plus size={14} />
             <span>Log Grievance</span>
@@ -662,13 +658,13 @@ export default function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 to="/login"
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-200 hover:text-white hover:bg-gov-navy-800 transition-all border border-white/10"
+                className="px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 hover:text-blue-700 hover:bg-slate-100 transition-all border border-slate-200"
               >
-                Official Sign In
+                Sign In
               </Link>
               <Link
                 to="/signup"
-                className="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition-all"
+                className="px-3 py-1.5 rounded-xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-sm transition-all"
               >
                 Register
               </Link>
@@ -678,7 +674,7 @@ export default function Navbar() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setMobileMenuOpen((o) => !o)}
-            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-gov-navy-800 border border-white/10 text-slate-300 hover:text-white cursor-pointer"
+            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl bg-slate-100 border border-slate-200 text-slate-700 hover:bg-slate-200 cursor-pointer"
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -692,9 +688,9 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-white/8 bg-gov-navy-950/98 backdrop-blur-2xl px-4 py-4 space-y-3"
+            className="lg:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-3 shadow-lg"
           >
-            <div className="pb-2 border-b border-white/6">
+            <div className="pb-2 border-b border-slate-100">
               <RoleSwitcher />
             </div>
 
@@ -704,10 +700,10 @@ export default function Navbar() {
                   key={item.href}
                   to={item.href}
                   className={cn(
-                    'flex items-center gap-2 p-2.5 rounded-xl text-xs font-semibold transition-all',
+                    'flex items-center gap-2 p-2.5 rounded-xl text-xs font-bold transition-all',
                     location.pathname === item.href
                       ? 'bg-blue-600 text-white'
-                      : 'bg-gov-navy-800 text-slate-300 hover:bg-gov-navy-700'
+                      : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
                   )}
                 >
                   {item.icon}
@@ -718,7 +714,7 @@ export default function Navbar() {
 
             <Link
               to="/problems/new"
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-amber-500 text-gov-navy-950 text-xs font-black shadow-lg shadow-amber-500/25"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-orange-600 text-white text-xs font-bold shadow-md"
             >
               <Plus size={14} />
               <span>Log Grievance with AI Triage</span>

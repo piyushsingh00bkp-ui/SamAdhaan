@@ -24,7 +24,7 @@ const links = {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-blue-900/40 mt-24 bg-gov-navy-950 text-slate-300">
+    <footer className="border-t border-slate-200 mt-20 bg-slate-900 text-slate-300">
       {/* Top National Strip */}
       <div className="tricolor-bar" />
 
@@ -33,14 +33,14 @@ export default function Footer() {
           {/* Official Brand Information */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-blue-600 flex items-center justify-center shadow-lg shadow-orange-900/30 border border-amber-300/40 text-xl">
+              <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-blue-600 flex items-center justify-center shadow-lg border border-amber-300 text-xl">
                 🏛️
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className="text-lg font-black tracking-tight text-white">समा<span className="text-amber-400">धान</span> (SAMADHAAN)</span>
                 </div>
-                <span className="text-[10px] text-amber-300/90 font-bold uppercase tracking-wider">
+                <span className="text-[10px] text-amber-300 font-bold uppercase tracking-wider">
                   National Multi-Stakeholder GovTech Bridge
                 </span>
               </div>
@@ -51,7 +51,7 @@ export default function Footer() {
             </p>
 
             {/* Helpline and Contact Box */}
-            <div className="p-3.5 rounded-2xl bg-gov-navy-900 border border-blue-500/20 space-y-2 max-w-sm text-xs">
+            <div className="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700 space-y-2 max-w-sm text-xs">
               <div className="flex items-center justify-between text-slate-300">
                 <span className="flex items-center gap-1.5 font-bold text-white"><Phone size={13} className="text-emerald-400" /> National Helpdesk:</span>
                 <strong className="text-emerald-400 font-mono">1800-11-2026</strong>
@@ -102,8 +102,8 @@ export default function Footer() {
           ))}
         </div>
 
-        {/* Bottom Legal & Web Information Manager Strip */}
-        <div className="mt-12 pt-8 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+        {/* Bottom Legal Strip */}
+        <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="space-y-1 text-center sm:text-left">
             <p className="text-slate-400">
               © 2026 SAMADHAAN — National GovTech Portal. Content owned, updated and maintained by the Ministry of Housing and Urban Affairs.
@@ -114,7 +114,7 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-bold text-[11px]">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-bold text-[11px]">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Official Gazette Active
             </span>
