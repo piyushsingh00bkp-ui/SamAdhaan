@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   Search, Filter, MapPin, ThumbsUp, MessageSquare,
   Image, Plus, SlidersHorizontal, Grid3X3, List, RefreshCw,
+  Sparkles, ArrowUpDown, Clock, CheckCircle2, AlertTriangle,
+  Building2, ShieldCheck
 } from 'lucide-react';
 import PageWrapper from '@/components/layout/PageWrapper';
 import { StatusBadge, UrgencyBadge, Badge } from '@/components/ui/Badge';
@@ -14,14 +16,25 @@ import apiClient from '@/api/client';
 import type { Problem, ProblemCategory, ProblemStatus } from '@/types';
 
 const CATEGORY_COLORS: Record<string, string> = {
-  infrastructure: '#6366f1', water: '#38bdf8', sanitation: '#34d399',
-  transport: '#a78bfa', electricity: '#fbbf24', healthcare: '#f87171',
-  education: '#fb923c', environment: '#86efac', agriculture: '#fdba74',
-  safety: '#c084fc', digital: '#67e8f9', other: '#94a3b8',
+  infrastructure: '#059669', water: '#0284c7', sanitation: '#0d9488',
+  transport: '#7c3aed', electricity: '#d97706', healthcare: '#e11d48',
+  education: '#ea580c', environment: '#16a34a', agriculture: '#c2410c',
+  safety: '#9333ea', digital: '#0891b2', other: '#64748b',
 };
 
+const CATEGORIES_LIST: { id: string; label: string }[] = [
+  { id: 'all', label: 'All Sectors' },
+  { id: 'infrastructure', label: 'Infrastructure' },
+  { id: 'water', label: 'Water' },
+  { id: 'sanitation', label: 'Sanitation' },
+  { id: 'transport', label: 'Transport' },
+  { id: 'electricity', label: 'Electricity' },
+  { id: 'healthcare', label: 'Healthcare' },
+  { id: 'environment', label: 'Environment' },
+];
+
 const STATUSES: { value: ProblemStatus | 'all'; label: string }[] = [
-  { value: 'all',         label: 'All' },
+  { value: 'all',         label: 'All Statuses' },
   { value: 'submitted',   label: 'Submitted' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'assigned',    label: 'Assigned' },
@@ -53,119 +66,49 @@ function normalizeStatus(st?: string): ProblemStatus {
   return 'submitted';
 }
 
-function ProblemCard({ problem }: { problem: Problem }) {
-
-  return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, scale: 0.98 }}
-      animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.95 }}
-      whileHover={{ y: -2 }}
-      className="glass rounded-2xl p-5 border border-white/8 hover:border-white/15 transition-all cursor-pointer group"
-    >
-      <Link to={`/problems/${problem.id}`} className="block">
-        {/* Header */}
-        <div className="flex items-start gap-3 mb-3">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-xs font-black"
-            style={{
-              backgroundColor: `${CATEGORY_COLORS[problem.category] ?? '#6366f1'}18`,
-              color: CATEGORY_COLORS[problem.category] ?? '#6366f1',
-              border: `1px solid ${CATEGORY_COLORS[problem.category] ?? '#6366f1'}25`,
-            }}
-          >
-            {problem.aiUrgencyScore}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-white leading-tight group-hover:text-indigo-300 transition-colors line-clamp-2">
-              {problem.title}
-            </p>
-            <div className="flex items-center gap-1.5 mt-1">
-              <MapPin size={10} className="text-slate-600 shrink-0" />
-              <span className="text-xs text-slate-500 truncate">{problem.locationName}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Description */}
-        <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 mb-3">
-          {problem.description}
-        </p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4">
-          <Badge color={CATEGORY_COLORS[problem.category] ?? '#6366f1'}>
-            {categoryLabel(problem.category)}
-          </Badge>
-          <UrgencyBadge score={problem.aiUrgencyScore} />
-        </div>
-
-        {/* AI Tags */}
-        {problem.aiTags.slice(0, 3).map((tag) => (
-          <span key={tag} className="inline-flex mr-1.5 mb-1.5 text-[10px] px-2 py-0.5 rounded-md bg-white/4 border border-white/8 text-slate-500">
-            {tag}
-          </span>
-        ))}
-
-        {/* Footer */}
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/6">
-          <StatusBadge status={problem.status} />
-          <div className="flex items-center gap-3 text-xs text-slate-600">
-            <span className="flex items-center gap-1"><ThumbsUp size={10} />{problem.upvotes.toLocaleString('en-IN')}</span>
-            <span className="flex items-center gap-1"><MessageSquare size={10} />{problem.commentCount}</span>
-            {problem.mediaCount > 0 && <span className="flex items-center gap-1"><Image size={10} />{problem.mediaCount}</span>}
-          </div>
-        </div>
-      </Link>
-    </motion.div>
-  );
-}
-
 export default function ProblemsPage() {
+  const [problems, setProblems] = useState<Problem[]>(MOCK_PROBLEMS);
+  const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ProblemStatus | 'all'>('all');
-  const [view, setView] = useState<'grid' | 'list'>('grid');
-  const [allProblems, setAllProblems] = useState<Problem[]>(MOCK_PROBLEMS);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedStatus, setSelectedStatus] = useState<ProblemStatus | 'all'>('all');
+  const [sortBy, setSortBy] = useState<'urgency' | 'newest' | 'upvotes'>('urgency');
 
   const fetchChallenges = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const res = await apiClient.get('/challenges?limit=50');
+      const res = await apiClient.get('/challenges');
       const items = res.data?.data?.items || res.data?.data || [];
       if (Array.isArray(items) && items.length > 0) {
-        const liveMapped: Problem[] = items.map((c: any) => ({
+        const mapped: Problem[] = items.map((c: any) => ({
           id: c.id,
-          title: c.title,
-          description: c.description,
+          title: c.title || 'Municipal Challenge',
+          description: c.description || '',
           category: normalizeCategory(c.category),
           status: normalizeStatus(c.status),
           location: {
-            lat: c.latitude ?? 18.5204,
-            lng: c.longitude ?? 73.8567,
+            lat: typeof c.location === 'object' && c.location?.lat ? c.location.lat : 18.5204,
+            lng: typeof c.location === 'object' && c.location?.lng ? c.location.lng : 73.8567,
           },
-          locationName: c.locationName || `${c.city || ''}, ${c.state || ''}`,
+          locationName: c.locationName || c.district || 'Pune, Maharashtra',
           state: c.state || 'Maharashtra',
           district: c.district || 'Pune',
-          ward: c.city || 'Pune',
-          aiUrgencyScore: c.aiUrgencyScore ?? (c.priority === 'CRITICAL' ? 95 : c.priority === 'HIGH' ? 85 : 70),
-          aiTags: c.aiTags ?? [c.category, 'Civic Issue', 'Verified'],
-          upvotes: c.upvotes ?? 1,
-          reportedBy: c.author?.name ?? 'Citizen',
-          reportedAt: c.createdAt ?? new Date().toISOString(),
-          updatedAt: c.updatedAt ?? new Date().toISOString(),
-          mediaCount: c.mediaUrls?.length ?? 0,
-          commentCount: c._count?.comments ?? 0,
+          ward: c.ward || 'Ward 47',
+          aiUrgencyScore: c.aiUrgencyScore || Math.floor(65 + Math.random() * 30),
+          aiTags: Array.isArray(c.aiTags) ? c.aiTags : ['Verified', 'Civic'],
+          upvotes: c.upvotes || 0,
+          reportedBy: c.reportedBy || 'Citizen',
+          reportedAt: c.createdAt || c.reportedAt || new Date().toISOString(),
+          updatedAt: c.updatedAt || new Date().toISOString(),
+          mediaCount: c.mediaCount || 0,
+          commentCount: c.commentCount || 0
         }));
-
-        // Merge live items with mock (avoiding duplicates)
-        const liveIds = new Set(liveMapped.map((p) => p.id));
-        const filteredMock = MOCK_PROBLEMS.filter((p) => !liveIds.has(p.id));
-        setAllProblems([...liveMapped, ...filteredMock]);
+        setProblems(mapped);
+      } else {
+        setProblems(MOCK_PROBLEMS);
       }
-    } catch (err) {
-      console.warn('Could not fetch challenges from backend, using mock cache:', err);
+    } catch {
+      setProblems(MOCK_PROBLEMS);
     } finally {
       setLoading(false);
     }
@@ -175,103 +118,176 @@ export default function ProblemsPage() {
     fetchChallenges();
   }, []);
 
-  const filtered = allProblems.filter((p) => {
-    const matchSearch = !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.locationName.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === 'all' || p.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
-
+  // Filter & Sort Pipeline
+  const filteredProblems = useMemo(() => {
+    return problems
+      .filter((p) => {
+        const matchCat = selectedCategory === 'all' || p.category === selectedCategory;
+        const matchStatus = selectedStatus === 'all' || p.status === selectedStatus;
+        const q = search.toLowerCase().trim();
+        const matchSearch =
+          !q ||
+          p.id.toLowerCase().includes(q) ||
+          p.title.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q) ||
+          p.locationName.toLowerCase().includes(q);
+        return matchCat && matchStatus && matchSearch;
+      })
+      .sort((a, b) => {
+        if (sortBy === 'urgency') return b.aiUrgencyScore - a.aiUrgencyScore;
+        if (sortBy === 'upvotes') return b.upvotes - a.upvotes;
+        return new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime();
+      });
+  }, [problems, selectedCategory, selectedStatus, search, sortBy]);
 
   return (
     <PageWrapper>
-      <div className="max-w-screen-xl mx-auto px-4 lg:px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Page Header */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-stone-200">
           <div>
-            <h1 className="text-3xl font-black text-white">Problem Explorer</h1>
-            <p className="text-slate-500 mt-1">Browse, search, and filter all {MOCK_PROBLEMS.length.toLocaleString('en-IN')} reported problems</p>
-          </div>
-          <Link to="/problems/new">
-            <Button leftIcon={<Plus size={14} />}>Report Problem</Button>
-          </Link>
-        </motion.div>
-
-        {/* Search + Filters */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex flex-col sm:flex-row gap-3 mb-6">
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600" />
-            <input
-              type="text"
-              placeholder="Search problems by title, location..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl glass border border-white/10 text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/30 transition-all"
-            />
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-[11px] font-bold tracking-widest text-emerald-800 uppercase bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                National Grievance Database
+              </span>
+              <span className="text-[11px] font-semibold text-stone-500">Live SLA Tracking</span>
+            </div>
+            <h1 className="text-2xl font-bold text-stone-900">Civic Challenges & Grievances</h1>
+            <p className="text-xs text-stone-500 mt-0.5">Explore, search by token (`GRV-XXXX`), and track verified civic issues.</p>
           </div>
 
-          {/* Status filter pills */}
-          <div className="flex items-center gap-1.5">
-            {STATUSES.map((s) => (
-              <button
-                key={s.value}
-                onClick={() => setStatusFilter(s.value as ProblemStatus | 'all')}
-                className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                  statusFilter === s.value
-                    ? 'bg-indigo-600 text-white'
-                    : 'glass border border-white/8 text-slate-400 hover:text-white hover:border-white/15'
-                }`}
-              >
-                {s.label}
-              </button>
-            ))}
-          </div>
-
-          {/* View toggle */}
-          <div className="flex items-center gap-1 glass rounded-xl border border-white/8 p-1">
-            {[{ v: 'grid', Icon: Grid3X3 }, { v: 'list', Icon: List }].map(({ v, Icon }) => (
-              <button
-                key={v}
-                onClick={() => setView(v as 'grid' | 'list')}
-                className={`p-2 rounded-lg transition-all ${view === v ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-white'}`}
-              >
-                <Icon size={14} />
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Results count */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="flex items-center justify-between mb-4">
-          <p className="text-sm text-slate-500">
-            Showing <span className="text-white font-medium">{filtered.length}</span> of {MOCK_PROBLEMS.length} problems
-          </p>
-          <div className="flex items-center gap-1.5 text-xs text-slate-600">
-            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
-            AI-ranked by urgency
-          </div>
-        </motion.div>
-
-        {/* Grid */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${statusFilter}-${search}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={`grid gap-5 ${view === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}
+          <Link
+            to="/problems/new"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm flex items-center gap-2 self-start sm:self-auto transition-all"
           >
-            {filtered.map((problem) => (
-              <ProblemCard key={problem.id} problem={problem} />
-            ))}
-          </motion.div>
-        </AnimatePresence>
+            <Plus className="w-4 h-4" /> Report New Problem
+          </Link>
+        </div>
 
-        {filtered.length === 0 && (
-          <div className="text-center py-20">
-            <Search size={40} className="text-slate-700 mx-auto mb-4" />
-            <p className="text-slate-400 font-medium">No problems found</p>
-            <p className="text-slate-600 text-sm mt-1">Try a different search or filter</p>
+        {/* Search & Filter Toolbar */}
+        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4 mb-6 space-y-4">
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            {/* Search Input */}
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3.5 top-3 w-4 h-4 text-stone-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search by Grievance Token (e.g. GRV-1001), Location, or Keyword..."
+                className="w-full pl-10 pr-4 py-2.5 text-xs text-stone-900 bg-stone-50 border border-stone-300 rounded-xl outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+              />
+            </div>
+
+            {/* Status Selector */}
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value as any)}
+              className="bg-stone-50 border border-stone-300 text-xs font-semibold text-stone-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 w-full md:w-auto"
+            >
+              {STATUSES.map((st) => (
+                <option key={st.value} value={st.value}>{st.label}</option>
+              ))}
+            </select>
+
+            {/* Sort Selector */}
+            <div className="flex items-center gap-1.5 w-full md:w-auto">
+              <ArrowUpDown className="w-4 h-4 text-stone-400 hidden sm:block" />
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                className="bg-stone-50 border border-stone-300 text-xs font-semibold text-stone-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 w-full md:w-auto"
+              >
+                <option value="urgency">Sort by Highest AI Urgency</option>
+                <option value="newest">Sort by Newest First</option>
+                <option value="upvotes">Sort by Most Upvotes</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Category Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-2 border-t border-stone-100">
+            {CATEGORIES_LIST.map((cat) => {
+              const isActive = selectedCategory === cat.id;
+              const count = cat.id === 'all' ? problems.length : problems.filter((p) => p.category === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`text-xs px-3 py-1.5 rounded-lg font-bold shrink-0 transition-all flex items-center gap-1.5 ${
+                    isActive
+                      ? 'bg-emerald-600 text-white shadow-sm'
+                      : 'bg-stone-100 hover:bg-stone-200 text-stone-700'
+                  }`}
+                >
+                  <span>{cat.label}</span>
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${isActive ? 'bg-white/20 text-white' : 'bg-stone-200 text-stone-600'}`}>
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Problems List / Cards */}
+        {filteredProblems.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-stone-200 p-12 text-center">
+            <AlertTriangle className="w-8 h-8 text-amber-500 mx-auto mb-2" />
+            <h3 className="text-sm font-bold text-stone-800">No grievances matching your criteria</h3>
+            <p className="text-xs text-stone-500 mt-1">Try resetting the filter pills or modifying your search query.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredProblems.map((p) => (
+              <motion.div
+                key={p.id}
+                layout
+                whileHover={{ y: -3 }}
+                className="bg-white rounded-2xl border border-stone-200 hover:border-emerald-400 hover:shadow-md transition-all p-5 flex flex-col justify-between"
+              >
+                <div>
+                  {/* Card Header */}
+                  <div className="flex items-start justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center font-black text-xs text-emerald-800">
+                        {p.aiUrgencyScore}
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-mono font-bold text-stone-500">{p.id}</span>
+                        <div className="text-[11px] font-semibold text-emerald-800">{categoryLabel(p.category)}</div>
+                      </div>
+                    </div>
+                    <StatusBadge status={p.status} />
+                  </div>
+
+                  {/* Card Title & Desc */}
+                  <Link to={`/problems/${p.id}`} className="block group">
+                    <h3 className="text-sm font-bold text-stone-900 group-hover:text-emerald-700 transition-colors line-clamp-2 mb-1.5">
+                      {p.title}
+                    </h3>
+                  </Link>
+                  <p className="text-xs text-stone-600 line-clamp-2 mb-4 leading-relaxed font-normal">
+                    {p.description}
+                  </p>
+                </div>
+
+                {/* Card Footer */}
+                <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs text-stone-500">
+                  <div className="flex items-center gap-1 truncate max-w-[180px]">
+                    <MapPin className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                    <span className="truncate text-[11px]">{p.locationName}</span>
+                  </div>
+
+                  <Link
+                    to={`/problems/${p.id}`}
+                    className="text-xs font-bold text-emerald-700 hover:text-emerald-800"
+                  >
+                    View Details →
+                  </Link>
+                </div>
+              </motion.div>
+            ))}
           </div>
         )}
       </div>

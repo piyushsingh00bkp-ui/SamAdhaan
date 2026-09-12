@@ -17,6 +17,7 @@ import LoginPage from '@/pages/Auth/Login';
 import SignupPage from '@/pages/Auth/Signup';
 import ProfilePage from '@/pages/Profile';
 import CopilotWidget from '@/components/ui/CopilotWidget';
+import { ToastProvider } from '@/components/common/Toast';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,29 +31,31 @@ const queryClient = new QueryClient({
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AnimatePresence mode="wait">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/problems" element={<ProblemsPage />} />
-            <Route path="/problems/new" element={<NewProblemPage />} />
-            <Route path="/problems/:id" element={<ProblemDetailPage />} />
-            <Route path="/solutions" element={<SolutionsPage />} />
-            <Route path="/ai-insights" element={<AIInsightsPage />} />
-            <Route path="/impact" element={<ImpactPage />} />
-            <Route path="/universities" element={<UniversitiesPage />} />
-            <Route path="/industry" element={<IndustryPage />} />
-            <Route path="/government" element={<GovernmentPage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </AnimatePresence>
-        {/* Global Floating AI Copilot Widget */}
-        <CopilotWidget />
-      </BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
+          <AnimatePresence mode="wait">
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/problems" element={<ProblemsPage />} />
+              <Route path="/problems/new" element={<NewProblemPage />} />
+              <Route path="/problems/:id" element={<ProblemDetailPage />} />
+              <Route path="/solutions" element={<SolutionsPage />} />
+              <Route path="/ai-insights" element={<AIInsightsPage />} />
+              <Route path="/impact" element={<ImpactPage />} />
+              <Route path="/universities" element={<UniversitiesPage />} />
+              <Route path="/industry" element={<IndustryPage />} />
+              <Route path="/government" element={<GovernmentPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </AnimatePresence>
+          {/* Global Floating AI Copilot Widget */}
+          <CopilotWidget />
+        </BrowserRouter>
+      </ToastProvider>
     </QueryClientProvider>
   );
 }
