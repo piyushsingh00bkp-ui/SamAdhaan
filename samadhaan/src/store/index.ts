@@ -1,12 +1,17 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Role, User } from '@/types';
-import { MOCK_USER, ROLE_CONFIGS } from '@/mock';
+import { ROLE_CONFIGS } from '@/mock';
+import type { SupportedLang } from '@/i18n';
 
 interface AppState {
-  // Active role (drives navigation + views)
+  // Active role
   activeRole: Role;
   setActiveRole: (role: Role) => void;
+
+  // Language: en, hi, bn
+  language: SupportedLang;
+  setLanguage: (lang: SupportedLang) => void;
 
   // Auth
   user: User | null;
@@ -30,7 +35,9 @@ export const useAppStore = create<AppState>()(
       activeRole: 'citizen',
       setActiveRole: (role) => set({ activeRole: role }),
 
-      // Clean default for new devices
+      language: 'en',
+      setLanguage: (lang) => set({ language: lang }),
+
       user: null,
       isAuthenticated: false,
       login: (user) => set({ user, isAuthenticated: true }),
@@ -50,14 +57,19 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'samadhaan-store',
-      partialize: (s) => ({ activeRole: s.activeRole, user: s.user, isAuthenticated: s.isAuthenticated }),
+      partialize: (s) => ({
+        activeRole: s.activeRole,
+        language: s.language,
+        user: s.user,
+        isAuthenticated: s.isAuthenticated
+      }),
     }
   )
 );
 
-// Convenience selectors
 export const useActiveRole = () => useAppStore((s) => s.activeRole);
 export const useActiveRoleConfig = () => {
   const role = useAppStore((s) => s.activeRole);
   return ROLE_CONFIGS.find((r) => r.id === role)!;
 };
+export const useLanguage = () => useAppStore((s) => s.language);

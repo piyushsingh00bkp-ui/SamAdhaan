@@ -10,42 +10,46 @@ import {
   Clock, ExternalLink, RefreshCw, Phone, Globe,
   ShieldCheck, HelpCircle, Eye
 } from 'lucide-react';
-import { useAppStore, useActiveRoleConfig } from '@/store';
+import { useAppStore, useActiveRoleConfig, useLanguage } from '@/store';
 import { ROLE_CONFIGS } from '@/mock';
 import { cn } from '@/utils';
 import type { Role } from '@/types';
 import apiClient from '@/api/client';
+import { t, SupportedLang } from '@/i18n';
 
-// ── Role-specific nav items ─────────────────────────────────────────────────
-const NAV_ITEMS: Record<Role, { label: string; href: string; icon: React.ReactNode }[]> = {
-  citizen: [
-    { label: 'Citizen Dashboard',   href: '/dashboard',    icon: <LayoutDashboard size={15} /> },
-    { label: 'Grievance Redressal', href: '/problems',     icon: <FileText size={15} /> },
-    { label: 'R&D Prototypes',      href: '/solutions',    icon: <Lightbulb size={15} /> },
-    { label: 'Impact Map',          href: '/impact',       icon: <Map size={15} /> },
-    { label: 'AI Intelligence',     href: '/ai-insights',  icon: <Sparkles size={15} /> },
-  ],
-  university: [
-    { label: 'HEI Dashboard',        href: '/dashboard',     icon: <LayoutDashboard size={15} /> },
-    { label: 'University R&D Hub',   href: '/universities',  icon: <GraduationCap size={15} /> },
-    { label: 'Open Civic Challenges',href: '/problems',      icon: <FileText size={15} /> },
-    { label: 'Deployed Solutions',   href: '/solutions',     icon: <Lightbulb size={15} /> },
-    { label: 'AI Analytics',         href: '/ai-insights',   icon: <Sparkles size={15} /> },
-  ],
-  industry: [
-    { label: 'CSR Dashboard',       href: '/dashboard',  icon: <LayoutDashboard size={15} /> },
-    { label: 'CSR Co-Funding Hub',  href: '/industry',   icon: <Building2 size={15} /> },
-    { label: 'Vetted Opportunities',href: '/problems',   icon: <FileText size={15} /> },
-    { label: 'SROI Impact',         href: '/impact',     icon: <TrendingUp size={15} /> },
-    { label: 'AI Insights',         href: '/ai-insights',icon: <Sparkles size={15} /> },
-  ],
-  government: [
-    { label: 'Command Desk',        href: '/dashboard',   icon: <LayoutDashboard size={15} /> },
-    { label: 'Municipal Ward Hub',  href: '/government',  icon: <Landmark size={15} /> },
-    { label: 'Grievance Pipeline',  href: '/problems',    icon: <FileText size={15} /> },
-    { label: 'Predictive Radar',    href: '/ai-insights', icon: <Sparkles size={15} /> },
-    { label: 'National Map',        href: '/impact',      icon: <TrendingUp size={15} /> },
-  ],
+// ── Dynamic Nav Item Builder with i18n ─────────────────────────────────────
+const getNavItems = (role: Role, lang: SupportedLang) => {
+  const map: Record<Role, { label: string; href: string; icon: React.ReactNode }[]> = {
+    citizen: [
+      { label: t(lang, 'navDashboard'),   href: '/dashboard',    icon: <LayoutDashboard size={15} /> },
+      { label: t(lang, 'navGrievance'),   href: '/problems',     icon: <FileText size={15} /> },
+      { label: t(lang, 'navPrototypes'),  href: '/solutions',    icon: <Lightbulb size={15} /> },
+      { label: t(lang, 'navImpactMap'),   href: '/impact',       icon: <Map size={15} /> },
+      { label: t(lang, 'navAIInsights'),  href: '/ai-insights',  icon: <Sparkles size={15} /> },
+    ],
+    university: [
+      { label: t(lang, 'navDashboard'),     href: '/dashboard',     icon: <LayoutDashboard size={15} /> },
+      { label: t(lang, 'navUniversities'),  href: '/universities',  icon: <GraduationCap size={15} /> },
+      { label: t(lang, 'navGrievance'),     href: '/problems',      icon: <FileText size={15} /> },
+      { label: t(lang, 'navPrototypes'),    href: '/solutions',     icon: <Lightbulb size={15} /> },
+      { label: t(lang, 'navAIInsights'),    href: '/ai-insights',   icon: <Sparkles size={15} /> },
+    ],
+    industry: [
+      { label: t(lang, 'navDashboard'),   href: '/dashboard',  icon: <LayoutDashboard size={15} /> },
+      { label: t(lang, 'navIndustry'),    href: '/industry',   icon: <Building2 size={15} /> },
+      { label: t(lang, 'navGrievance'),   href: '/problems',   icon: <FileText size={15} /> },
+      { label: t(lang, 'navImpactMap'),   href: '/impact',     icon: <TrendingUp size={15} /> },
+      { label: t(lang, 'navAIInsights'),  href: '/ai-insights',icon: <Sparkles size={15} /> },
+    ],
+    government: [
+      { label: t(lang, 'navDashboard'),    href: '/dashboard',   icon: <LayoutDashboard size={15} /> },
+      { label: t(lang, 'navCommandDesk'),  href: '/government',  icon: <Landmark size={15} /> },
+      { label: t(lang, 'navGrievance'),    href: '/problems',    icon: <FileText size={15} /> },
+      { label: t(lang, 'navAIInsights'),   href: '/ai-insights', icon: <Sparkles size={15} /> },
+      { label: t(lang, 'navImpactMap'),    href: '/impact',      icon: <TrendingUp size={15} /> },
+    ],
+  };
+  return map[role] || map.citizen;
 };
 
 function NotifIcon({ type }: { type: string }) {
@@ -105,10 +109,10 @@ const DEFAULT_NOTIFICATIONS = [
   }
 ];
 
-// ── Official National Government Top Header Bar (White & Green Theme) ─────
+// ── Official National Government Top Header Bar with Language Switcher ───
 function NationalGovHeader() {
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
-  const [lang, setLang] = useState('English');
+  const { language, setLanguage } = useAppStore();
 
   const handleFontChange = (size: 'sm' | 'md' | 'lg') => {
     setFontSize(size);
@@ -125,13 +129,13 @@ function NationalGovHeader() {
         {/* Left: Official Government of India Identity */}
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1.5">
-            <span className="text-amber-300 font-bold tracking-wide">भारत सरकार</span>
+            <span className="text-amber-300 font-bold tracking-wide">{t(language, 'govIndia')}</span>
             <span className="text-emerald-300">|</span>
             <span className="text-white font-medium">Government of India</span>
           </div>
           <span className="hidden md:inline text-emerald-300">•</span>
           <span className="hidden md:inline text-emerald-100">
-            आवासन और शहरी कार्य मंत्रालय | Ministry of Housing & Urban Affairs (MoHUA)
+            {t(language, 'ministry')}
           </span>
         </div>
 
@@ -139,11 +143,11 @@ function NationalGovHeader() {
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
           <div className="hidden sm:flex items-center gap-1 text-emerald-100 font-semibold">
             <Phone size={11} className="text-amber-300" />
-            <span>Toll-Free: <strong className="text-white">1800-11-2026</strong></span>
+            <span>{t(language, 'tollFree')}: <strong className="text-white">1800-11-2026</strong></span>
           </div>
 
           <div className="flex items-center gap-1 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-700 text-[10px]">
-            <span className="text-emerald-200 mr-1 hidden sm:inline">Text:</span>
+            <span className="text-emerald-200 mr-1 hidden sm:inline">{t(language, 'textSize')}:</span>
             <button
               onClick={() => handleFontChange('sm')}
               className={cn('px-1 rounded hover:text-white', fontSize === 'sm' && 'text-amber-300 font-bold')}
@@ -167,16 +171,17 @@ function NationalGovHeader() {
             </button>
           </div>
 
+          {/* Real Language Switcher: English, Hindi, Bengali */}
           <div className="flex items-center gap-1 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-700 text-[10px]">
             <Globe size={10} className="text-emerald-300" />
             <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value)}
-              className="bg-transparent text-white border-none focus:outline-none cursor-pointer text-[10px]"
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as SupportedLang)}
+              className="bg-transparent text-white font-bold border-none focus:outline-none cursor-pointer text-[10px]"
             >
-              <option value="English" className="text-slate-900">English</option>
-              <option value="Hindi" className="text-slate-900">हिन्दी (Hindi)</option>
-              <option value="Marathi" className="text-slate-900">मराठी (Marathi)</option>
+              <option value="en" className="text-slate-900">English</option>
+              <option value="hi" className="text-slate-900">हिन्दी (Hindi)</option>
+              <option value="bn" className="text-slate-900">বাংলা (Bengali)</option>
             </select>
           </div>
         </div>
@@ -189,7 +194,7 @@ function NationalGovHeader() {
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, activeRole, setActiveRole, logout } = useAppStore();
+  const { user, activeRole, setActiveRole, logout, language } = useAppStore();
   const activeConfig = useActiveRoleConfig();
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -206,7 +211,6 @@ export default function Navbar() {
   const notifRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
-  // Fetch live notifications
   const fetchLiveNotifications = async () => {
     try {
       setLoadingNotifs(true);
@@ -216,7 +220,6 @@ export default function Navbar() {
         setNotifications(data);
       }
     } catch {
-      // Keep existing state on error
     } finally {
       setLoadingNotifs(false);
     }
@@ -247,12 +250,6 @@ export default function Navbar() {
   const unreadCount = notifications.filter((n) => !n.read).length;
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (roleRef.current && !roleRef.current.contains(e.target as Node)) setRoleDropdownOpen(false);
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) setNotifDropdownOpen(false);
@@ -263,7 +260,7 @@ export default function Navbar() {
   }, []);
 
   const role: Role = activeRole || 'citizen';
-  const navItems = NAV_ITEMS[role] || NAV_ITEMS.citizen;
+  const navItems = getNavItems(role, language);
 
   return (
     <>
@@ -277,7 +274,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
 
-            {/* ── Brand / Official Emblem Logo ── */}
+            {/* ── Brand Emblem Logo ── */}
             <Link to="/" className="flex items-center gap-3.5 group shrink-0">
               <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 border-2 border-emerald-600 flex items-center justify-center text-emerald-800 font-black shadow-sm group-hover:bg-emerald-100 transition-colors">
                 <span className="text-xl">🏛️</span>
@@ -292,14 +289,14 @@ export default function Navbar() {
                   </span>
                 </div>
                 <span className="text-[10px] font-semibold text-slate-500 tracking-wider uppercase mt-0.5">
-                  National Multi-Stakeholder Civic Portal
+                  {t(language, 'brandTagline')}
                 </span>
               </div>
             </Link>
 
             {/* ── Desktop Navigation Links ── */}
             <nav className="hidden lg:flex items-center gap-1">
-              {navItems.map((item: { label: string; href: string; icon: React.ReactNode }) => {
+              {navItems.map((item) => {
                 const isActive = location.pathname === item.href;
                 return (
                   <Link
@@ -343,7 +340,7 @@ export default function Navbar() {
                       className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-emerald-200 shadow-xl py-2 z-50 overflow-hidden"
                     >
                       <div className="px-3 py-1.5 border-b border-emerald-100">
-                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Switch Portal Persona</p>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Switch Persona</p>
                       </div>
                       {ROLE_CONFIGS.map((cfg) => {
                         const isSelected = cfg.id === activeRole;
@@ -362,7 +359,7 @@ export default function Navbar() {
                             )}
                           >
                             <div>
-                              <div className="capitalize">{cfg.label}</div>
+                              <div className="capitalize font-bold">{cfg.label}</div>
                               <div className="text-[10px] text-slate-500 font-normal">{cfg.description}</div>
                             </div>
                             {isSelected && <CheckCircle2 size={14} className="text-emerald-600 shrink-0 ml-2" />}
@@ -403,7 +400,7 @@ export default function Navbar() {
                     >
                       <div className="px-4 py-3 border-b border-emerald-100 flex items-center justify-between bg-emerald-50/50">
                         <div className="flex items-center gap-2">
-                          <h4 className="text-xs font-bold text-slate-900">National Notifications</h4>
+                          <h4 className="text-xs font-bold text-slate-900">{t(language, 'notifications')}</h4>
                           {unreadCount > 0 && (
                             <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-200 text-emerald-900">
                               {unreadCount} unread
@@ -416,7 +413,7 @@ export default function Navbar() {
                             className="text-[11px] font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
                           >
                             <CheckCheck size={13} />
-                            <span>Mark read</span>
+                            <span>{t(language, 'markRead')}</span>
                           </button>
                         )}
                       </div>
@@ -425,7 +422,7 @@ export default function Navbar() {
                         {loadingNotifs ? (
                           <div className="p-6 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
                             <RefreshCw size={14} className="animate-spin text-emerald-600" />
-                            <span>Syncing national bulletin...</span>
+                            <span>Syncing bulletin...</span>
                           </div>
                         ) : notifications.length === 0 ? (
                           <div className="p-6 text-center text-xs text-slate-500">
@@ -485,7 +482,7 @@ export default function Navbar() {
                 className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm shadow-emerald-600/20 transition-all cursor-pointer"
               >
                 <Plus size={14} />
-                <span>File Grievance</span>
+                <span>{t(language, 'fileGrievance')}</span>
               </Link>
 
               {/* User Profile / Login */}
@@ -518,7 +515,7 @@ export default function Navbar() {
                           className="flex items-center gap-2 px-4 py-2 text-xs text-slate-700 hover:bg-emerald-50 hover:text-emerald-900"
                         >
                           <User size={14} />
-                          <span>My Citizen Profile</span>
+                          <span>{t(language, 'myProfile')}</span>
                         </Link>
                         <button
                           onClick={() => {
@@ -528,7 +525,7 @@ export default function Navbar() {
                           className="w-full flex items-center gap-2 px-4 py-2 text-xs text-red-600 hover:bg-red-50 text-left"
                         >
                           <LogOut size={14} />
-                          <span>Sign Out</span>
+                          <span>{t(language, 'logout')}</span>
                         </button>
                       </motion.div>
                     )}
@@ -539,7 +536,7 @@ export default function Navbar() {
                   to="/login"
                   className="px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-800 hover:bg-emerald-50 border border-emerald-200 transition-colors"
                 >
-                  Citizen Login
+                  {t(language, 'login')}
                 </Link>
               )}
 
@@ -564,7 +561,7 @@ export default function Navbar() {
               className="lg:hidden bg-white border-b border-emerald-200 px-4 py-4 space-y-3 shadow-xl"
             >
               <div className="flex flex-col gap-1">
-                {navItems.map((item: { label: string; href: string; icon: React.ReactNode }) => (
+                {navItems.map((item) => (
                   <Link
                     key={item.href}
                     to={item.href}
@@ -584,7 +581,7 @@ export default function Navbar() {
                   className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-sm"
                 >
                   <Plus size={15} />
-                  <span>File Official Grievance</span>
+                  <span>{t(language, 'fileGrievance')}</span>
                 </Link>
               </div>
             </motion.div>

@@ -3,8 +3,12 @@ import {
   Phone, Mail, MapPin, ExternalLink, ShieldCheck,
   CheckCircle2, Globe, Heart, Award, FileText, Landmark
 } from 'lucide-react';
+import { useLanguage } from '@/store';
+import { t } from '@/i18n';
 
 export default function Footer() {
+  const language = useLanguage();
+
   return (
     <footer className="bg-white border-t-2 border-emerald-500 text-slate-700 text-xs">
       {/* ── Top Government Initiative Badges Strip ── */}
@@ -13,19 +17,19 @@ export default function Footer() {
           <div className="flex items-center gap-4">
             <span className="font-bold text-emerald-950 flex items-center gap-1.5">
               <Landmark size={15} className="text-emerald-700" />
-              <span>National Innovation & Public Grievance Portal</span>
+              <span>{t(language, 'brandTagline')}</span>
             </span>
             <span className="hidden md:inline text-emerald-300">|</span>
             <span className="hidden md:inline text-emerald-800 font-medium">
-              Guidelines for Indian Government Websites (GIGW) Certified
+              {t(language, 'gigwCert')}
             </span>
           </div>
           <div className="flex items-center gap-3 text-emerald-800 font-bold">
-            <span>Swachh Bharat</span>
+            <span>{t(language, 'swachhBharat')}</span>
             <span>•</span>
-            <span>Smart Cities Mission</span>
+            <span>{t(language, 'smartCities')}</span>
             <span>•</span>
-            <span>Digital India</span>
+            <span>{t(language, 'digitalIndia')}</span>
           </div>
         </div>
       </div>
@@ -47,7 +51,7 @@ export default function Footer() {
             </div>
           </div>
           <p className="text-slate-600 leading-relaxed text-xs">
-            An official initiative connecting Indian citizens with Municipal Corporations, accredited Academic R&D labs, and Corporate CSR wings under Section 135 to resolve urban infrastructure challenges through statutory SLA-bound transparency.
+            {t(language, 'heroDesc')}
           </p>
           <div className="flex items-center gap-3 text-xs text-slate-600">
             <span className="flex items-center gap-1 text-emerald-800 font-bold">
@@ -64,36 +68,35 @@ export default function Footer() {
 
         {/* Col 2: Citizen Services */}
         <div className="space-y-3">
-          <h4 className="font-bold text-emerald-950 text-sm">Citizen Services</h4>
+          <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'citizenServices')}</h4>
           <ul className="space-y-2 text-slate-600">
-            <li><Link to="/problems/new" className="hover:text-emerald-700 transition-colors">File Public Grievance</Link></li>
-            <li><Link to="/problems" className="hover:text-emerald-700 transition-colors">Track Complaint Status</Link></li>
-            <li><Link to="/impact" className="hover:text-emerald-700 transition-colors">Live Municipal Map</Link></li>
-            <li><Link to="/ai-insights" className="hover:text-emerald-700 transition-colors">Predictive Ward Analytics</Link></li>
-            <li><Link to="/solutions" className="hover:text-emerald-700 transition-colors">Civic Innovation Catalog</Link></li>
+            <li><Link to="/problems/new" className="hover:text-emerald-700 transition-colors">{t(language, 'fileGrievance')}</Link></li>
+            <li><Link to="/problems" className="hover:text-emerald-700 transition-colors">{t(language, 'navGrievance')}</Link></li>
+            <li><Link to="/impact" className="hover:text-emerald-700 transition-colors">{t(language, 'navImpactMap')}</Link></li>
+            <li><Link to="/ai-insights" className="hover:text-emerald-700 transition-colors">{t(language, 'navAIInsights')}</Link></li>
+            <li><Link to="/solutions" className="hover:text-emerald-700 transition-colors">{t(language, 'navPrototypes')}</Link></li>
           </ul>
         </div>
 
         {/* Col 3: Institutional Pillars */}
         <div className="space-y-3">
-          <h4 className="font-bold text-emerald-950 text-sm">Stakeholder Hubs</h4>
+          <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'stakeholderHubs')}</h4>
           <ul className="space-y-2 text-slate-600">
-            <li><Link to="/universities" className="hover:text-emerald-700 transition-colors">Higher Education Institutes (HEI)</Link></li>
-            <li><Link to="/industry" className="hover:text-emerald-700 transition-colors">CSR & Corporate Co-Funding</Link></li>
-            <li><Link to="/government" className="hover:text-emerald-700 transition-colors">Municipal Command Center</Link></li>
-            <li><Link to="/dashboard" className="hover:text-emerald-700 transition-colors">Nodal Officer Dashboard</Link></li>
+            <li><Link to="/universities" className="hover:text-emerald-700 transition-colors">{t(language, 'navUniversities')}</Link></li>
+            <li><Link to="/industry" className="hover:text-emerald-700 transition-colors">{t(language, 'navIndustry')}</Link></li>
+            <li><Link to="/government" className="hover:text-emerald-700 transition-colors">{t(language, 'navCommandDesk')}</Link></li>
+            <li><Link to="/dashboard" className="hover:text-emerald-700 transition-colors">{t(language, 'navDashboard')}</Link></li>
             <li><a href="https://cpgrams.gov.in" target="_blank" rel="noreferrer" className="hover:text-emerald-700 flex items-center gap-1">CPGRAMS Portal <ExternalLink size={11} /></a></li>
           </ul>
         </div>
 
         {/* Col 4: Statutory & Legal */}
         <div className="space-y-3">
-          <h4 className="font-bold text-emerald-950 text-sm">Statutory Compliance</h4>
+          <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'statutoryCompliance')}</h4>
           <ul className="space-y-2 text-slate-600">
-            <li><span className="hover:text-emerald-700 cursor-pointer">Right to Information (RTI)</span></li>
-            <li><span className="hover:text-emerald-700 cursor-pointer">Citizen Charter & SLA</span></li>
+            <li><span className="hover:text-emerald-700 cursor-pointer">{t(language, 'rti')}</span></li>
+            <li><span className="hover:text-emerald-700 cursor-pointer">{t(language, 'citizenCharter')}</span></li>
             <li><span className="hover:text-emerald-700 cursor-pointer">Privacy & Data Governance</span></li>
-            <li><span className="hover:text-emerald-700 cursor-pointer">Hyperlinking & Copyright</span></li>
             <li><span className="hover:text-emerald-700 cursor-pointer">Terms of Service</span></li>
           </ul>
         </div>
@@ -103,7 +106,7 @@ export default function Footer() {
       <div className="bg-emerald-50/50 border-t border-emerald-100 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-2 text-slate-500 text-[11px]">
           <div>
-            © 2026 SAMADHAAN Portal. Designed & Developed for the Government of India.
+            {t(language, 'copyright')}
           </div>
           <div className="flex items-center gap-2">
             <span>Portal Content Managed by Ministry of Housing & Urban Affairs (MoHUA)</span>
