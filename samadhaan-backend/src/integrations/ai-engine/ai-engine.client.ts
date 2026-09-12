@@ -656,31 +656,39 @@ Over the last reporting period, the SAMADHAAN platform triaged **142 civic chall
       this.handleAIError('copilotChat', error);
     }
 
-    // 2. Try Direct Google Gemini API if GEMINI_API_KEY is available
-    const geminiKey = process.env.GEMINI_API_KEY || payload?.geminiApiKey;
-    if (geminiKey && rawQuery) {
+    // 2. Try Direct OpenRouter / LLM API if OPENROUTER_API_KEY or GEMINI_API_KEY is available
+    const openRouterKey = process.env.OPENROUTER_API_KEY || payload?.openRouterApiKey;
+    const openRouterModel = process.env.OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct';
+    if (openRouterKey && rawQuery) {
       try {
-        const geminiRes = await axios.post(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+        const openRouterRes = await axios.post(
+          'https://openrouter.ai/api/v1/chat/completions',
           {
-            contents: [
+            model: openRouterModel,
+            messages: [
+              {
+                role: 'system',
+                content: 'You are SAMADHAAN AI Copilot, an expert AI advisor for Indian civic governance, municipal issue tracking, university R&D, and CSR funding under Companies Act Section 135. Answer concisely, helpfully, and with markdown bullet points.',
+              },
               {
                 role: 'user',
-                parts: [
-                  {
-                    text: `You are SAMADHAAN AI Copilot, an expert AI advisor for Indian civic governance, municipal issue tracking, university R&D, and CSR funding under Companies Act Section 135. Answer concisely, helpfully, and with markdown bullet points.\nUser query: ${rawQuery}`,
-                  },
-                ],
-              },
+                content: rawQuery,
+              }
             ],
-            generationConfig: {
-              temperature: 0.4,
-              maxOutputTokens: 600,
-            },
+            temperature: 0.5,
+            max_tokens: 700,
           },
-          { timeout: 10000 }
+          {
+            headers: {
+              'Authorization': `Bearer ${openRouterKey}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': 'https://sam-adhaan-2zlm.vercel.app',
+              'X-Title': 'SAMADHAAN',
+            },
+            timeout: 15000,
+          }
         );
-        const text = geminiRes.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const text = openRouterRes.data?.choices?.[0]?.message?.content;
         if (text && text.trim()) {
           const defaultLinks = [
             { label: 'Report Civic Issue', title: 'Report Civic Issue', url: '/problems/new' },
@@ -696,7 +704,7 @@ Over the last reporting period, the SAMADHAAN platform triaged **142 civic chall
             ],
             actionableLinks: defaultLinks,
             links: defaultLinks,
-            groundingSources: ['Google Gemini Live Model', 'SamAdhaan Intelligence Base'],
+            groundingSources: ['OpenRouter Live LLM', 'SamAdhaan Intelligence Base'],
           } as any;
         }
       } catch (geminiErr) {
