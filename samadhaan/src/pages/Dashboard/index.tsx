@@ -45,13 +45,13 @@ const DEFAULT_TREND = [
 function CustomTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="glass rounded-xl px-3.5 py-2.5 border border-white/10 text-xs shadow-2xl">
-      <p className="text-slate-400 font-semibold mb-1">{label}</p>
+    <div className="bg-white rounded-xl px-3.5 py-2.5 border border-stone-200 text-xs shadow-xl">
+      <p className="text-stone-900 font-bold mb-1">{label}</p>
       {payload.map((p: any) => (
         <div key={p.dataKey} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color }} />
-          <span className="text-slate-400 capitalize">{p.name || p.dataKey}:</span>
-          <span className="text-white font-bold">{p.value?.toLocaleString('en-IN')}</span>
+          <span className="text-stone-500 capitalize font-medium">{p.name || p.dataKey}:</span>
+          <span className="text-emerald-800 font-bold">{p.value?.toLocaleString('en-IN')}</span>
         </div>
       ))}
     </div>
@@ -245,7 +245,7 @@ export default function DashboardPage() {
             <button
               onClick={() => fetchLiveDatabaseData(true)}
               disabled={refreshing}
-              className="px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-semibold text-slate-300 hover:text-white flex items-center gap-2 transition-all cursor-pointer shadow-sm"
+              className="px-3.5 py-2 rounded-xl bg-stone-50 hover:bg-white/10 border border-stone-200 text-xs font-semibold text-slate-300 hover:text-white flex items-center gap-2 transition-all cursor-pointer shadow-sm"
               title="Sync latest live data from PostgreSQL database"
             >
               <RefreshCw size={13} className={refreshing ? 'animate-spin text-indigo-400' : 'text-slate-400'} />
@@ -253,7 +253,7 @@ export default function DashboardPage() {
             </button>
 
             {/* Impact Score or User Badge */}
-            <div className="glass rounded-xl px-3.5 py-1.5 border border-white/8 text-right hidden sm:block">
+            <div className="glass rounded-xl px-3.5 py-1.5 border border-stone-200 text-right hidden sm:block">
               <p className="text-[10px] text-slate-500 font-bold uppercase">Impact Score</p>
               <p className="text-lg font-black text-amber-400 leading-none mt-0.5">{user?.impactScore ?? 847}</p>
             </div>
@@ -308,7 +308,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="lg:col-span-2 glass rounded-3xl p-5 border border-white/8 shadow-xl space-y-4"
+            className="lg:col-span-2 glass rounded-3xl p-5 border border-stone-200 shadow-xl space-y-4"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -353,7 +353,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="glass rounded-3xl p-5 border border-white/8 shadow-xl flex flex-col justify-between"
+            className="glass rounded-3xl p-5 border border-stone-200 shadow-xl flex flex-col justify-between"
           >
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Category Distribution</p>
@@ -382,7 +382,7 @@ export default function DashboardPage() {
               </ResponsiveContainer>
             </div>
 
-            <div className="flex flex-col gap-1.5 mt-2 border-t border-white/6 pt-3">
+            <div className="flex flex-col gap-1.5 mt-2 border-t border-stone-100 pt-3">
               {categoryBreakdown.slice(0, 4).map((cat) => (
                 <div key={cat.category} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2 min-w-0">
@@ -400,9 +400,9 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="lg:col-span-2 glass rounded-3xl p-5 border border-white/8 shadow-xl space-y-4"
+            className="lg:col-span-2 glass rounded-3xl p-5 border border-stone-200 shadow-xl space-y-4"
           >
-            <div className="flex items-center justify-between border-b border-white/8 pb-3">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <span>Recent Problems Feed</span>
@@ -472,7 +472,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="glass rounded-3xl p-5 border border-white/8 border-l-4 border-l-indigo-500 shadow-xl space-y-3.5 flex flex-col justify-between"
+            className="glass rounded-3xl p-5 border border-stone-200 border-l-4 border-l-indigo-500 shadow-xl space-y-3.5 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-3">
@@ -518,9 +518,9 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="lg:col-span-3 glass rounded-3xl p-5 border border-white/8 shadow-xl space-y-4"
+            className="lg:col-span-3 glass rounded-3xl p-5 border border-stone-200 shadow-xl space-y-4"
           >
-            <div className="flex items-center justify-between border-b border-white/8 pb-3">
+            <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div>
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <span>🎓 Active University Solutions & CSR Co-Funding</span>
@@ -568,7 +568,7 @@ export default function DashboardPage() {
               ]).map((sol) => (
                 <div
                   key={sol.id}
-                  className="bg-white/3 rounded-2xl p-4 border border-white/6 hover:border-indigo-500/30 transition-all hover:bg-white/5 space-y-3"
+                  className="bg-stone-50 rounded-2xl p-4 border border-stone-100 hover:border-indigo-500/30 transition-all hover:bg-stone-50 space-y-3"
                 >
                   <div>
                     <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider truncate">{sol.problemTitle}</p>
@@ -588,7 +588,7 @@ export default function DashboardPage() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] pt-2 border-t border-white/6">
+                  <div className="flex items-center justify-between text-[11px] pt-2 border-t border-stone-100">
                     <span className="text-slate-400 flex items-center gap-1">
                       <GraduationCap size={12} className="text-purple-400" />
                       {sol.partnersCount} Lab Partners

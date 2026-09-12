@@ -359,7 +359,7 @@ export default function ImpactPage() {
 
               <Link
                 to="/problems/new"
-                className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white text-xs font-bold flex items-center gap-1.5 border border-white/15 cursor-pointer transition-all"
+                className="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 border border-emerald-500 cursor-pointer transition-all"
               >
                 <MapPin size={14} className="text-amber-400" />
                 <span>Report on Map</span>
@@ -690,7 +690,7 @@ export default function ImpactPage() {
           </MapContainer>
 
           {/* Floating Map Overlays: Map Urgency Legend */}
-          <div className="absolute bottom-4 left-4 z-[1000] glass px-3.5 py-2 rounded-xl border border-white/15 shadow-xl flex items-center gap-4 text-xs">
+          <div className="absolute bottom-4 left-4 z-[1000] glass px-3.5 py-2 rounded-xl border border-emerald-500 shadow-xl flex items-center gap-4 text-xs">
             <span className="font-bold text-white text-[11px]">Urgency:</span>
             {[
               { color: '#ef4444', label: 'Critical 90+' },
@@ -706,7 +706,7 @@ export default function ImpactPage() {
           </div>
 
           {/* Active Problems Counter Badge */}
-          <div className="absolute top-4 right-4 z-[1000] glass px-3.5 py-1.5 rounded-xl border border-white/15 shadow-xl text-xs font-bold text-indigo-300 flex items-center gap-2">
+          <div className="absolute top-4 right-4 z-[1000] glass px-3.5 py-1.5 rounded-xl border border-emerald-500 shadow-xl text-xs font-bold text-indigo-300 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-indigo-400 animate-ping" />
             <span>Showing {filteredProblems.length} Active Hotspots</span>
           </div>

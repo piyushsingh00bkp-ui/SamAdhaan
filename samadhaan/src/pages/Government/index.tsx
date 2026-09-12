@@ -35,13 +35,13 @@ const SLA_STATUS_DATA = [
 function CustomGovTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="glass rounded-xl px-3 py-2 border border-white/10 text-xs shadow-xl backdrop-blur-md">
-      {label && <p className="text-slate-400 mb-1">{label}</p>}
+    <div className="bg-white rounded-xl px-3 py-2 border border-stone-200 text-xs shadow-xl">
+      {label && <p className="text-stone-900 font-bold mb-1">{label}</p>}
       {payload.map((p: any) => (
         <div key={p.dataKey || p.name} className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color || p.fill || '#6366f1' }} />
-          <span className="text-slate-300">{p.name || p.dataKey}:</span>
-          <span className="text-white font-bold">{p.value}</span>
+          <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.color || p.fill || '#059669' }} />
+          <span className="text-stone-500 font-medium">{p.name || p.dataKey}:</span>
+          <span className="text-emerald-800 font-bold">{p.value}</span>
         </div>
       ))}
     </div>
@@ -350,7 +350,7 @@ export default function GovernmentPage() {
                 <Landmark size={16} className="text-amber-400" />
               </div>
               <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Government & Municipal Command</span>
-              <span className="text-xs text-slate-400 bg-white/4 px-2 py-0.5 rounded-full border border-white/6">GovTech Console</span>
+              <span className="text-xs text-slate-400 bg-white/4 px-2 py-0.5 rounded-full border border-stone-100">GovTech Console</span>
             </div>
             <h1 className="text-3xl font-black text-white">University Assignment & CSR Co-Funding Console</h1>
             <p className="text-slate-400 mt-1 max-w-2xl text-sm">
@@ -364,7 +364,7 @@ export default function GovernmentPage() {
               className={`px-3 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                 geminiApiKey
                   ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                  : 'bg-white/5 text-slate-400 hover:text-white border-white/10'
+                  : 'bg-stone-50 text-slate-400 hover:text-white border-stone-200'
               }`}
             >
               <Key size={13} />
@@ -395,7 +395,7 @@ export default function GovernmentPage() {
                   placeholder="AIzaSy..."
                   value={geminiApiKey}
                   onChange={(e) => handleSaveApiKey(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                  className="flex-1 px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
                 />
               </div>
             </motion.div>
@@ -403,13 +403,13 @@ export default function GovernmentPage() {
         </AnimatePresence>
 
         {/* Top Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-white/10 pb-4 mb-6">
+        <div className="flex items-center gap-2 border-b border-stone-200 pb-4 mb-6">
           <button
             onClick={() => setActiveTab('match')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'match'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+                : 'bg-stone-50 text-slate-400 hover:text-white hover:bg-white/10'
             }`}
           >
             <GraduationCap size={15} />
@@ -420,7 +420,7 @@ export default function GovernmentPage() {
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'dossier'
                 ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30'
-                : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+                : 'bg-stone-50 text-slate-400 hover:text-white hover:bg-white/10'
             }`}
           >
             <FileText size={15} />
@@ -431,7 +431,7 @@ export default function GovernmentPage() {
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'radar'
                 ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-white/5 text-slate-400 hover:text-white hover:bg-white/10'
+                : 'bg-stone-50 text-slate-400 hover:text-white hover:bg-white/10'
             }`}
           >
             <BarChart2 size={15} />
@@ -484,19 +484,19 @@ export default function GovernmentPage() {
 
               {/* Selected Problem Metadata Card */}
               {selectedProblem && (
-                <div className="p-4 rounded-2xl bg-white/3 border border-white/6 flex flex-wrap items-center justify-between gap-4 text-xs">
+                <div className="p-4 rounded-2xl bg-stone-50 border border-stone-100 flex flex-wrap items-center justify-between gap-4 text-xs">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-indigo-400 font-bold">{selectedProblem.id}</span>
                       <UrgencyBadge score={selectedProblem.aiUrgencyScore ?? selectedProblem.severity ?? 85} />
-                      <span className="px-2 py-0.5 rounded-full bg-white/5 text-slate-300 capitalize">{selectedProblem.category}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-stone-50 text-slate-300 capitalize">{selectedProblem.category}</span>
                       <StatusBadge status={selectedProblem.status || 'submitted'} />
                     </div>
                     <p className="text-sm font-bold text-white">{selectedProblem.title}</p>
                     <p className="text-slate-400 text-xs">{selectedProblem.description}</p>
                   </div>
 
-                  <div className="text-right space-y-1 border-l border-white/8 pl-4">
+                  <div className="text-right space-y-1 border-l border-stone-200 pl-4">
                     <p className="text-slate-400 text-[11px]">Location / Jurisdiction</p>
                     <p className="font-bold text-white">{selectedProblem.locationName || selectedProblem.city || 'Pune, Maharashtra'}</p>
                     <p className="text-[11px] text-slate-500">Ward: {selectedProblem.ward || 'Ward 47'}</p>
@@ -510,7 +510,7 @@ export default function GovernmentPage() {
               <div className="grid lg:grid-cols-2 gap-6">
                 {/* Academic Universities Match Column */}
                 <div className="glass rounded-3xl p-6 border border-violet-500/30 space-y-4">
-                  <div className="flex items-center justify-between border-b border-white/8 pb-3">
+                  <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center">
                         <GraduationCap size={16} />
@@ -537,7 +537,7 @@ export default function GovernmentPage() {
                           className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                             isSelected
                               ? 'bg-violet-950/40 border-violet-500 shadow-lg shadow-violet-500/20'
-                              : 'bg-white/2 border-white/6 hover:border-white/15'
+                              : 'bg-stone-50 border-stone-100 hover:border-white/15'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -560,7 +560,7 @@ export default function GovernmentPage() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-white/6 text-slate-300">
+                          <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-stone-100 text-slate-300">
                             <div>
                               <span className="text-slate-500">Core Lab: </span>
                               <strong className="text-slate-200">{univ.specialization || 'Urban Hydraulic Modeling'}</strong>
@@ -578,7 +578,7 @@ export default function GovernmentPage() {
 
                 {/* Industry CSR Sponsors Match Column */}
                 <div className="glass rounded-3xl p-6 border border-emerald-500/30 space-y-4">
-                  <div className="flex items-center justify-between border-b border-white/8 pb-3">
+                  <div className="flex items-center justify-between border-b border-stone-200 pb-3">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
                         <Briefcase size={16} />
@@ -605,7 +605,7 @@ export default function GovernmentPage() {
                           className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
                             isSelected
                               ? 'bg-emerald-950/40 border-emerald-500 shadow-lg shadow-emerald-500/20'
-                              : 'bg-white/2 border-white/6 hover:border-white/15'
+                              : 'bg-stone-50 border-stone-100 hover:border-white/15'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -628,7 +628,7 @@ export default function GovernmentPage() {
                             </div>
                           </div>
 
-                          <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-white/6 text-slate-300">
+                          <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-stone-100 text-slate-300">
                             <div>
                               <span className="text-slate-500">Funding Slab: </span>
                               <strong className="text-white">{ind.eligibleBudget || ind.potentialFundingSlab || '₹25.00 Lakhs Cap'}</strong>
@@ -648,7 +648,7 @@ export default function GovernmentPage() {
 
             {/* Step 3: Grant Customization & Final Tripartite Assignment Action */}
             {matchResults && (
-              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-6 border border-white/10 space-y-4">
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass rounded-3xl p-6 border border-stone-200 space-y-4">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <h4 className="text-sm font-black text-white flex items-center gap-2">
@@ -665,7 +665,7 @@ export default function GovernmentPage() {
                         type="number"
                         value={customGrant}
                         onChange={(e) => setCustomGrant(e.target.value)}
-                        className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 text-xs text-white w-32 focus:outline-none focus:border-indigo-500"
+                        className="px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200 text-xs text-white w-32 focus:outline-none focus:border-indigo-500"
                       />
                     </div>
 
@@ -689,7 +689,7 @@ export default function GovernmentPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="glass rounded-3xl p-6 sm:p-8 border border-emerald-500/40 bg-gradient-to-br from-emerald-950/30 via-surface-1 to-surface-2/90 space-y-5 shadow-2xl"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-4">
                   <div className="space-y-0.5">
                     <span className="text-[10px] font-mono text-emerald-400 tracking-wider font-bold">
                       TRIPARTITE SANCTION ORDER #{sanctionSuccess.sanctionId}
@@ -730,7 +730,7 @@ export default function GovernmentPage() {
                 </div>
 
                 {/* Digital Hash & Verification */}
-                <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-white/10 text-xs text-slate-400">
+                <div className="flex flex-wrap items-center justify-between gap-4 pt-3 border-t border-stone-200 text-xs text-slate-400">
                   <div>
                     <p className="text-slate-300 font-bold">{sanctionSuccess.digitalVerification?.verifiedBy}</p>
                     <p className="font-mono text-[10px] text-slate-500 mt-0.5">{sanctionSuccess.digitalVerification?.cryptographicHash}</p>
@@ -768,7 +768,7 @@ export default function GovernmentPage() {
                   <select
                     value={selectedProblemId}
                     onChange={(e) => handleSelectProblem(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer max-w-[220px] truncate"
+                    className="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer max-w-[220px] truncate"
                   >
                     {allProblems.map((p) => (
                       <option key={p.id} value={p.id} className="bg-slate-900 text-white">
@@ -795,7 +795,7 @@ export default function GovernmentPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="p-5 rounded-2xl bg-surface-2/90 border border-amber-500/30 space-y-4 mt-4"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-200 pb-3">
                     <div>
                       <span className="text-[10px] font-mono text-amber-400 tracking-wider font-bold">SANCTION ORDER #{reportResult.reportId}</span>
                       <h4 className="text-sm font-black text-white">{reportResult.title}</h4>
@@ -815,7 +815,7 @@ export default function GovernmentPage() {
                       <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider">2. Authorized Inter-Agency Directives</h4>
                       <div className="grid sm:grid-cols-3 gap-3">
                         {reportResult.departmentalDirectives.map((dir: any, idx: number) => (
-                          <div key={idx} className="p-3 rounded-xl bg-white/3 border border-white/6 space-y-1 text-xs">
+                          <div key={idx} className="p-3 rounded-xl bg-stone-50 border border-stone-100 space-y-1 text-xs">
                             <div className="flex items-center justify-between">
                               <span className="font-bold text-white">{dir.officer}</span>
                               <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 font-bold">{dir.slaHours} SLA</span>
@@ -862,7 +862,7 @@ export default function GovernmentPage() {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
             <div className="grid lg:grid-cols-3 gap-5">
               {/* Ward SLA Resolution Bar Chart */}
-              <div className="lg:col-span-2 glass rounded-3xl p-5 border border-white/8 space-y-4">
+              <div className="lg:col-span-2 glass rounded-3xl p-5 border border-stone-200 space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Municipal Ward Workload</p>
@@ -886,7 +886,7 @@ export default function GovernmentPage() {
               </div>
 
               {/* Municipal SLA Compliance Donut / Pie Chart */}
-              <div className="glass rounded-3xl p-5 border border-white/8 flex flex-col justify-between">
+              <div className="glass rounded-3xl p-5 border border-stone-200 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <div>
@@ -918,7 +918,7 @@ export default function GovernmentPage() {
                   </ResponsiveContainer>
                 </div>
 
-                <div className="flex flex-col gap-1.5 mt-1 pt-3 border-t border-white/6">
+                <div className="flex flex-col gap-1.5 mt-1 pt-3 border-t border-stone-100">
                   {SLA_STATUS_DATA.map((item) => (
                     <div key={item.name} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-1.5 min-w-0">
