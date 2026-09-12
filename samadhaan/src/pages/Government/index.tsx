@@ -459,11 +459,11 @@ export default function GovernmentPage() {
                 </div>
 
                 {/* Problem Picker */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
                   <select
                     value={selectedProblemId}
                     onChange={(e) => handleSelectProblem(e.target.value)}
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-900 border border-indigo-500/30 text-xs text-white focus:outline-none focus:border-indigo-500 max-w-[280px] truncate cursor-pointer"
+                    className="w-full sm:max-w-[260px] px-3.5 py-2.5 rounded-xl bg-slate-900 border border-indigo-500/30 text-xs text-white focus:outline-none focus:border-indigo-500 truncate cursor-pointer"
                   >
                     {allProblems.map((p) => (
                       <option key={p.id} value={p.id} className="bg-slate-900 text-white">
@@ -765,11 +765,11 @@ export default function GovernmentPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
                   <select
                     value={selectedProblemId}
                     onChange={(e) => handleSelectProblem(e.target.value)}
-                    className="px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer max-w-[220px] truncate"
+                    className="w-full sm:max-w-[220px] px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-xs text-white focus:outline-none focus:border-amber-500 cursor-pointer truncate"
                   >
                     {allProblems.map((p) => (
                       <option key={p.id} value={p.id} className="bg-slate-900 text-white">
