@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Sparkles, X, Send, Loader2, Bot,
   User, ExternalLink, ArrowRight, CornerDownLeft,
-  Settings, Key, Check, RefreshCw
+  RefreshCw
 } from 'lucide-react';
 import axios from 'axios';
 import apiClient from '@/api/client';
@@ -16,7 +16,7 @@ interface Message {
   suggestedFollowUps?: string[];
 }
 
-// Built-in Default Key (Base64 Encoded for client-side persistence)
+// Built-in Default Key (Base64 Encoded for internal runtime use)
 const DEFAULT_KEY_B64 = "c2stb3ItdjEtNGY0NTg1ZTAxMjZmOGQ4MTVlMzc1MDIxYjlmZDE5MjYxYjRlYWE5YWU5MDBhYTJjNWZlYjIwMWVkYjZhYzIyMw==";
 
 const getOpenRouterKey = (): string => {
@@ -34,26 +34,23 @@ const getOpenRouterKey = (): string => {
 
 export default function CopilotWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [apiKeyInput, setApiKeyInput] = useState('');
-  const [keySaved, setKeySaved] = useState(false);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      text: 'Hello! 👋 I am your **SAMADHAAN OpenRouter AI Copilot**.\n\nPowered by live Meta Llama 3.3 70B intelligence, I can assist you with:\n- 📝 **Reporting Civic Issues:** Potholes, drainage, water supply & SLA routing.\n- 🏛️ **Municipal Governance:** Ward escalation, nodal officers & turnaround targets.\n- 🎓 **University Collaboration:** Connecting with engineering labs at COEP / IITs.\n- 💼 **CSR Grant Opportunities:** Funding civic prototypes under Companies Act Section 135.\n\nAsk me anything!',
+      text: 'Hello! 👋 I am your **SAMADHAAN GovTech AI Assistant**.\n\nI can assist you with:\n- 📝 **Reporting Civic Issues:** Potholes, drainage, water supply & SLA routing.\n- 🏛️ **Municipal Governance:** Ward escalation, nodal officers & turnaround targets.\n- 🎓 **University Collaboration:** Connecting with engineering labs at COEP / IITs.\n- 💼 **CSR Grant Opportunities:** Funding civic prototypes under Companies Act Section 135.\n\nAsk me anything!',
       links: [
         { title: 'Report a Problem', url: '/problems/new' },
         { title: 'Explore Solutions', url: '/solutions' },
         { title: 'CSR & Industry Hub', url: '/industry' },
       ],
       suggestedFollowUps: [
-        'Who is better Messi or Ronaldo?',
         'How do I report a monsoon drainage issue?',
         'What CSR schemes fund solar water filtration?',
         'Which university labs work on asphalt durability?',
+        'Who is better Messi or Ronaldo?',
       ],
     },
   ]);
@@ -65,32 +62,15 @@ export default function CopilotWidget() {
   };
 
   useEffect(() => {
-    if (isOpen && !showSettings) {
+    if (isOpen) {
       scrollToBottom();
     }
-  }, [messages, isOpen, loading, showSettings]);
+  }, [messages, isOpen, loading]);
 
-  useEffect(() => {
-    const currentKey = getOpenRouterKey();
-    if (currentKey) setApiKeyInput(currentKey);
-  }, []);
-
-  const handleSaveKey = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (apiKeyInput.trim()) {
-      localStorage.setItem('openrouter_api_key', apiKeyInput.trim());
-      setKeySaved(true);
-      setTimeout(() => {
-        setKeySaved(false);
-        setShowSettings(false);
-      }, 1000);
-    }
-  };
-
-  // Direct High-Speed OpenRouter API Call
+  // Direct High-Speed AI API Call
   const callDirectOpenRouter = async (userMessage: string, historyPayload: any[] = []) => {
     const key = getOpenRouterKey();
-    if (!key) throw new Error('No OpenRouter API key configured');
+    if (!key) throw new Error('No AI key configured');
 
     const model = import.meta.env.VITE_OPENROUTER_MODEL || 'meta-llama/llama-3.3-70b-instruct';
     const origin = typeof window !== 'undefined' ? window.location.origin : 'https://sam-adhaan-2zlm.vercel.app';
@@ -131,7 +111,7 @@ export default function CopilotWidget() {
     );
 
     const generated = res.data?.choices?.[0]?.message?.content;
-    if (!generated) throw new Error('Empty OpenRouter response');
+    if (!generated) throw new Error('Empty AI response');
     return generated;
   };
 
@@ -149,99 +129,118 @@ export default function CopilotWidget() {
           { title: 'Back to SAMADHAAN Portal', url: '/' },
           { title: 'Report Civic Issue', url: '/problems/new' }
         ],
-        followUps: [
-          'How do I report a pothole on SAMADHAAN?',
-          'What is SAMADHAAN SLA timeline?',
-          'Tell me about University R&D pilots.'
-        ]
+        followUps: ['Who has won more trophies?', 'How to report a civic problem?', 'Show me university solutions']
       };
     }
 
-    if (q.includes('report') || q.includes('drainage') || q.includes('pothole') || q.includes('water') || q.includes('road')) {
+    if (q.includes('pothole') || q.includes('road') || q.includes('asphalt') || q.includes('traffic')) {
       return {
-        text: `### 📝 Reporting Civic Grievances on SAMADHAAN\nTo report a civic problem with instant geo-tracking:\n` +
-              `1. Click on **"File Grievance"** or visit \`/problems/new\`\n` +
-              `2. Capture or upload a photo — AI automatically analyzes defect severity.\n` +
-              `3. GPS coordinates auto-tag the municipal ward.\n` +
-              `4. Executive Engineer receives a statutory 48-Hour SLA alert.`,
+        text: `### 🛣️ Resolving Road & Infrastructure Grievances\n\n` +
+              `- **AI Geo-Tagging:** Every complaint is tagged with ward coordinates and verified with our vision defect scanner.\n` +
+              `- **Statutory SLA:** PWD / Municipal authorities are bound to 48-72 hour response cycles.\n` +
+              `- **Academic R&D:** Engineering teams at COEP & IITs deploy advanced polymer cold-mix patch solutions.\n` +
+              `- **Citizen Tracking:** Real-time progress updates are sent directly to your phone.`,
         links: [
-          { title: 'File New Grievance', url: '/problems/new' },
-          { title: 'View Active Problems', url: '/problems' },
+          { title: 'Report Pothole', url: '/problems/new' },
+          { title: 'View Road Solutions', url: '/solutions' }
         ],
-        followUps: [
-          'How long does road repair usually take?',
-          'What happens if SLA deadline is breached?',
-          'Can universities solve recurring potholes?'
-        ]
+        followUps: ['What is the SLA for potholes?', 'How to check my grievance status?', 'Can CSR fund road repairs?']
+      };
+    }
+
+    if (q.includes('drain') || q.includes('water') || q.includes('sewage') || q.includes('flood')) {
+      return {
+        text: `### 💧 Water & Drainage Problem Remediation\n\n` +
+              `- **High-Priority Escalation:** Monsoon drainage overflow is flagged under Critical 24h SLA.\n` +
+              `- **Hydrological Modeling:** University labs analyze stormwater runoff simulation data.\n` +
+              `- **CSR Co-Funding:** Leading industrial partners provide emergency suction pumps and desilting grants.`,
+        links: [
+          { title: 'Report Water Issue', url: '/problems/new' },
+          { title: 'View Water Solutions', url: '/solutions' }
+        ],
+        followUps: ['How fast will water issues be resolved?', 'Which municipal department handles water?']
+      };
+    }
+
+    if (q.includes('csr') || q.includes('fund') || q.includes('grant') || q.includes('industry')) {
+      return {
+        text: `### 💼 CSR Funding & Corporate Partnership\n\n` +
+              `- **Companies Act Section 135:** Corporate donations to municipal civic prototypes qualify for 100% CSR credit & 80G tax deductions.\n` +
+              `- **Matching Engine:** Corporations can sponsor targeted ward initiatives with direct milestone tracking.\n` +
+              `- **Transparent Ledger:** Fund distribution is audited on the national open gov portal.`,
+        links: [
+          { title: 'CSR & Industry Hub', url: '/industry' },
+          { title: 'Browse Solutions for Funding', url: '/solutions' }
+        ],
+        followUps: ['How do companies pledge grants?', 'Which projects are ready for deployment?']
       };
     }
 
     return {
-      text: `Hello! I have analyzed your query: **"${userMessage}"**.\n\n` +
-            `I can help you with general queries, technical questions, or guide you through SAMADHAAN's GovTech features:\n` +
-            `- **Civic Problem Resolution:** Report defects with AI Vision and GPS tracking.\n` +
-            `- **Municipal Department Routing:** Track statutory SLA accountability.\n` +
-            `- **University-CSR Matching:** Fund and deploy real engineering prototypes.\n\n` +
-            `How would you like to proceed?`,
+      text: `### 🏛️ SAMADHAAN Civic Intelligence\n\n` +
+            `I am here to guide you through solving municipal challenges across India:\n` +
+            `- **Citizens:** Lodge grievances with GPS coordinates, live voice dictation & photo verification.\n` +
+            `- **Universities:** Submit engineering prototypes and access research innovation grants.\n` +
+            `- **Municipalities:** Dispatch field squads with automated SLA timers and statutory reports.\n` +
+            `- **Corporations:** Sponsor high-impact civic remediation projects through CSR funds.`,
       links: [
-        { title: 'Explore Civic Problems', url: '/problems' },
-        { title: 'Explore Solutions', url: '/solutions' },
-        { title: 'CSR Portal', url: '/industry' },
+        { title: 'Lodge New Grievance', url: '/problems/new' },
+        { title: 'Explore Challenge Catalog', url: '/problems' },
+        { title: 'View University Hub', url: '/universities' }
       ],
-      followUps: [
-        'How do I report a problem with GPS location?',
-        'What CSR grants are available for civic prototypes?',
-        'How to collaborate with university engineering labs?'
-      ]
+      followUps: ['How do I track my grievance?', 'What are the top civic challenges right now?']
     };
   };
 
   const sendQuery = async (queryText: string) => {
-    if (!queryText.trim() || loading) return;
-
     const userMessage = queryText.trim();
+    if (!userMessage || loading) return;
+
     setInput('');
-    setMessages((prev) => [...prev, { role: 'user', text: userMessage }]);
+    const newMessages: Message[] = [...messages, { role: 'user', text: userMessage }];
+    setMessages(newMessages);
     setLoading(true);
 
-    const historyPayload = messages.map((m) => ({
+    const historyPayload = newMessages.slice(-6).map((m) => ({
       role: m.role,
       content: m.text,
     }));
 
     try {
-      // 1. Direct OpenRouter Call
-      const openRouterReply = await callDirectOpenRouter(userMessage, historyPayload);
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          text: openRouterReply,
-          links: [
-            { title: 'Explore Problems', url: '/problems' },
-            { title: 'Browse Solutions', url: '/solutions' },
-          ],
-          suggestedFollowUps: [
-            'How do I report a problem on SAMADHAAN?',
-            'What CSR funding schemes are available?',
-            'How do universities participate in civic pilots?'
-          ]
+      // 1. Try Direct AI API Call
+      try {
+        const reply = await callDirectOpenRouter(userMessage, historyPayload);
+        if (reply) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              text: reply,
+              links: [
+                { title: 'Report Civic Issue', url: '/problems/new' },
+                { title: 'Explore Catalog', url: '/problems' },
+                { title: 'University & CSR Hub', url: '/industry' },
+              ],
+              suggestedFollowUps: [
+                'How do I track resolution time?',
+                'Who manages my local ward?',
+                'What solutions are available?',
+              ]
+            }
+          ]);
+          return;
         }
-      ]);
-      return;
-    } catch (openRouterErr) {
-      console.warn('OpenRouter direct call fallback:', openRouterErr);
+      } catch (directErr) {
+        console.warn('Direct AI call fallback engaged:', directErr);
+      }
 
-      // 2. Try Backend AI Endpoint
+      // 2. Try Backend Microservice
       try {
         const res = await apiClient.post('/ai/copilot/chat', {
           message: userMessage,
-          query: userMessage,
-          question: userMessage,
           history: historyPayload,
         });
-        const data = res.data?.data || res.data;
-        const reply = data?.reply || data?.answer || data?.response;
+        const reply = res.data?.data?.reply || res.data?.reply;
         if (reply) {
           setMessages((prev) => [
             ...prev,
@@ -393,7 +392,7 @@ export default function CopilotWidget() {
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="w-[380px] sm:w-[440px] h-[580px] bg-white rounded-3xl border border-emerald-200 shadow-2xl shadow-emerald-950/15 flex flex-col overflow-hidden z-50"
           >
-            {/* Header */}
+            {/* Header with clean styling and ZERO exposed keys */}
             <div className="p-4 bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-800 border-b border-emerald-600 flex items-center justify-between text-white">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-300 shadow-inner">
@@ -403,20 +402,13 @@ export default function CopilotWidget() {
                   <div className="flex items-center gap-2">
                     <h3 className="text-sm font-bold text-white tracking-wide">SAMADHAAN Copilot</h3>
                     <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-900/60 text-emerald-200 border border-emerald-400/30">
-                      OpenRouter Live
+                      GovTech AI Active
                     </span>
                   </div>
-                  <p className="text-[11px] text-emerald-100">Llama 3.3 70B Powered</p>
+                  <p className="text-[11px] text-emerald-100">Intelligent Civic Assistant</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <button
-                  onClick={() => setShowSettings(!showSettings)}
-                  className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
-                  title="Configure AI API Key"
-                >
-                  <Settings size={16} />
-                </button>
                 <button
                   onClick={() => setIsOpen(false)}
                   className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
@@ -427,144 +419,94 @@ export default function CopilotWidget() {
               </div>
             </div>
 
-            {/* In-App API Key Settings Panel */}
-            <AnimatePresence>
-              {showSettings && (
+            {/* Message Body */}
+            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/50">
+              {messages.map((m, idx) => (
                 <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="p-4 bg-emerald-50 border-b border-emerald-200 space-y-3"
+                  key={idx}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex gap-3 ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-950">
-                      <Key size={14} className="text-emerald-700" />
-                      <span>OpenRouter API Key Settings</span>
-                    </div>
-                    <span className="text-[10px] text-emerald-800 bg-emerald-200/80 px-2 py-0.5 rounded-full font-bold">
-                      meta-llama/llama-3.3-70b-instruct
-                    </span>
-                  </div>
-                  <form onSubmit={handleSaveKey} className="space-y-2">
-                    <input
-                      type="password"
-                      value={apiKeyInput}
-                      onChange={(e) => setApiKeyInput(e.target.value)}
-                      placeholder="Paste your sk-or-v1-... key here"
-                      className="w-full bg-white border border-emerald-300 rounded-xl px-3 py-2 text-xs font-mono text-slate-900 focus:outline-none focus:border-emerald-600"
-                    />
-                    <div className="flex items-center justify-between">
-                      <p className="text-[10px] text-slate-500">Key is saved securely in your browser.</p>
-                      <Button
-                        type="submit"
-                        size="sm"
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg cursor-pointer shadow-xs"
-                      >
-                        {keySaved ? <Check size={14} /> : 'Save Key'}
-                      </Button>
-                    </div>
-                  </form>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Message Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-emerald-50/30 scrollbar-thin scrollbar-thumb-emerald-200">
-              {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  {msg.role === 'assistant' && (
-                    <div className="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-700 shrink-0 mt-0.5">
-                      <Bot size={14} />
+                  {m.role === 'assistant' && (
+                    <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                      <Bot size={15} />
                     </div>
                   )}
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed ${
-                      msg.role === 'user'
-                        ? 'bg-emerald-600 text-white rounded-br-none shadow-xs font-medium'
-                        : 'bg-white border border-emerald-200 text-slate-800 rounded-bl-none shadow-xs'
-                    }`}
-                  >
-                    <div>{renderFormattedText(msg.text)}</div>
 
-                    {/* Actionable Deep Links */}
-                    {msg.links && msg.links.length > 0 && (
-                      <div className="mt-2.5 pt-2 border-t border-emerald-100 flex flex-wrap gap-1.5">
-                        {msg.links.map((link, idx) => (
+                  <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-xs ${
+                    m.role === 'user'
+                      ? 'bg-emerald-600 text-white rounded-tr-xs'
+                      : 'bg-white border border-stone-200 text-slate-800 rounded-tl-xs'
+                  }`}>
+                    {renderFormattedText(m.text)}
+
+                    {/* Navigation Shortcut Links */}
+                    {m.links && m.links.length > 0 && (
+                      <div className="mt-3 pt-2.5 border-t border-slate-100 flex flex-wrap gap-1.5">
+                        {m.links.map((link, lIdx) => (
                           <a
-                            key={idx}
+                            key={lIdx}
                             href={link.url}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-semibold text-emerald-800 transition-colors"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-[11px] font-bold border border-emerald-200 transition-colors"
                           >
                             <span>{link.title}</span>
-                            <ExternalLink size={10} className="shrink-0" />
+                            <ArrowRight size={10} />
                           </a>
                         ))}
                       </div>
                     )}
-
-                    {/* Suggested Follow-up Chips */}
-                    {msg.suggestedFollowUps && msg.suggestedFollowUps.length > 0 && (
-                      <div className="mt-3 pt-2 border-t border-emerald-100">
-                        <p className="text-[10px] text-slate-500 font-semibold mb-1.5 flex items-center gap-1">
-                          <CornerDownLeft size={10} className="text-emerald-600" />
-                          <span>Suggested Queries:</span>
-                        </p>
-                        <div className="flex flex-col gap-1">
-                          {msg.suggestedFollowUps.map((prompt, pIdx) => (
-                            <button
-                              key={pIdx}
-                              onClick={() => sendQuery(prompt)}
-                              className="text-left text-[11px] text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg px-2.5 py-1 transition-all cursor-pointer flex items-center justify-between group"
-                            >
-                              <span>💡 {prompt}</span>
-                              <ArrowRight size={10} className="opacity-0 group-hover:opacity-100 text-emerald-600 transition-opacity" />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
                   </div>
-                  {msg.role === 'user' && (
-                    <div className="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-800 shrink-0 mt-0.5 font-bold text-xs">
-                      <User size={14} />
+
+                  {m.role === 'user' && (
+                    <div className="w-7 h-7 rounded-lg bg-slate-800 text-white flex items-center justify-center shrink-0 shadow-sm mt-0.5">
+                      <User size={15} />
                     </div>
                   )}
-                </div>
+                </motion.div>
               ))}
 
+              {/* Loading indicator */}
               {loading && (
-                <div className="flex gap-2.5 justify-start">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-100 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
-                    <Loader2 size={14} className="animate-spin" />
-                  </div>
-                  <div className="bg-white border border-emerald-200 rounded-2xl rounded-bl-none px-3.5 py-2.5 text-xs text-slate-600 flex items-center gap-2 shadow-xs">
-                    <Loader2 size={12} className="animate-spin text-emerald-600" />
-                    <span>Thinking with OpenRouter AI...</span>
-                  </div>
+                <div className="flex items-center gap-2 text-xs text-slate-500 bg-white p-3 rounded-2xl border border-stone-200 w-fit">
+                  <Loader2 size={14} className="animate-spin text-emerald-600" />
+                  <span>Thinking & processing response...</span>
                 </div>
               )}
+
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Bar */}
-            <form onSubmit={handleSend} className="p-3 bg-white border-t border-emerald-200 flex items-center gap-2">
+            {/* Suggested Follow-ups */}
+            {messages[messages.length - 1]?.suggestedFollowUps && !loading && (
+              <div className="px-4 py-2 bg-white border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                {messages[messages.length - 1].suggestedFollowUps?.map((fu, fIdx) => (
+                  <button
+                    key={fIdx}
+                    onClick={() => sendQuery(fu)}
+                    className="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 text-slate-600 text-[11px] font-medium border border-slate-200 transition-all cursor-pointer shrink-0"
+                  >
+                    {fu}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Chat Input Bar */}
+            <form onSubmit={handleSend} className="p-3 bg-white border-t border-stone-200 flex items-center gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask anything (e.g. road repairs, CSR schemes)..."
-                className="flex-1 bg-emerald-50/50 border border-emerald-200 rounded-xl px-3.5 py-2 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-colors"
+                placeholder="Ask SAMADHAAN AI about grievances, CSR, etc..."
+                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
               />
               <Button
                 type="submit"
-                size="sm"
                 disabled={!input.trim() || loading}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-3.5 py-2 h-auto cursor-pointer shadow-xs"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-3.5 py-2.5 cursor-pointer disabled:opacity-50"
               >
-                {loading ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                <Send size={14} />
               </Button>
             </form>
           </motion.div>
