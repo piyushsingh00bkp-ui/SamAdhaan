@@ -1,38 +1,34 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Indian GovTech Light Palette ─────────────────── */
-  --color-gov-navy-950: #0a192f;
-  --color-gov-navy-900: #0f294d;
-  --color-gov-navy-800: #1b3b6f;
-  --color-gov-navy-700: #1e40af;
-  --color-gov-navy-600: #2563eb;
-  --color-gov-navy-500: #3b82f6;
+  /* ── White & Emerald Green GovTech Palette ───────────── */
+  --color-gov-green-950: #022c22;
+  --color-gov-green-900: #064e3b;
+  --color-gov-green-800: #065f46;
+  --color-gov-green-700: #047857;
+  --color-gov-green-600: #059669;
+  --color-gov-green-500: #10b981;
+  --color-gov-green-400: #34d399;
+  --color-gov-green-300: #6ee7b7;
+  --color-gov-green-200: #a7f3d0;
+  --color-gov-green-100: #d1fae5;
+  --color-gov-green-50:  #ecfdf5;
 
-  /* National Saffron & Amber */
+  /* National Saffron Accents (Subtle) */
   --color-saffron-600: #c2410c;
   --color-saffron-500: #ea580c;
   --color-saffron-400: #f97316;
-  --color-gold-600:    #d97706;
-  --color-gold-500:    #f59e0b;
-  --color-gold-400:    #fbbf24;
 
-  /* Tiranga Emerald */
-  --color-tiranga-green-700: #047857;
-  --color-tiranga-green-600: #059669;
-  --color-tiranga-green-500: #10b981;
-  --color-tiranga-green-400: #34d399;
-
-  /* Light Surface layers */
-  --color-surface-0:  #f8fafc;
-  --color-surface-1:  #ffffff;
-  --color-surface-2:  #f1f5f9;
+  /* Crisp Light Surfaces */
+  --color-surface-0:  #ffffff;
+  --color-surface-1:  #f8fafc;
+  --color-surface-2:  #f0fdf4;
   --color-surface-3:  #e2e8f0;
   --color-surface-4:  #cbd5e1;
 
   /* Status colours */
-  --color-success-500: #059669;
-  --color-success-400: #10b981;
+  --color-success-500: #16a34a;
+  --color-success-400: #22c55e;
   --color-warning-500: #d97706;
   --color-warning-400: #f59e0b;
   --color-danger-500:  #dc2626;
@@ -65,7 +61,7 @@ html.font-scale-md { font-size: 16px; }
 html.font-scale-lg { font-size: 18px; }
 
 body {
-  background-color: #f8fafc;
+  background-color: #ffffff;
   color: #0f172a;
   font-family: var(--font-sans);
   min-height: 100vh;
@@ -79,25 +75,25 @@ body {
   width: 100%;
 }
 
-/* ── Custom scrollbar ──────────────────────── */
+/* ── Custom green scrollbar ────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-track { background: #f0fdf4; }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #a7f3d0;
   border-radius: 9999px;
 }
-::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+::-webkit-scrollbar-thumb:hover { background: #10b981; }
 
-/* ── Government-Grade Light Cards & Glass ───── */
+/* ── White & Emerald Cards & Glass ─────────── */
 .glass {
   background: #ffffff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.05);
+  border: 1px solid #d1fae5;
+  box-shadow: 0 4px 20px -2px rgba(16, 185, 129, 0.06);
 }
 
 .glass-light {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: #f0fdf4;
+  border: 1px solid #d1fae5;
 }
 
 .gov-card {
@@ -107,41 +103,41 @@ body {
 }
 
 .gov-seal-badge {
-  background: #fffbeb;
-  border: 1px solid #fde68a;
-  color: #b45309;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
 }
 
 .glow-brand {
-  box-shadow: 0 4px 24px rgba(37, 99, 235, 0.08);
+  box-shadow: 0 4px 24px rgba(16, 185, 129, 0.12);
 }
 
-.glow-saffron {
-  box-shadow: 0 4px 24px rgba(234, 88, 12, 0.1);
+.glow-green {
+  box-shadow: 0 4px 24px rgba(5, 150, 105, 0.15);
 }
 
 /* ── Gradient text ─────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #1e40af 0%, #0369a1 50%, #0f172a 100%);
+  background: linear-gradient(135deg, #047857 0%, #059669 50%, #0f172a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.gradient-text-saffron {
-  background: linear-gradient(135deg, #ea580c 0%, #d97706 60%, #b45309 100%);
+.gradient-text-green {
+  background: linear-gradient(135deg, #047857 0%, #10b981 60%, #064e3b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* ── Hero Light Gradient ───────────────────── */
+/* ── Hero Light Green & White Gradient ─────── */
 .hero-gradient {
   background:
-    radial-gradient(ellipse 70% 50% at 20% 20%, rgba(239, 246, 255, 0.9) 0%, transparent 70%),
-    radial-gradient(ellipse 60% 40% at 80% 30%, rgba(255, 247, 237, 0.8) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 50% at 50% 100%, rgba(240, 253, 244, 0.7) 0%, transparent 70%),
-    #f8fafc;
+    radial-gradient(ellipse 70% 50% at 20% 20%, rgba(236, 253, 245, 0.9) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 30%, rgba(240, 253, 244, 0.8) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 50% at 50% 100%, rgba(209, 250, 229, 0.5) 0%, transparent 70%),
+    #ffffff;
 }
 
 /* ── Global Card Text Adaptations for Light Palette ── */
@@ -171,7 +167,7 @@ body {
 .glass .border-white\/4,
 .gov-card .border-white\/8,
 .gov-card .border-white\/6 {
-  border-color: #e2e8f0 !important;
+  border-color: #d1fae5 !important;
 }
 
 .glass .bg-white\/2,
@@ -183,7 +179,7 @@ body {
 .gov-card .bg-white\/3,
 .gov-card .bg-white\/4,
 .gov-card .bg-white\/5 {
-  background-color: #f8fafc !important;
+  background-color: #f0fdf4 !important;
 }
 
 /* ── Recharts light override ───────────────── */
@@ -194,4 +190,4 @@ body {
 .recharts-text { fill: #475569 !important; }
 
 /* ── Leaflet map light styling ─────────────── */
-.leaflet-container { background: #f1f5f9 !important; }
+.leaflet-container { background: #f0fdf4 !important; }
