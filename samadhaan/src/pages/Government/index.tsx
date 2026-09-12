@@ -404,7 +404,7 @@ export default function GovernmentPage() {
         </AnimatePresence>
 
         {/* Top Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-stone-200 pb-4 mb-6">
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar border-b border-stone-200 pb-4 mb-6">
           <button
             onClick={() => setActiveTab('match')}
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${

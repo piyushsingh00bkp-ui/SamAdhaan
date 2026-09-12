@@ -396,7 +396,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-white border border-emerald-200 shadow-2xl py-2 z-50 overflow-hidden"
+                      className="absolute right-0 mt-2 w-[calc(100vw-32px)] sm:w-96 max-w-sm rounded-2xl bg-white border border-emerald-200 shadow-2xl py-2 z-50 overflow-hidden"
                     >
                       <div className="px-4 py-3 border-b border-emerald-100 flex items-center justify-between bg-emerald-50/50">
                         <div className="flex items-center gap-2">
@@ -574,11 +574,39 @@ export default function Navbar() {
                 ))}
               </div>
 
+              {/* Mobile Persona Switcher */}
+              <div className="pt-3 border-t border-emerald-100">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Switch Role / Persona</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {ROLE_CONFIGS.map((cfg) => {
+                    const isSelected = cfg.id === activeRole;
+                    return (
+                      <button
+                        key={cfg.id}
+                        onClick={() => {
+                          setActiveRole(cfg.id);
+                          setMobileMenuOpen(false);
+                        }}
+                        className={cn(
+                          'flex items-center gap-1.5 px-2.5 py-2 rounded-xl text-xs font-bold text-left transition-all',
+                          isSelected
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'bg-slate-50 text-slate-700 hover:bg-emerald-50 border border-slate-200'
+                        )}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-current shrink-0" />
+                        <span className="truncate capitalize">{cfg.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               <div className="pt-3 border-t border-emerald-100 flex flex-col gap-2">
                 <Link
                   to="/problems/new"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-sm"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm cursor-pointer"
                 >
                   <Plus size={15} />
                   <span>{t(language, 'fileGrievance')}</span>

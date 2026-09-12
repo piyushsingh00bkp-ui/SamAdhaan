@@ -1201,7 +1201,7 @@ Return ONLY a JSON object:
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-stone-200">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mt-8 pt-6 border-t border-stone-200">
               {step > 1 ? (
                 <Button
                   type="button"

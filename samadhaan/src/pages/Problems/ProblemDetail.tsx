@@ -224,7 +224,7 @@ export default function ProblemDetailPage() {
               <ArrowLeft className="w-4 h-4" />
             </Link>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="text-[11px] font-mono font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                   {problem.id}
                 </span>
@@ -236,7 +236,7 @@ export default function ProblemDetailPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {/* Multi-Language Switcher */}
             <div className="flex items-center bg-stone-100 p-1 rounded-xl border border-stone-200">
               <button
@@ -430,14 +430,14 @@ export default function ProblemDetailPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white rounded-2xl max-w-2xl w-full border border-stone-200 shadow-2xl p-6 sm:p-8 max-h-[90vh] overflow-y-auto"
+                className="bg-white rounded-2xl max-w-2xl w-full border border-stone-200 shadow-2xl p-4 sm:p-8 max-h-[90vh] overflow-y-auto"
               >
                 {/* Modal Header Actions */}
                 <div className="flex items-center justify-between pb-4 border-b border-stone-200 mb-6 print:hidden">
                   <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
                     Official GIGW Sanction Certificate
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <Button
                       onClick={handlePrint}
                       className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5"
@@ -469,7 +469,7 @@ export default function ProblemDetailPage() {
                   </div>
 
                   {/* Grievance Metadata Grid */}
-                  <div className="grid grid-cols-2 gap-4 text-xs mb-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs mb-6">
                     <div className="p-3 bg-stone-50 rounded-lg border border-stone-200">
                       <span className="text-stone-500 block text-[10px] uppercase font-bold">Grievance Token:</span>
                       <span className="font-mono font-bold text-stone-900">{problem.id}</span>

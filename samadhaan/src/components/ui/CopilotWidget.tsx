@@ -360,7 +360,7 @@ export default function CopilotWidget() {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50">
       {/* Floating Toggle Button */}
       {!isOpen && (
         <motion.button
@@ -390,7 +390,7 @@ export default function CopilotWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="w-[380px] sm:w-[440px] h-[580px] bg-white rounded-3xl border border-emerald-200 shadow-2xl shadow-emerald-950/15 flex flex-col overflow-hidden z-50"
+            className="w-[calc(100vw-24px)] sm:w-[440px] max-w-[440px] h-[80vh] sm:h-[580px] max-h-[640px] bg-white rounded-2xl sm:rounded-3xl border border-emerald-200 shadow-2xl shadow-emerald-950/15 flex flex-col overflow-hidden z-50"
           >
             {/* Header with clean styling and ZERO exposed keys */}
             <div className="p-4 bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-800 border-b border-emerald-600 flex items-center justify-between text-white">

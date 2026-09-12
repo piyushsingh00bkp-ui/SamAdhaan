@@ -568,8 +568,8 @@ export default function ImpactPage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="glass rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative"
-          style={{ height: 560 }}
+          className="glass rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative h-[380px] sm:h-[480px] md:h-[580px]"
+          
         >
           <MapContainer
             center={mapCenter}
@@ -624,7 +624,7 @@ export default function ImpactPage() {
                   }}
                 >
                   <Popup className="custom-leaflet-popup">
-                    <div className="text-xs bg-slate-950 text-white rounded-xl p-3.5 min-w-[280px] max-w-[340px] space-y-2.5 border border-white/10 shadow-2xl">
+                    <div className="text-xs bg-slate-950 text-white rounded-xl p-3.5 min-w-[240px] max-w-[calc(100vw-60px)] sm:max-w-[340px] space-y-2.5 border border-white/10 shadow-2xl">
                       {/* Badge & Urgency */}
                       <div className="flex items-center justify-between border-b border-white/10 pb-2">
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-slate-300 uppercase tracking-wider">
