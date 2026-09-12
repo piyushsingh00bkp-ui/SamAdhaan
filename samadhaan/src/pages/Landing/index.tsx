@@ -74,7 +74,6 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 text-xs font-bold text-emerald-950 shadow-xs"
             >
-              <span>🏛️</span>
               <span>{t(language, 'nationalPortalBadge')}</span>
             </motion.div>
 
@@ -154,7 +153,7 @@ export default function LandingPage() {
                   <h3 className="font-bold text-slate-900 text-sm">National Civic Redressal Telemetry</h3>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
-                  LIVE NIC SYNC
+                  LIVE AI SYNC
                 </span>
               </div>
 

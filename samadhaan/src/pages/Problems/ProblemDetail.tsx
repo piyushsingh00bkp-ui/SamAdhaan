@@ -285,7 +285,7 @@ export default function ProblemDetailPage() {
               className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm flex items-center gap-1.5"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>GIGW Sanction Order</span>
+              <span>AI Resolution Dossier</span>
             </Button>
           </div>
         </div>
@@ -435,7 +435,7 @@ export default function ProblemDetailPage() {
                 {/* Modal Header Actions */}
                 <div className="flex items-center justify-between pb-4 border-b border-stone-200 mb-6 print:hidden">
                   <span className="text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                    Official GIGW Sanction Certificate
+                    Official Resolution & Resource Allocation Dossier
                   </span>
                   <div className="flex flex-wrap items-center gap-2">
                     <Button
@@ -458,10 +458,10 @@ export default function ProblemDetailPage() {
                   {/* Seal & Govt Header */}
                   <div className="text-center pb-4 border-b-2 border-stone-900 mb-6">
                     <div className="text-xs font-bold tracking-widest text-stone-600 uppercase">
-                      GOVERNMENT OF INDIA • MUNICIPAL GOVERNANCE COUNCIL
+                      SAMADHAAN CIVIC INNOVATION NETWORK • SMART ALLOCATION
                     </div>
                     <h2 className="text-xl font-black text-stone-950 uppercase tracking-tight mt-1">
-                      STATUTORY SANCTION & WORK ORDER
+                      SMART CIVIC RESOLUTION & ALLOCATION DOSSIER
                     </h2>
                     <div className="text-[11px] font-mono text-stone-500 mt-0.5">
                       Order Reference: {sanctionOrderNo} • Date: {new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
@@ -503,11 +503,11 @@ export default function ProblemDetailPage() {
                     <div className="text-[10px] text-stone-500">
                       <div className="font-mono font-bold text-stone-800">DIGITAL QR SEAL: VALID</div>
                       <div>SHA-256: e3b0c44298fc1c149afbf4c8996fb924</div>
-                      <div>SamAdhaan GIGW National Gateway</div>
+                      <div>SamAdhaan AI Platform Gateway</div>
                     </div>
                     <div className="text-right">
-                      <div className="font-serif italic text-stone-800 font-bold">Dr. V. K. Ramanathan, IAS</div>
-                      <div className="text-[10px] text-stone-600">Principal Municipal Commissioner</div>
+                      <div className="font-serif italic text-stone-800 font-bold">SamAdhaan AI Automated Triage</div>
+                      <div className="text-[10px] text-stone-600">Verified Resolution Authority</div>
                       <div className="text-[10px] font-mono text-emerald-800 font-bold">Digitally Signed [Verified]</div>
                     </div>
                   </div>

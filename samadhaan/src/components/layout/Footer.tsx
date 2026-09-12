@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import {
   Phone, Mail, MapPin, ExternalLink, ShieldCheck,
-  CheckCircle2, Globe, Heart, Award, FileText, Landmark
+  CheckCircle2, Globe, Heart, Award, FileText, Sparkles, Code2
 } from 'lucide-react';
 import { useLanguage } from '@/store';
 import { t } from '@/i18n';
@@ -11,17 +11,17 @@ export default function Footer() {
 
   return (
     <footer className="bg-white border-t-2 border-emerald-500 text-slate-700 text-xs">
-      {/* ── Top Government Initiative Badges Strip ── */}
+      {/* Top Innovation Badges Strip */}
       <div className="bg-emerald-50/70 border-b border-emerald-100 py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <span className="font-bold text-emerald-950 flex items-center gap-1.5">
-              <Landmark size={15} className="text-emerald-700" />
+              <Sparkles size={15} className="text-emerald-700" />
               <span>{t(language, 'brandTagline')}</span>
             </span>
             <span className="hidden md:inline text-emerald-300">|</span>
             <span className="hidden md:inline text-emerald-800 font-medium">
-              {t(language, 'gigwCert')}
+              Civic Hackathon 2026 Project
             </span>
           </div>
           <div className="flex items-center gap-3 text-emerald-800 font-bold">
@@ -34,20 +34,20 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* ── Main Footer Grid ── */}
+      {/* Main Footer Grid */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
         
-        {/* Col 1: Government Mission */}
+        {/* Col 1: Platform Mission */}
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-emerald-50 border-2 border-emerald-600 flex items-center justify-center text-emerald-800 font-black">
-              🏛️
+              ⚡
             </div>
             <div>
               <h3 className="font-black text-lg text-emerald-950 tracking-tight">
                 SAM<span className="text-emerald-600">ADHAAN</span>
               </h3>
-              <p className="text-[11px] text-slate-500 font-medium">Government of India Multi-Stakeholder Redressal Hub</p>
+              <p className="text-[11px] text-slate-500 font-medium">AI-Powered Multi-Stakeholder Civic Problem Solving System</p>
             </div>
           </div>
           <p className="text-slate-600 leading-relaxed text-xs">
@@ -55,18 +55,18 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-3 text-xs text-slate-600">
             <span className="flex items-center gap-1 text-emerald-800 font-bold">
-              <Phone size={13} className="text-emerald-600" />
-              <span>1800-11-2026 (Toll Free)</span>
+              <Mail size={13} className="text-emerald-600" />
+              <span>contact@samadhaan.dev</span>
             </span>
             <span>•</span>
-            <span className="flex items-center gap-1">
-              <Mail size={13} className="text-emerald-600" />
-              <span>support@samadhaan.gov.in</span>
+            <span className="flex items-center gap-1 text-emerald-800 font-bold">
+              <Sparkles size={13} className="text-emerald-600" />
+              <span>Civic Hackathon 2026</span>
             </span>
           </div>
         </div>
 
-        {/* Col 2: Citizen Services */}
+        {/* Col 2: Platform Services */}
         <div className="space-y-3">
           <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'citizenServices')}</h4>
           <ul className="space-y-2 text-slate-600">
@@ -78,7 +78,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Col 3: Institutional Pillars */}
+        {/* Col 3: Stakeholder Hubs */}
         <div className="space-y-3">
           <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'stakeholderHubs')}</h4>
           <ul className="space-y-2 text-slate-600">
@@ -86,30 +86,31 @@ export default function Footer() {
             <li><Link to="/industry" className="hover:text-emerald-700 transition-colors">{t(language, 'navIndustry')}</Link></li>
             <li><Link to="/government" className="hover:text-emerald-700 transition-colors">{t(language, 'navCommandDesk')}</Link></li>
             <li><Link to="/dashboard" className="hover:text-emerald-700 transition-colors">{t(language, 'navDashboard')}</Link></li>
-            <li><a href="https://cpgrams.gov.in" target="_blank" rel="noreferrer" className="hover:text-emerald-700 flex items-center gap-1">CPGRAMS Portal <ExternalLink size={11} /></a></li>
           </ul>
         </div>
 
-        {/* Col 4: Statutory & Legal */}
+        {/* Col 4: Open Architecture */}
         <div className="space-y-3">
           <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'statutoryCompliance')}</h4>
           <ul className="space-y-2 text-slate-600">
             <li><span className="hover:text-emerald-700 cursor-pointer">{t(language, 'rti')}</span></li>
             <li><span className="hover:text-emerald-700 cursor-pointer">{t(language, 'citizenCharter')}</span></li>
             <li><span className="hover:text-emerald-700 cursor-pointer">Privacy & Data Governance</span></li>
-            <li><span className="hover:text-emerald-700 cursor-pointer">Terms of Service</span></li>
+            <li><span className="hover:text-emerald-700 cursor-pointer">Open Source Repository</span></li>
           </ul>
         </div>
       </div>
 
-      {/* ── Bottom Strip ── */}
-      <div className="bg-emerald-50/50 border-t border-emerald-100 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-2 text-slate-500 text-[11px]">
-          <div>
-            {t(language, 'copyright')}
-          </div>
-          <div className="flex items-center gap-2">
-            <span>Portal Content Managed by Ministry of Housing & Urban Affairs (MoHUA)</span>
+      {/* Bottom Copyright Strip */}
+      <div className="bg-slate-50 border-t border-emerald-100 py-4 text-[11px] text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+          <p>{t(language, 'copyright')}</p>
+          <div className="flex items-center gap-4 text-emerald-700 font-semibold">
+            <span>FastAPI Backend</span>
+            <span>•</span>
+            <span>PostgreSQL Database</span>
+            <span>•</span>
+            <span>Multimodal Gemini AI</span>
           </div>
         </div>
       </div>

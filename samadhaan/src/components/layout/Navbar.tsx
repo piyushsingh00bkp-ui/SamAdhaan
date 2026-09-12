@@ -82,8 +82,8 @@ function formatRelativeTime(dateStr?: string) {
 const DEFAULT_NOTIFICATIONS = [
   {
     id: 'notif-01',
-    title: 'Municipal Works Sanction Issued',
-    message: 'Ward 47 road stabilization and drainage dispatch order approved by Executive Engineer.',
+    title: 'Smart Resolution Dispatched',
+    message: 'Ward 47 road defect and drainage dispatch verified by autonomous triage.',
     type: 'success',
     read: false,
     createdAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
@@ -121,33 +121,24 @@ function NationalGovHeader() {
   };
 
   return (
-    <div className="bg-emerald-800 text-white text-[11px] select-none">
-      {/* National Tricolor Top Strip */}
-      <div className="tricolor-bar" />
-
+    <div className="bg-emerald-900 text-white text-[11px] select-none border-b border-emerald-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 flex flex-wrap items-center justify-between gap-2">
-        {/* Left: Official Government of India Identity */}
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5">
-            <span className="text-amber-300 font-bold tracking-wide">{t(language, 'govIndia')}</span>
-            <span className="text-emerald-300">|</span>
-            <span className="text-white font-medium">Government of India</span>
-          </div>
-          <span className="hidden md:inline text-emerald-300">•</span>
-          <span className="hidden md:inline text-emerald-100">
-            {t(language, 'ministry')}
+        {/* Left: Hackathon Project Showcase Identity */}
+        <div className="flex items-center gap-2.5">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-800 text-amber-300 font-bold text-[10px] border border-emerald-700">
+            <span>🚀</span>
+            <span>Civic Hackathon 2026</span>
+          </span>
+          <span className="hidden md:inline text-emerald-400">•</span>
+          <span className="hidden md:inline text-emerald-100 font-medium">
+            AI-Powered Multi-Stakeholder Civic Problem Solving System
           </span>
         </div>
 
-        {/* Right: Accessibility Toolbar, Helpline & Language Selector */}
+        {/* Right: Accessibility Toolbar & Language Selector */}
         <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-          <div className="hidden sm:flex items-center gap-1 text-emerald-100 font-semibold">
-            <Phone size={11} className="text-amber-300" />
-            <span>{t(language, 'tollFree')}: <strong className="text-white">1800-11-2026</strong></span>
-          </div>
-
-          <div className="flex items-center gap-1 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-700 text-[10px]">
-            <span className="text-emerald-200 mr-1 hidden sm:inline">{t(language, 'textSize')}:</span>
+          <div className="flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-700/60 text-[10px]">
+            <span className="text-emerald-300 mr-1 hidden sm:inline">{t(language, 'textSize')}:</span>
             <button
               onClick={() => handleFontChange('sm')}
               className={cn('px-1 rounded hover:text-white', fontSize === 'sm' && 'text-amber-300 font-bold')}
@@ -171,8 +162,8 @@ function NationalGovHeader() {
             </button>
           </div>
 
-          {/* Real Language Switcher: English, Hindi, Bengali */}
-          <div className="flex items-center gap-1 bg-emerald-900/60 px-2 py-0.5 rounded border border-emerald-700 text-[10px]">
+          {/* Language Switcher: English, Hindi, Bengali */}
+          <div className="flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-700/60 text-[10px]">
             <Globe size={10} className="text-emerald-300" />
             <select
               value={language}
@@ -285,7 +276,7 @@ export default function Navbar() {
                     SAM<span className="text-emerald-600">ADHAAN</span>
                   </span>
                   <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                    GOV.IN
+                    AI PLATFORM
                   </span>
                 </div>
                 <span className="text-[10px] font-semibold text-slate-500 tracking-wider uppercase mt-0.5">

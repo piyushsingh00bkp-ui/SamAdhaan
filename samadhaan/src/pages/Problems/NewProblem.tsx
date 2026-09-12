@@ -595,7 +595,7 @@ Return ONLY a JSON object:
 
   const onSubmit = async () => {
     setIsSubmitting(true);
-    info('Registering grievance with statutory municipal database...', 'Submitting');
+    info('Registering civic challenge in SamAdhaan database...', 'Submitting');
     try {
       const catObj = CATEGORIES.find((c) => c.id === category);
       const catLabel = catObj ? catObj.label : (category || 'Infrastructure');
@@ -710,7 +710,7 @@ Return ONLY a JSON object:
               <CheckCircle2 className="w-8 h-8" />
             </div>
             <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-900 px-3 py-1 rounded-full text-xs font-bold mb-3">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Statutory Grievance Token Generated
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Civic Challenge Token Generated
             </div>
             <h2 className="text-2xl font-black text-stone-900 mb-2">Grievance Registered Successfully</h2>
             <p className="text-xs text-stone-600 max-w-md mx-auto mb-6">
@@ -1233,7 +1233,7 @@ Return ONLY a JSON object:
                   className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl px-6 py-2.5 shadow-md flex items-center gap-2"
                 >
                   {isSubmitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-                  <span>{isSubmitting ? 'Registering Grievance...' : 'Submit Grievance to Municipal DB'}</span>
+                  <span>{isSubmitting ? 'Registering Grievance...' : 'Submit Challenge to SamAdhaan AI'}</span>
                 </Button>
               )}
             </div>
