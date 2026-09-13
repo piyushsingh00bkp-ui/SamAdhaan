@@ -966,21 +966,22 @@ Return ONLY a JSON object:
                 <div className="space-y-4">
                   <div>
                     <div className="flex items-center justify-between mb-1.5">
-                      <label className="block text-xs font-bold text-stone-700 uppercase tracking-wider">
+                      <label className="block text-xs font-bold text-stone-700 dark:text-slate-300 uppercase tracking-wider">
                         Problem Title *
                       </label>
                       <button
                         type="button"
                         onClick={handleAnalyzeProblem}
-                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-lg text-xs font-bold text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-950/80 hover:bg-emerald-200 dark:hover:bg-emerald-900 border border-emerald-300 dark:border-emerald-700 flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
                       >
-                        <Sparkles className="w-3 h-3" /> Auto-Detect Sector
+                        <Sparkles className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
+                        <span>⚡ Auto-Classify Category with AI</span>
                       </button>
                     </div>
                     <input
                       {...register('title')}
-                      placeholder="e.g. Severe drainage overflow & asphalt cavity causing road hazard"
-                      className="w-full px-3.5 py-2.5 text-xs font-medium text-stone-900 bg-stone-50 border border-stone-300 rounded-xl focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
+                      placeholder="e.g. Severe water pipeline burst flooding market street or deep road cavity"
+                      className="w-full px-3.5 py-2.5 text-xs font-medium text-stone-900 dark:text-white bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all"
                     />
                     {errors.title && <p className="text-xs text-red-600 mt-1">{errors.title.message}</p>}
                   </div>
