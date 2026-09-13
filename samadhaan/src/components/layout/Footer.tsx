@@ -106,11 +106,11 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <p>{t(language, 'copyright')}</p>
           <div className="flex items-center gap-4 text-emerald-700 font-semibold">
-            <span>FastAPI Backend</span>
+            <span>Real-time Telemetry</span>
             <span>•</span>
-            <span>PostgreSQL Database</span>
+            <span>Live Cloud Sync</span>
             <span>•</span>
-            <span>Multimodal Gemini AI</span>
+            <span>AI Automated Redressal</span>
           </div>
         </div>
       </div>

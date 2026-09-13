@@ -81,21 +81,21 @@ export default function AIInsightsPage() {
               <Brain size={18} />
             </div>
             <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-              Gemini AI Predictive Intelligence & SLA Radar
+              AI Predictive Intelligence & SLA Radar
             </span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            National Civic AI Analytics & Predictive Risk Radar
+            Civic AI Analytics & Predictive Risk Radar
           </h1>
           <p className="text-slate-600 max-w-3xl text-sm sm:text-base leading-relaxed">
-            Real-time multi-modal defect classification, predictive municipal hotspot clustering, and automated university CSR matching algorithms.
+            Real-time defect classification, predictive hotspot clustering, and automated stakeholder matching.
           </p>
         </motion.div>
 
         {/* 4 AI Telemetry Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'Gemini Engine Health', val: 'Online & Active', icon: Activity, sub: 'Latency: 142ms' },
+            { label: 'AI Engine Health', val: 'Online & Active', icon: Activity, sub: 'Latency: 142ms' },
             { label: 'Classification Accuracy', val: '97.8%', icon: ShieldCheck, sub: 'Multi-Modal Vision' },
             { label: 'Predictive Risk Hotspots', val: '14 Wards', icon: AlertTriangle, sub: 'Statutory SLA' },
             { label: 'R&D Co-Matches Generated', val: '189 Tripartite', icon: Sparkles, sub: 'Universities & CSR' },

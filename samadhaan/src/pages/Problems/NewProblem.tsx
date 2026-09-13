@@ -505,7 +505,7 @@ Return ONLY a JSON object:
     const text = `${title || ''} ${description || ''}`.trim();
     if (!text || text.length < 5) return;
 
-    info('Gemini Intelligence analyzing problem context & determining sector...', 'Problem Intelligence');
+    info('AI analyzing issue details & predicting category...', 'Problem Intelligence');
     try {
       const res = await apiClient.post('/ai/analyze', { problem: text });
       const data = res.data?.data || res.data;

@@ -122,7 +122,7 @@ export default function DashboardPage() {
         });
       }
 
-      // 2. Recent Challenges & Dynamic Calculations from PostgreSQL
+      // 2. Recent Challenges & Dynamic Calculations
       if (challengesRes.status === 'fulfilled') {
         const items = challengesRes.value.data?.data?.items || challengesRes.value.data?.data || [];
         if (Array.isArray(items) && items.length > 0) {
@@ -242,14 +242,14 @@ export default function DashboardPage() {
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center gap-1 ml-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                PostgreSQL Live Connected
+                Live Cloud Sync Active
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               {user?.name ? `Welcome back, ${user.name.split(' ')[0]} 👋` : 'National Civic Intelligence Dashboard'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • Direct Supabase Telemetry
+              {new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} • Real-Time Telemetry
             </p>
           </div>
 
@@ -259,7 +259,7 @@ export default function DashboardPage() {
               onClick={() => fetchLiveDatabaseData(true)}
               disabled={refreshing}
               className="px-3.5 py-2 rounded-xl bg-white hover:bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-2 transition-all cursor-pointer shadow-sm"
-              title="Sync latest live data from PostgreSQL database"
+              title="Sync latest live data"
             >
               <RefreshCw size={13} className={refreshing ? 'animate-spin text-indigo-400' : 'text-slate-400'} />
               <span>{refreshing ? 'Syncing...' : 'Sync Database'}</span>
@@ -434,7 +434,7 @@ export default function DashboardPage() {
             <div className="divide-y divide-white/5 max-h-[320px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
               {recentProblems.length === 0 ? (
                 <div className="py-8 text-center text-slate-500 text-xs">
-                  Loading live problems from PostgreSQL database...
+                  Loading live civic issues...
                 </div>
               ) : (
                 recentProblems.map((problem) => (

@@ -150,7 +150,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-between border-b border-emerald-100 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping" />
-                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">National Civic Redressal Telemetry</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">Live Resolution Telemetry</h3>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
                   LIVE AI SYNC
@@ -214,7 +214,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
             <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full">
-              Transparent Municipal Workflow
+              Transparent Redressal Workflow
             </span>
             <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
               {t(language, 'redressalTitle')}
