@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAppStore } from '@/store';
 import { ToastProvider } from '@/components/common/Toast';
 import CopilotWidget from '@/components/ui/CopilotWidget';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 // ── Lazy-Loaded Page Components for Lightning Fast Chunking ─────────────────
 const LandingPage = lazy(() => import('@/pages/Landing'));
@@ -80,7 +81,7 @@ export default function App() {
                 <Route path="/impact" element={<ImpactPage />} />
                 <Route path="/universities" element={<UniversitiesPage />} />
                 <Route path="/industry" element={<IndustryPage />} />
-                <Route path="/government" element={<GovernmentPage />} />
+                <Route path="/government" element={<ProtectedRoute allowedRoles={['government']}><GovernmentPage /></ProtectedRoute>} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/signup" element={<SignupPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />

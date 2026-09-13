@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
@@ -73,6 +74,7 @@ export default function ProblemsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedStatus, setSelectedStatus] = useState<ProblemStatus | 'all'>('all');
   const [sortBy, setSortBy] = useState<'urgency' | 'newest' | 'upvotes'>('urgency');
+  const debouncedSearch = useDebounce(search, 200);
 
   const fetchChallenges = async () => {
     setLoading(true);
@@ -124,7 +126,7 @@ export default function ProblemsPage() {
       .filter((p) => {
         const matchCat = selectedCategory === 'all' || p.category === selectedCategory;
         const matchStatus = selectedStatus === 'all' || p.status === selectedStatus;
-        const q = search.toLowerCase().trim();
+        const q = debouncedSearch.toLowerCase().trim();
         const matchSearch =
           !q ||
           p.id.toLowerCase().includes(q) ||
@@ -138,7 +140,7 @@ export default function ProblemsPage() {
         if (sortBy === 'upvotes') return b.upvotes - a.upvotes;
         return new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime();
       });
-  }, [problems, selectedCategory, selectedStatus, search, sortBy]);
+  }, [problems, selectedCategory, selectedStatus, debouncedSearch, sortBy]);
 
   return (
     <PageWrapper>

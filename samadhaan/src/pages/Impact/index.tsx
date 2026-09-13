@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { useDebounce } from '@/hooks/useDebounce';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MapContainer, TileLayer, CircleMarker, Popup, useMap, Marker } from 'react-leaflet';
@@ -194,6 +195,7 @@ export default function ImpactPage() {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 200);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedUrgency, setSelectedUrgency] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -304,7 +306,7 @@ export default function ImpactPage() {
       // 2. Search filter
       if (searchQuery) {
         const text = `${p.title} ${p.location} ${p.description}`.toLowerCase();
-        if (!text.includes(searchQuery.toLowerCase())) return false;
+        if (debouncedSearchQuery && !text.includes(debouncedSearchQuery.toLowerCase())) return false;
       }
       // 3. Category filter
       if (selectedCategory !== 'all' && p.category !== selectedCategory) {
@@ -320,7 +322,7 @@ export default function ImpactPage() {
 
       return true;
     });
-  }, [allProblems, selectedCity, searchQuery, selectedCategory, selectedUrgency, selectedStatus]);
+  }, [allProblems, selectedCity, debouncedSearchQuery, selectedCategory, selectedUrgency, selectedStatus]);
 
   // Current active hub for municipal intelligence
   const currentHub = selectedCity || INDIAN_CITIES[0];
