@@ -1,57 +1,37 @@
+from typing import Optional, List
+from pydantic import BaseModel
 from fastapi import APIRouter, HTTPException
-
-from app.schemas.categorization import (
-    CategorizationRequest,
-    CategorizationResult
-)
-
-from app.services.problem_analyzer.ai_categorizer import (
-    categorize_problem
-)
-
+from app.services.problem_analyzer.ai_categorizer import classify_civic_problem
 
 router = APIRouter(
-    prefix="/api/v1/categorization",
-    tags=["AI Auto Categorization"]
+    tags=["NLP Categorization Engine"]
 )
 
+class ClassifyRequest(BaseModel):
+    problem: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
 
-@router.post(
-    "/analyze",
-    response_model=CategorizationResult
-)
-def categorize(
-    request: CategorizationRequest
-):
-    """
-    Automatically categorize a citizen civic complaint.
-    """
+class ClassifyResponse(BaseModel):
+    category: str
+    subcategory: str
+    confidence: int
+    department: str
+    slaHours: int
+    urgency: str
+    keywords: List[str]
+    summary: str
 
+@router.post("/ai/classify", response_model=ClassifyResponse)
+@router.post("/api/v1/categorization/classify", response_model=ClassifyResponse)
+@router.post("/api/v1/problems/classify", response_model=ClassifyResponse)
+def classify_endpoint(request: ClassifyRequest):
+    """
+    Classify a civic problem into one of: Water, Road, Sanitation, Energy, Transport.
+    """
+    text = request.problem or f"{request.title or ''} {request.description or ''}".strip()
     try:
-
-        result = categorize_problem(
-            request.problem
-        )
-
-        return result
-
-    except ValueError as exc:
-
-        raise HTTPException(
-            status_code=422,
-            detail=str(exc)
-        ) from exc
-
-    except RuntimeError as exc:
-
-        raise HTTPException(
-            status_code=500,
-            detail=str(exc)
-        ) from exc
-
+        res = classify_civic_problem(text)
+        return res
     except Exception as exc:
-
-        raise HTTPException(
-            status_code=502,
-            detail=f"AI categorization failed: {exc}"
-        ) from exc
+        raise HTTPException(status_code=500, detail=f"Categorization error: {exc}") from exc

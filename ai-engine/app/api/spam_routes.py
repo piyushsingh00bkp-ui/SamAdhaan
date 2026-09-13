@@ -1,47 +1,38 @@
-from fastapi import APIRouter
+from typing import Optional, List, Dict, Any
 from pydantic import BaseModel
-from typing import Optional, List
-
-from app.schemas.spam import (
-    SpamRequest,
-    SpamResponse
-)
-
-from app.services.spam_detector import (
-    analyze_submission
-)
+from fastapi import APIRouter, HTTPException
+from app.services.spam_detector import check_problem_genuineness
 
 router = APIRouter(
-    prefix="/api/v1/spam",
-    tags=["AI Spam / Fake Detection"]
+    tags=["Anti-Spam & Genuineness Auditor"]
 )
 
-class ModerationSpamRequest(BaseModel):
-    title: Optional[str] = ""
-    description: Optional[str] = ""
-    problem: Optional[str] = ""
-    previous_complaints: Optional[List[str]] = []
-    duplicate_account: Optional[bool] = False
-    irrelevant_image: Optional[bool] = False
+class SpamCheckRequest(BaseModel):
+    problem: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
 
-@router.post("/analyze", response_model=SpamResponse)
-@router.post("/check")
-async def analyze_spam(data: ModerationSpamRequest):
-    combined_text = data.problem or f"{data.title} {data.description}".strip()
-    result = analyze_submission(
-        problem=combined_text,
-        previous_complaints=data.previous_complaints or [],
-        duplicate_account=data.duplicate_account or False,
-        irrelevant_image=data.irrelevant_image or False
-    )
+class SpamCheckResponse(BaseModel):
+    isGenuine: bool
+    isSpam: bool
+    confidenceScore: int
+    credibilityScore: int
+    trust_score: int
+    reason: str
+    fraudIndicators: List[str]
+    recommendation: str
 
-    return SpamResponse(
-        trust_score=result["trust_score"],
-        status=result["status"],
-        duplicate_account=result["duplicate_account"],
-        repeated_complaint=result["repeated_complaint"],
-        spam_text=result["spam_text"],
-        irrelevant_image=result["irrelevant_image"],
-        suspicious_submission=result["suspicious_submission"],
-        human_verification_required=result["human_verification_required"]
-    )
+@router.post("/ai/spam-check", response_model=SpamCheckResponse)
+@router.post("/api/v1/spam/check", response_model=SpamCheckResponse)
+@router.post("/api/v1/spam/analyze", response_model=SpamCheckResponse)
+def spam_check_endpoint(data: SpamCheckRequest):
+    """
+    Check if a problem is a genuine civic complaint or spam.
+    Returns confidence score 0-100.
+    """
+    combined = data.problem or f"{data.title or ''} {data.description or ''}".strip()
+    try:
+        result = check_problem_genuineness(combined)
+        return result
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Spam check failed: {exc}") from exc
