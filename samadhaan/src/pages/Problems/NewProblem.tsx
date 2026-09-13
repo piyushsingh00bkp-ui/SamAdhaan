@@ -507,18 +507,26 @@ Return ONLY a JSON object:
 
     info('AI analyzing issue details & predicting category...', 'Problem Intelligence');
     try {
-      const res = await apiClient.post('/ai/analyze', { problem: text });
+      const res = await apiClient.post('/ai/classify', { problem: text, title, description });
       const data = res.data?.data || res.data;
       setAiAnalysis(data);
 
       if (data?.category) {
+        const categoryMap: Record<string, string> = {
+          'Water': 'water',
+          'Road': 'infrastructure',
+          'Sanitation': 'sanitation',
+          'Energy': 'electricity',
+          'Transport': 'transport'
+        };
+        const targetId = categoryMap[data.category] || data.category.toLowerCase();
         const matched = CATEGORIES.find(
-          (c) => c.label.toLowerCase().includes(data.category.toLowerCase()) ||
-                 c.id.toLowerCase().includes(data.category.toLowerCase())
+          (c) => c.id === targetId ||
+                 c.label.toLowerCase().includes(data.category.toLowerCase())
         );
         if (matched) {
           setValue('category', matched.id);
-          success(`Auto-categorized as ${matched.label}`, 'Sector Identified');
+          success(`AI Classified: ${data.category} (${data.confidence}% confidence)`, 'Category Assigned');
         }
       }
     } catch {
