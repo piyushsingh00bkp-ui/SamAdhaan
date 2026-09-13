@@ -62,7 +62,7 @@ export default function LandingPage() {
   return (
     <PageWrapper>
       {/* ── 1. OFFICIAL NATIONAL HERO BANNER ───────────────────────────────── */}
-      <section className="relative min-h-[82vh] flex items-center bg-gradient-to-b from-emerald-50/70 via-green-50/30 to-white border-b border-emerald-100 overflow-hidden py-16">
+      <section className="relative min-h-[82vh] flex items-center bg-gradient-to-b from-emerald-50/70 via-green-50/30 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 border-b border-emerald-100 dark:border-slate-800 overflow-hidden py-16">
         <div className="absolute top-0 right-10 w-96 h-96 rounded-full bg-emerald-100/50 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-10 w-96 h-96 rounded-full bg-green-100/60 blur-3xl pointer-events-none" />
 
@@ -83,7 +83,7 @@ export default function LandingPage() {
               transition={{ delay: 0.1 }}
               className="space-y-2"
             >
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.1] tracking-tight">
                 {t(language, 'subHeader')}
               </h1>
             </motion.div>
@@ -103,7 +103,7 @@ export default function LandingPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
               onSubmit={handleTrackGrievance}
-              className="p-2 rounded-2xl bg-white border-2 border-emerald-400 flex flex-col sm:flex-row gap-2 max-w-xl shadow-lg shadow-emerald-600/5"
+              className="p-2 rounded-2xl bg-white dark:bg-slate-900 border-2 border-emerald-400 dark:border-emerald-600 flex flex-col sm:flex-row gap-2 max-w-xl shadow-lg shadow-emerald-600/5"
             >
               <div className="flex-1 flex items-center gap-2.5 px-3 py-1.5 text-slate-700">
                 <Search size={18} className="text-emerald-600 shrink-0" />
@@ -112,7 +112,7 @@ export default function LandingPage() {
                   value={trackingId}
                   onChange={(e) => setTrackingId(e.target.value)}
                   placeholder={t(language, 'trackPlaceholder')}
-                  className="w-full bg-transparent border-none text-xs sm:text-sm font-semibold text-slate-900 placeholder-slate-400 focus:outline-none"
+                  className="w-full bg-transparent border-none text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                 />
               </div>
               <Button
@@ -145,12 +145,12 @@ export default function LandingPage() {
               initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 }}
-              className="bg-white rounded-3xl p-6 border-2 border-emerald-200 shadow-xl shadow-emerald-700/5 space-y-5"
+              className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-emerald-200 dark:border-slate-800 shadow-xl shadow-emerald-700/5 space-y-5"
             >
               <div className="flex items-center justify-between border-b border-emerald-100 pb-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping" />
-                  <h3 className="font-bold text-slate-900 text-sm">National Civic Redressal Telemetry</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">National Civic Redressal Telemetry</h3>
                 </div>
                 <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">
                   LIVE AI SYNC
@@ -159,24 +159,24 @@ export default function LandingPage() {
 
               {/* 4 Official Stat Metrics */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200">
+                <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-slate-800/60 border border-emerald-200 dark:border-slate-700">
                   <p className="text-[11px] text-slate-600 font-medium">{t(language, 'resolvedGrievances')}</p>
-                  <p className="text-2xl font-black text-emerald-800 mt-1">31,847</p>
+                  <p className="text-2xl font-black text-emerald-800 dark:text-emerald-400 mt-1">31,847</p>
                   <span className="text-[10px] text-emerald-700 font-bold">↑ {t(language, 'slaTarget')}</span>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200">
+                <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-slate-800/60 border border-emerald-200 dark:border-slate-700">
                   <p className="text-[11px] text-slate-600 font-medium">{t(language, 'activeWards')}</p>
-                  <p className="text-2xl font-black text-emerald-800 mt-1">1,420</p>
+                  <p className="text-2xl font-black text-emerald-800 dark:text-emerald-400 mt-1">1,420</p>
                   <span className="text-[10px] text-emerald-700 font-bold">28 States & UTs</span>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200">
+                <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-slate-800/60 border border-emerald-200 dark:border-slate-700">
                   <p className="text-[11px] text-slate-600 font-medium">{t(language, 'csrPool')}</p>
-                  <p className="text-2xl font-black text-emerald-800 mt-1">₹847 Cr</p>
+                  <p className="text-2xl font-black text-emerald-800 dark:text-emerald-400 mt-1">₹847 Cr</p>
                   <span className="text-[10px] text-emerald-700 font-bold">Sec 135 Compliant</span>
                 </div>
-                <div className="p-3.5 rounded-2xl bg-emerald-50/60 border border-emerald-200">
+                <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-slate-800/60 border border-emerald-200 dark:border-slate-700">
                   <p className="text-[11px] text-slate-600 font-medium">{t(language, 'universityPilots')}</p>
-                  <p className="text-2xl font-black text-emerald-800 mt-1">234</p>
+                  <p className="text-2xl font-black text-emerald-800 dark:text-emerald-400 mt-1">234</p>
                   <span className="text-[10px] text-emerald-700 font-bold">IIT / COEP / NIT Labs</span>
                 </div>
               </div>
@@ -210,16 +210,16 @@ export default function LandingPage() {
       </section>
 
       {/* ── 2. STATUTORY 4-STAGE REDRESSAL PROCESS ───────────────────────── */}
-      <section className="py-16 bg-white border-b border-emerald-100">
+      <section className="py-16 bg-white dark:bg-slate-950 border-b border-emerald-100 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="text-center max-w-3xl mx-auto space-y-3 mb-12">
             <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider bg-emerald-100 px-3 py-1 rounded-full">
               Transparent Municipal Workflow
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
               {t(language, 'redressalTitle')}
             </h2>
-            <p className="text-slate-600 text-sm sm:text-base">
+            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base">
               {t(language, 'redressalDesc')}
             </p>
           </div>
@@ -253,7 +253,7 @@ export default function LandingPage() {
             ].map((p, idx) => (
               <div
                 key={idx}
-                className="bg-white rounded-2xl p-6 border-2 border-emerald-100 hover:border-emerald-400 transition-all shadow-sm hover:shadow-md relative overflow-hidden group"
+                className="bg-white dark:bg-slate-900 rounded-2xl p-6 border-2 border-emerald-100 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all shadow-sm hover:shadow-md relative overflow-hidden group"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center group-hover:bg-emerald-100 transition-colors">
@@ -263,8 +263,8 @@ export default function LandingPage() {
                     {p.step}
                   </span>
                 </div>
-                <h3 className="font-bold text-slate-900 text-base mb-2">{p.title}</h3>
-                <p className="text-slate-600 text-xs leading-relaxed">{p.desc}</p>
+                <h3 className="font-bold text-slate-900 dark:text-white text-base mb-2">{p.title}</h3>
+                <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">{p.desc}</p>
               </div>
             ))}
           </div>

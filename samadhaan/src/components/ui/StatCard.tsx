@@ -56,10 +56,10 @@ export function StatCard({ label, value, suffix, prefix, formatter, icon, color 
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      className="bg-white rounded-2xl p-3.5 sm:p-5 border border-stone-200 shadow-sm flex flex-col gap-2 sm:gap-3 hover:border-emerald-300 transition-colors"
+      className="bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 border border-stone-200 dark:border-slate-800 shadow-sm flex flex-col gap-2 sm:gap-3 hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors"
     >
       <div className="flex items-start justify-between">
-        <p className="text-xs sm:text-sm text-stone-500 font-medium truncate">{label}</p>
+        <p className="text-xs sm:text-sm text-stone-500 dark:text-slate-400 font-medium truncate">{label}</p>
         {icon && (
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center"
@@ -72,7 +72,7 @@ export function StatCard({ label, value, suffix, prefix, formatter, icon, color 
       <div className="flex items-end gap-2">
         <div className="flex items-baseline gap-1">
           {prefix && <span className="text-lg text-slate-400">{prefix}</span>}
-          <span className="text-xl sm:text-2xl font-black text-stone-900">
+          <span className="text-xl sm:text-2xl font-black text-stone-900 dark:text-white">
             <AnimatedCounter
               value={value}
               formatter={formatter ?? ((n) => Math.round(n).toLocaleString('en-IN'))}

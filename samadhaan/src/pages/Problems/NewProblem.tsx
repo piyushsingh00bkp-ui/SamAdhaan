@@ -647,7 +647,7 @@ Return ONLY a JSON object:
               </span>
               <span className="text-[11px] font-semibold text-stone-500">GIGW 3.0 Standard</span>
             </div>
-            <h1 className="text-2xl font-bold text-stone-900 tracking-tight">Report Civic Problem</h1>
+            <h1 className="text-2xl font-bold text-stone-900 dark:text-white tracking-tight">Report Civic Problem</h1>
             <p className="text-xs text-stone-500 mt-0.5">Empowered with AI Vision Defect Scanning & Multi-Language Voice Dictation</p>
           </div>
           <Link
@@ -660,7 +660,7 @@ Return ONLY a JSON object:
 
         {/* Step Progression Bar */}
         {!submitted && (
-          <div className="bg-white rounded-xl p-3 border border-stone-200 shadow-sm mb-6">
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-3 border border-stone-200 dark:border-slate-800 shadow-sm mb-6">
             <div className="grid grid-cols-4 gap-2">
               {STEPS.map((s) => {
                 const Icon = s.icon;
@@ -758,12 +758,12 @@ Return ONLY a JSON object:
             </div>
           </motion.div>
         ) : (
-          <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6 sm:p-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-stone-200 dark:border-slate-800 shadow-sm p-6 sm:p-8">
             {/* Step 1: Location */}
             {step === 1 && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                 <div className="mb-6">
-                  <h2 className="text-lg font-bold text-stone-900">Step 1: Specify Problem Location</h2>
+                  <h2 className="text-lg font-bold text-stone-900 dark:text-white">Step 1: Specify Problem Location</h2>
                   <p className="text-xs text-stone-500">Pinpoint the exact municipal boundary or use automatic GPS detection.</p>
                 </div>
 
@@ -838,7 +838,7 @@ Return ONLY a JSON object:
             {step === 2 && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
                 <div className="mb-6">
-                  <h2 className="text-lg font-bold text-stone-900">Step 2: Select Civic Category</h2>
+                  <h2 className="text-lg font-bold text-stone-900 dark:text-white">Step 2: Select Civic Category</h2>
                   <p className="text-xs text-stone-500">Identify the civic department domain for automatic SLA tagging.</p>
                 </div>
 
@@ -875,7 +875,7 @@ Return ONLY a JSON object:
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-stone-200">
                   <div>
-                    <h2 className="text-lg font-bold text-stone-900">Step 3: Grievance Details & AI Inspection</h2>
+                    <h2 className="text-lg font-bold text-stone-900 dark:text-white">Step 3: Grievance Details & AI Inspection</h2>
                     <p className="text-xs text-stone-500">Provide written explanation or use AI Voice dictation & photo defect scanning.</p>
                   </div>
 
@@ -1150,7 +1150,7 @@ Return ONLY a JSON object:
             {step === 4 && (
               <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
                 <div className="mb-4">
-                  <h2 className="text-lg font-bold text-stone-900">Step 4: AI Multi-Module Triage & Verification</h2>
+                  <h2 className="text-lg font-bold text-stone-900 dark:text-white">Step 4: AI Multi-Module Triage & Verification</h2>
                   <p className="text-xs text-stone-500">Autonomous categorization, SLA severity index, and municipal dispatch routing.</p>
                 </div>
 

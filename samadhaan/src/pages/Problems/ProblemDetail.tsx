@@ -230,7 +230,7 @@ export default function ProblemDetailPage() {
                 </span>
                 <StatusBadge status={problem.status} />
               </div>
-              <h1 className="text-xl font-bold text-stone-900 mt-1">
+              <h1 className="text-xl font-bold text-stone-900 dark:text-white mt-1">
                 {translatedText?.title || problem.title}
               </h1>
             </div>
@@ -295,7 +295,7 @@ export default function ProblemDetailPage() {
           {/* Left Column: Details & Audit Trail */}
           <div className="lg:col-span-2 space-y-6">
             {/* Grievance Statement */}
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-stone-200 dark:border-slate-800 shadow-sm p-6">
               <div className="flex items-center justify-between pb-3 mb-4 border-b border-stone-100">
                 <span className="text-xs font-bold text-stone-500 uppercase tracking-wider">
                   Official Grievance Statement
@@ -306,7 +306,7 @@ export default function ProblemDetailPage() {
                 </div>
               </div>
 
-              <p className="text-sm text-stone-800 leading-relaxed font-normal">
+              <p className="text-sm text-stone-800 dark:text-slate-200 leading-relaxed font-normal">
                 {translatedText?.description || problem.description}
               </p>
 
@@ -320,7 +320,7 @@ export default function ProblemDetailPage() {
             </div>
 
             {/* Statutory SLA & Technical Assessment */}
-            <div className="bg-stone-50 rounded-2xl border border-stone-200 p-6">
+            <div className="bg-stone-50 dark:bg-slate-800/60 rounded-2xl border border-stone-200 dark:border-slate-700 p-6">
               <h2 className="text-xs font-bold text-stone-700 uppercase tracking-wider mb-4 flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" /> Technical SLA & Departmental Routing
               </h2>
@@ -344,7 +344,7 @@ export default function ProblemDetailPage() {
             </div>
 
             {/* Official Citizen & Engineer Feedback Trail */}
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-stone-200 dark:border-slate-800 shadow-sm p-6">
               <h2 className="text-sm font-bold text-stone-900 mb-4 flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-emerald-600" /> Verified Audit Logs & Feedback ({comments.length})
               </h2>
@@ -380,7 +380,7 @@ export default function ProblemDetailPage() {
 
           {/* Right Column: Key Stakeholders & Governance */}
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-stone-200 dark:border-slate-800 shadow-sm p-6">
               <h2 className="text-xs font-bold text-stone-700 uppercase tracking-wider mb-4">
                 Assigned Stakeholders
               </h2>
@@ -430,7 +430,7 @@ export default function ProblemDetailPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white rounded-2xl max-w-2xl w-full border border-stone-200 shadow-2xl p-4 sm:p-8 max-h-[90vh] overflow-y-auto"
+                className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full border border-stone-200 dark:border-slate-800 shadow-2xl p-4 sm:p-8 max-h-[90vh] overflow-y-auto"
               >
                 {/* Modal Header Actions */}
                 <div className="flex items-center justify-between pb-4 border-b border-stone-200 mb-6 print:hidden">

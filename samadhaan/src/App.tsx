@@ -1,6 +1,8 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useAppStore } from '@/store';
 
 import LandingPage from '@/pages/Landing';
 import DashboardPage from '@/pages/Dashboard';
@@ -29,6 +31,18 @@ const queryClient = new QueryClient({
 });
 
 export default function App() {
+  const { theme } = useAppStore();
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, [theme]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>

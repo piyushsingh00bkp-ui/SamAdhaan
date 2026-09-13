@@ -9,6 +9,11 @@ interface AppState {
   activeRole: Role;
   setActiveRole: (role: Role) => void;
 
+  // Theme: 'light' | 'dark'
+  theme: 'light' | 'dark';
+  setTheme: (theme: 'light' | 'dark') => void;
+  toggleTheme: () => void;
+
   // Language: en, hi, bn
   language: SupportedLang;
   setLanguage: (lang: SupportedLang) => void;
@@ -35,6 +40,23 @@ export const useAppStore = create<AppState>()(
       activeRole: 'citizen',
       setActiveRole: (role) => set({ activeRole: role }),
 
+      theme: 'light',
+      setTheme: (theme) => {
+        if (typeof document !== 'undefined') {
+          document.documentElement.classList.toggle('dark', theme === 'dark');
+        }
+        set({ theme });
+      },
+      toggleTheme: () => {
+        set((s) => {
+          const next = s.theme === 'dark' ? 'light' : 'dark';
+          if (typeof document !== 'undefined') {
+            document.documentElement.classList.toggle('dark', next === 'dark');
+          }
+          return { theme: next };
+        });
+      },
+
       language: 'en',
       setLanguage: (lang) => set({ language: lang }),
 
@@ -59,6 +81,7 @@ export const useAppStore = create<AppState>()(
       name: 'samadhaan-store',
       partialize: (s) => ({
         activeRole: s.activeRole,
+        theme: s.theme,
         language: s.language,
         user: s.user,
         isAuthenticated: s.isAuthenticated
@@ -73,3 +96,5 @@ export const useActiveRoleConfig = () => {
   return ROLE_CONFIGS.find((r) => r.id === role)!;
 };
 export const useLanguage = () => useAppStore((s) => s.language);
+export const useTheme = () => useAppStore((s) => s.theme);
+

@@ -101,14 +101,14 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getBorderColor = (type: ToastType) => {
     switch (type) {
       case 'success':
-        return 'border-emerald-300 bg-white/95 text-emerald-950 shadow-emerald-900/10 shadow-lg';
+        return 'border-emerald-300 dark:border-emerald-700 bg-white/95 dark:bg-slate-900/95 text-emerald-950 dark:text-emerald-100 shadow-emerald-900/10 shadow-lg';
       case 'error':
-        return 'border-red-300 bg-white/95 text-red-950 shadow-red-900/10 shadow-lg';
+        return 'border-red-300 dark:border-red-700 bg-white/95 dark:bg-slate-900/95 text-red-950 dark:text-red-100 shadow-red-900/10 shadow-lg';
       case 'warning':
-        return 'border-amber-300 bg-white/95 text-amber-950 shadow-amber-900/10 shadow-lg';
+        return 'border-amber-300 dark:border-amber-700 bg-white/95 dark:bg-slate-900/95 text-amber-950 dark:text-amber-100 shadow-amber-900/10 shadow-lg';
       case 'info':
       default:
-        return 'border-blue-300 bg-white/95 text-blue-950 shadow-blue-900/10 shadow-lg';
+        return 'border-blue-300 dark:border-blue-700 bg-white/95 dark:bg-slate-900/95 text-blue-950 dark:text-blue-100 shadow-blue-900/10 shadow-lg';
     }
   };
 

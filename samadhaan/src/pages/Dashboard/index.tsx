@@ -245,7 +245,7 @@ export default function DashboardPage() {
                 PostgreSQL Live Connected
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               {user?.name ? `Welcome back, ${user.name.split(' ')[0]} 👋` : 'National Civic Intelligence Dashboard'}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -321,12 +321,12 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="lg:col-span-2 bg-white rounded-3xl p-5 border border-stone-200 shadow-sm space-y-4"
+            className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl p-5 border border-stone-200 dark:border-slate-800 shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">National Resolution Trend</p>
-                <p className="text-base font-bold text-slate-900 mt-0.5">2026 Live Monthly Progress</p>
+                <p className="text-base font-bold text-slate-900 dark:text-white mt-0.5">2026 Live Monthly Progress</p>
               </div>
               <div className="flex items-center gap-4 text-xs font-medium text-slate-400">
                 <div className="flex items-center gap-1.5">
@@ -366,7 +366,7 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white rounded-3xl p-5 border border-stone-200 shadow-sm flex flex-col justify-between"
+            className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-stone-200 dark:border-slate-800 shadow-sm flex flex-col justify-between"
           >
             <div>
               <p className="text-xs text-slate-500 uppercase tracking-widest font-bold">Category Distribution</p>
@@ -413,11 +413,11 @@ export default function DashboardPage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="lg:col-span-2 bg-white rounded-3xl p-5 border border-stone-200 shadow-sm space-y-4"
+            className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-3xl p-5 border border-stone-200 dark:border-slate-800 shadow-sm space-y-4"
           >
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <span>Recent Problems Feed</span>
                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 font-semibold">
                     Live DB
@@ -535,7 +535,7 @@ export default function DashboardPage() {
           >
             <div className="flex items-center justify-between border-b border-stone-200 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                   <span>🎓 Active University Solutions & CSR Co-Funding</span>
                   <span className="text-[11px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold">
                     Schedule VII

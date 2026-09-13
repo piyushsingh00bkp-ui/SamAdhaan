@@ -8,7 +8,7 @@ import {
   User, Settings, LogOut, Plus, Sparkles,
   AlertTriangle, CheckCircle2, Info, CheckCheck,
   Clock, ExternalLink, RefreshCw, Phone, Globe,
-  ShieldCheck, HelpCircle, Eye
+  ShieldCheck, HelpCircle, Eye, Sun, Moon
 } from 'lucide-react';
 import { useAppStore, useActiveRoleConfig, useLanguage } from '@/store';
 import { ROLE_CONFIGS } from '@/mock';
@@ -112,7 +112,7 @@ const DEFAULT_NOTIFICATIONS = [
 // ── Official National Government Top Header Bar with Language Switcher ───
 function NationalGovHeader() {
   const [fontSize, setFontSize] = useState<'sm' | 'md' | 'lg'>('md');
-  const { language, setLanguage } = useAppStore();
+  const { language, setLanguage, theme, toggleTheme } = useAppStore();
 
   const handleFontChange = (size: 'sm' | 'md' | 'lg') => {
     setFontSize(size);
@@ -121,24 +121,34 @@ function NationalGovHeader() {
   };
 
   return (
-    <div className="bg-emerald-900 text-white text-[11px] select-none border-b border-emerald-800">
+    <div className="bg-emerald-900 dark:bg-slate-950 text-white text-[11px] select-none border-b border-emerald-800 dark:border-slate-800 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 flex flex-wrap items-center justify-between gap-2">
         {/* Left: Hackathon Project Showcase Identity */}
         <div className="flex items-center gap-2.5">
-          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-800 text-amber-300 font-bold text-[10px] border border-emerald-700">
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-800 dark:bg-slate-800 text-amber-300 font-bold text-[10px] border border-emerald-700 dark:border-slate-700">
             <span>🚀</span>
             <span>Civic Hackathon 2026</span>
           </span>
           <span className="hidden md:inline text-emerald-400">•</span>
-          <span className="hidden md:inline text-emerald-100 font-medium">
+          <span className="hidden md:inline text-emerald-100 dark:text-slate-300 font-medium">
             AI-Powered Multi-Stakeholder Civic Problem Solving System
           </span>
         </div>
 
-        {/* Right: Accessibility Toolbar & Language Selector */}
-        <div className="flex items-center gap-3 sm:gap-4 ml-auto">
-          <div className="flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-700/60 text-[10px]">
-            <span className="text-emerald-300 mr-1 hidden sm:inline">{t(language, 'textSize')}:</span>
+        {/* Right: Accessibility Toolbar, Theme Toggle & Language Selector */}
+        <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+          {/* Quick Theme Toggle in Top Strip */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-1 bg-emerald-950/60 dark:bg-slate-800/80 px-2 py-0.5 rounded border border-emerald-700/60 dark:border-slate-700 text-[10px] text-amber-300 hover:text-white transition-colors cursor-pointer"
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {theme === 'dark' ? <Sun size={10} className="text-amber-300" /> : <Moon size={10} className="text-emerald-300" />}
+            <span className="capitalize hidden sm:inline">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          </button>
+
+          <div className="flex items-center gap-1 bg-emerald-950/60 dark:bg-slate-800/80 px-2 py-0.5 rounded border border-emerald-700/60 dark:border-slate-700 text-[10px]">
+            <span className="text-emerald-300 dark:text-slate-300 mr-1 hidden sm:inline">{t(language, 'textSize')}:</span>
             <button
               onClick={() => handleFontChange('sm')}
               className={cn('px-1 rounded hover:text-white', fontSize === 'sm' && 'text-amber-300 font-bold')}
@@ -163,8 +173,8 @@ function NationalGovHeader() {
           </div>
 
           {/* Language Switcher: English, Hindi, Bengali */}
-          <div className="flex items-center gap-1 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-700/60 text-[10px]">
-            <Globe size={10} className="text-emerald-300" />
+          <div className="flex items-center gap-1 bg-emerald-950/60 dark:bg-slate-800/80 px-2 py-0.5 rounded border border-emerald-700/60 dark:border-slate-700 text-[10px]">
+            <Globe size={10} className="text-emerald-300 dark:text-slate-300" />
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value as SupportedLang)}
@@ -185,7 +195,7 @@ function NationalGovHeader() {
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, activeRole, setActiveRole, logout, language } = useAppStore();
+  const { user, activeRole, setActiveRole, logout, language, theme, toggleTheme } = useAppStore();
   const activeConfig = useActiveRoleConfig();
 
   const [isScrolled, setIsScrolled] = useState(false);
@@ -259,7 +269,7 @@ export default function Navbar() {
 
       <header
         className={cn(
-          'sticky top-0 z-40 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-sm'
+          'sticky top-0 z-40 transition-all duration-300 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-emerald-100 dark:border-slate-800 shadow-sm'
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -267,15 +277,15 @@ export default function Navbar() {
 
             {/* ── Brand Emblem Logo ── */}
             <Link to="/" className="flex items-center gap-3.5 group shrink-0">
-              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 border-2 border-emerald-600 flex items-center justify-center text-emerald-800 font-black shadow-sm group-hover:bg-emerald-100 transition-colors">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-emerald-50 dark:bg-slate-800 border-2 border-emerald-600 dark:border-emerald-500 flex items-center justify-center text-emerald-800 dark:text-emerald-400 font-black shadow-sm group-hover:bg-emerald-100 dark:group-hover:bg-slate-700 transition-colors">
                 <span className="text-xl">🏛️</span>
               </div>
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl sm:text-2xl font-black tracking-tight text-emerald-900 leading-none">
+                  <span className="text-xl sm:text-2xl font-black tracking-tight text-emerald-900 dark:text-white leading-none">
                     SAM<span className="text-emerald-600">ADHAAN</span>
                   </span>
-                  <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800">
                     AI PLATFORM
                   </span>
                 </div>
@@ -296,8 +306,8 @@ export default function Navbar() {
                     className={cn(
                       'flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200',
                       isActive
-                        ? 'text-emerald-900 bg-emerald-100/80 border border-emerald-300 font-bold shadow-xs'
-                        : 'text-slate-700 hover:text-emerald-800 hover:bg-emerald-50'
+                        ? 'text-emerald-900 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-700 font-bold shadow-xs'
+                        : 'text-slate-700 dark:text-slate-300 hover:text-emerald-800 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-slate-800'
                     )}
                   >
                     <span className={isActive ? 'text-emerald-700' : 'text-slate-500'}>{item.icon}</span>
@@ -310,11 +320,21 @@ export default function Navbar() {
             {/* ── Right Controls ── */}
             <div className="flex items-center gap-2 sm:gap-3">
 
+              {/* Theme Toggle Button */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-slate-700 text-slate-700 dark:text-amber-300 hover:text-emerald-800 dark:hover:text-amber-200 hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors cursor-pointer shadow-xs"
+                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                aria-label="Toggle Theme"
+              >
+                {theme === 'dark' ? <Sun size={17} className="text-amber-300" /> : <Moon size={17} className="text-slate-700" />}
+              </button>
+
               {/* Role Switcher */}
               <div ref={roleRef} className="relative hidden md:block">
                 <button
                   onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 border border-emerald-200 text-emerald-900 hover:bg-emerald-100 transition-colors shadow-xs"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 dark:bg-slate-800 border border-emerald-200 dark:border-slate-700 text-emerald-900 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-slate-700 transition-colors shadow-xs"
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse" />
                   <span className="capitalize">{activeConfig?.label || activeRole}</span>
@@ -328,7 +348,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-emerald-200 shadow-xl py-2 z-50 overflow-hidden"
+                      className="absolute right-0 mt-2 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-slate-800 shadow-xl py-2 z-50 overflow-hidden"
                     >
                       <div className="px-3 py-1.5 border-b border-emerald-100">
                         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Switch Persona</p>
@@ -366,7 +386,7 @@ export default function Navbar() {
               <div ref={notifRef} className="relative">
                 <button
                   onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
-                  className="relative p-2 sm:p-2.5 rounded-xl bg-white border border-emerald-200 text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 transition-colors cursor-pointer shadow-xs"
+                  className="relative p-2 sm:p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-emerald-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-emerald-800 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors cursor-pointer shadow-xs"
                   title="Notifications"
                 >
                   <Bell size={17} />
@@ -387,7 +407,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.95 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-[calc(100vw-32px)] sm:w-96 max-w-sm rounded-2xl bg-white border border-emerald-200 shadow-2xl py-2 z-50 overflow-hidden"
+                      className="absolute right-0 mt-2 w-[calc(100vw-32px)] sm:w-96 max-w-sm rounded-2xl bg-white dark:bg-slate-900 border border-emerald-200 dark:border-slate-800 shadow-2xl py-2 z-50 overflow-hidden"
                     >
                       <div className="px-4 py-3 border-b border-emerald-100 flex items-center justify-between bg-emerald-50/50">
                         <div className="flex items-center gap-2">
@@ -549,8 +569,21 @@ export default function Navbar() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden bg-white border-b border-emerald-200 px-4 py-4 space-y-3 shadow-xl"
+              className="lg:hidden bg-white dark:bg-slate-900 border-b border-emerald-200 dark:border-slate-800 px-4 py-4 space-y-3 shadow-xl"
             >
+              {/* Mobile Theme Toggle */}
+              <div className="flex items-center justify-between pb-2 border-b border-emerald-100 dark:border-slate-800">
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5">
+                  {theme === 'dark' ? <Moon size={14} className="text-amber-400" /> : <Sun size={14} className="text-amber-500" />}
+                  <span>Appearance Mode</span>
+                </span>
+                <button
+                  onClick={toggleTheme}
+                  className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 cursor-pointer"
+                >
+                  {theme === 'dark' ? '☀️ Switch to Light' : '🌙 Switch to Dark'}
+                </button>
+              </div>
               <div className="flex flex-col gap-1">
                 {navItems.map((item) => (
                   <Link

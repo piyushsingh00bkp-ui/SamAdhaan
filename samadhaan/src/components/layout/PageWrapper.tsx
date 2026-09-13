@@ -16,7 +16,7 @@ const pageVariants = {
 
 export default function PageWrapper({ children, withFooter = true, className }: PageWrapperProps) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       <Navbar />
       <motion.main
         variants={pageVariants}

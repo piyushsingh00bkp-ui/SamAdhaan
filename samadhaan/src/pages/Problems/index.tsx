@@ -152,7 +152,7 @@ export default function ProblemsPage() {
               </span>
               <span className="text-[11px] font-semibold text-stone-500">Live SLA Tracking</span>
             </div>
-            <h1 className="text-2xl font-bold text-stone-900">Civic Challenges & Grievances</h1>
+            <h1 className="text-2xl font-bold text-stone-900 dark:text-white">Civic Challenges & Grievances</h1>
             <p className="text-xs text-stone-500 mt-0.5">Explore, search by token (`GRV-XXXX`), and track verified civic issues.</p>
           </div>
 
@@ -165,7 +165,7 @@ export default function ProblemsPage() {
         </div>
 
         {/* Search & Filter Toolbar */}
-        <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-4 mb-6 space-y-4">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-stone-200 dark:border-slate-800 shadow-sm p-4 mb-6 space-y-4">
           <div className="flex flex-col md:flex-row items-center gap-3">
             {/* Search Input */}
             <div className="relative flex-1 w-full">
@@ -175,7 +175,7 @@ export default function ProblemsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by Grievance Token (e.g. GRV-1001), Location, or Keyword..."
-                className="w-full pl-10 pr-4 py-2.5 text-xs text-stone-900 bg-stone-50 border border-stone-300 rounded-xl outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                className="w-full pl-10 pr-4 py-2.5 text-xs text-stone-900 dark:text-white bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-500"
               />
             </div>
 
@@ -183,7 +183,7 @@ export default function ProblemsPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value as any)}
-              className="bg-stone-50 border border-stone-300 text-xs font-semibold text-stone-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 w-full md:w-auto"
+              className="bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 text-xs font-semibold text-stone-700 dark:text-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 w-full md:w-auto"
             >
               {STATUSES.map((st) => (
                 <option key={st.value} value={st.value}>{st.label}</option>
@@ -196,7 +196,7 @@ export default function ProblemsPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-stone-50 border border-stone-300 text-xs font-semibold text-stone-700 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 w-full md:w-auto"
+                className="bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 text-xs font-semibold text-stone-700 dark:text-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-500 w-full md:w-auto"
               >
                 <option value="urgency">Sort by Highest AI Urgency</option>
                 <option value="newest">Sort by Newest First</option>
@@ -244,7 +244,7 @@ export default function ProblemsPage() {
                 key={p.id}
                 layout
                 whileHover={{ y: -3 }}
-                className="bg-white rounded-2xl border border-stone-200 hover:border-emerald-400 hover:shadow-md transition-all p-5 flex flex-col justify-between"
+                className="bg-white dark:bg-slate-900 border border-stone-200 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-md transition-all p-5 flex flex-col justify-between"
               >
                 <div>
                   {/* Card Header */}

@@ -390,7 +390,7 @@ export default function CopilotWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="w-[calc(100vw-24px)] sm:w-[440px] max-w-[440px] h-[80vh] sm:h-[580px] max-h-[640px] bg-white rounded-2xl sm:rounded-3xl border border-emerald-200 shadow-2xl shadow-emerald-950/15 flex flex-col overflow-hidden z-50"
+            className="w-[calc(100vw-24px)] sm:w-[440px] max-w-[440px] h-[80vh] sm:h-[580px] max-h-[640px] bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl border border-emerald-200 dark:border-slate-800 shadow-2xl shadow-emerald-950/15 flex flex-col overflow-hidden z-50"
           >
             {/* Header with clean styling and ZERO exposed keys */}
             <div className="p-4 bg-gradient-to-r from-emerald-800 via-emerald-700 to-emerald-800 border-b border-emerald-600 flex items-center justify-between text-white">
@@ -420,7 +420,7 @@ export default function CopilotWidget() {
             </div>
 
             {/* Message Body */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/50">
+            <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/50 dark:bg-slate-950/70">
               {messages.map((m, idx) => (
                 <motion.div
                   key={idx}
@@ -437,7 +437,7 @@ export default function CopilotWidget() {
                   <div className={`max-w-[85%] rounded-2xl p-3.5 text-xs shadow-xs ${
                     m.role === 'user'
                       ? 'bg-emerald-600 text-white rounded-tr-xs'
-                      : 'bg-white border border-stone-200 text-slate-800 rounded-tl-xs'
+                      : 'bg-white dark:bg-slate-800 border border-stone-200 dark:border-slate-700 text-slate-800 dark:text-slate-100 rounded-tl-xs'
                   }`}>
                     {renderFormattedText(m.text)}
 
@@ -479,12 +479,12 @@ export default function CopilotWidget() {
 
             {/* Suggested Follow-ups */}
             {messages[messages.length - 1]?.suggestedFollowUps && !loading && (
-              <div className="px-4 py-2 bg-white border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              <div className="px-4 py-2 bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
                 {messages[messages.length - 1].suggestedFollowUps?.map((fu, fIdx) => (
                   <button
                     key={fIdx}
                     onClick={() => sendQuery(fu)}
-                    className="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 text-slate-600 text-[11px] font-medium border border-slate-200 transition-all cursor-pointer shrink-0"
+                    className="whitespace-nowrap px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-slate-700 hover:text-emerald-700 dark:hover:text-emerald-400 hover:border-emerald-300 text-slate-600 dark:text-slate-300 text-[11px] font-medium border border-slate-200 dark:border-slate-700 transition-all cursor-pointer shrink-0"
                   >
                     {fu}
                   </button>
@@ -493,13 +493,13 @@ export default function CopilotWidget() {
             )}
 
             {/* Chat Input Bar */}
-            <form onSubmit={handleSend} className="p-3 bg-white border-t border-stone-200 flex items-center gap-2">
+            <form onSubmit={handleSend} className="p-3 bg-white dark:bg-slate-900 border-t border-stone-200 dark:border-slate-800 flex items-center gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder="Ask SAMADHAAN AI about grievances, CSR, etc..."
-                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all"
+                className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800 transition-all"
               />
               <Button
                 type="submit"

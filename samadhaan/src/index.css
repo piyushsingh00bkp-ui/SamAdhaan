@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* ── White & Emerald Green GovTech Palette ───────────── */
   --color-gov-green-950: #022c22;
@@ -66,16 +68,15 @@ body {
   font-family: var(--font-sans);
   min-height: 100vh;
   line-height: 1.6;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* ── National GovTech Tricolor Ribbon ──────── */
-.tricolor-bar {
-  height: 4px;
-  background: linear-gradient(90deg, #ff9933 0%, #ff9933 33.33%, #ffffff 33.33%, #ffffff 66.66%, #138808 66.66%, #138808 100%);
-  width: 100%;
+html.dark body {
+  background-color: #020617;
+  color: #f8fafc;
 }
 
-/* ── Custom green scrollbar ────────────────── */
+/* ── Custom scrollbars ─────────────────────── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f0fdf4; }
 ::-webkit-scrollbar-thumb {
@@ -84,7 +85,11 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover { background: #10b981; }
 
-/* ── White & Emerald Cards & Glass ─────────── */
+html.dark ::-webkit-scrollbar-track { background: #0b1120; }
+html.dark ::-webkit-scrollbar-thumb { background: #1e293b; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #10b981; }
+
+/* ── White & Emerald Cards & Glass (Light Mode) ── */
 .glass {
   background: #ffffff;
   border: 1px solid #d1fae5;
@@ -102,10 +107,34 @@ body {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
+/* ── Dark Mode Cards & Glass Adaptations ──── */
+html.dark .glass {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4);
+}
+
+html.dark .glass-light {
+  background: #1e293b;
+  border: 1px solid #334155;
+}
+
+html.dark .gov-card {
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
 .gov-seal-badge {
   background: #ecfdf5;
   border: 1px solid #a7f3d0;
   color: #065f46;
+}
+
+html.dark .gov-seal-badge {
+  background: #064e3b;
+  border: 1px solid #047857;
+  color: #a7f3d0;
 }
 
 .glow-brand {
@@ -124,6 +153,13 @@ body {
   background-clip: text;
 }
 
+html.dark .gradient-text {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 50%, #f8fafc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 .gradient-text-green {
   background: linear-gradient(135deg, #047857 0%, #10b981 60%, #064e3b 100%);
   -webkit-background-clip: text;
@@ -131,7 +167,14 @@ body {
   background-clip: text;
 }
 
-/* ── Hero Light Green & White Gradient ─────── */
+html.dark .gradient-text-green {
+  background: linear-gradient(135deg, #34d399 0%, #6ee7b7 60%, #a7f3d0 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Hero Light & Dark Gradient ─────────────── */
 .hero-gradient {
   background:
     radial-gradient(ellipse 70% 50% at 20% 20%, rgba(236, 253, 245, 0.9) 0%, transparent 70%),
@@ -140,54 +183,47 @@ body {
     #ffffff;
 }
 
-/* ── Global Card Text Adaptations for Light Palette ── */
-.glass .text-white,
-.gov-card .text-white {
+html.dark .hero-gradient {
+  background:
+    radial-gradient(ellipse 70% 50% at 20% 20%, rgba(6, 78, 59, 0.25) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 30%, rgba(4, 120, 87, 0.15) 0%, transparent 60%),
+    #020617;
+}
+
+/* ── Light mode card text overrides ─────────── */
+html:not(.dark) .glass .text-white,
+html:not(.dark) .gov-card .text-white {
   color: #0f172a !important;
 }
 
-.glass .text-slate-400,
-.gov-card .text-slate-400 {
+html:not(.dark) .glass .text-slate-400,
+html:not(.dark) .gov-card .text-slate-400 {
   color: #475569 !important;
 }
 
-.glass .text-slate-500,
-.gov-card .text-slate-500 {
+html:not(.dark) .glass .text-slate-500,
+html:not(.dark) .gov-card .text-slate-500 {
   color: #64748b !important;
 }
 
-.glass .text-slate-300,
-.gov-card .text-slate-300 {
+html:not(.dark) .glass .text-slate-300,
+html:not(.dark) .gov-card .text-slate-300 {
   color: #334155 !important;
 }
 
-.glass .border-white\/8,
-.glass .border-white\/6,
-.glass .border-white\/10,
-.glass .border-white\/4,
-.gov-card .border-white\/8,
-.gov-card .border-white\/6 {
-  border-color: #d1fae5 !important;
-}
-
-.glass .bg-white\/2,
-.glass .bg-white\/3,
-.glass .bg-white\/4,
-.glass .bg-white\/5,
-.glass .bg-white\/6,
-.gov-card .bg-white\/2,
-.gov-card .bg-white\/3,
-.gov-card .bg-white\/4,
-.gov-card .bg-white\/5 {
-  background-color: #f0fdf4 !important;
-}
-
-/* ── Recharts light override ───────────────── */
+/* ── Recharts styling ──────────────────────── */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
   stroke: #e2e8f0 !important;
 }
-.recharts-text { fill: #475569 !important; }
+html.dark .recharts-cartesian-grid-horizontal line,
+html.dark .recharts-cartesian-grid-vertical line {
+  stroke: #1e293b !important;
+}
 
-/* ── Leaflet map light styling ─────────────── */
+.recharts-text { fill: #475569 !important; }
+html.dark .recharts-text { fill: #94a3b8 !important; }
+
+/* ── Leaflet map styling ───────────────────── */
 .leaflet-container { background: #f0fdf4 !important; }
+html.dark .leaflet-container { background: #0b1120 !important; }
