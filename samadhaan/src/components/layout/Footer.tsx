@@ -10,21 +10,21 @@ export default function Footer() {
   const language = useLanguage();
 
   return (
-    <footer className="bg-white border-t-2 border-emerald-500 text-slate-700 text-xs">
+    <footer className="bg-white dark:bg-slate-950 border-t-2 border-emerald-500 dark:border-emerald-600 text-slate-700 dark:text-slate-300 text-xs transition-colors">
       {/* Top Innovation Badges Strip */}
-      <div className="bg-emerald-50/70 border-b border-emerald-100 py-3">
+      <div className="bg-emerald-50/70 dark:bg-slate-900/80 border-b border-emerald-100 dark:border-slate-800 py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <span className="font-bold text-emerald-950 flex items-center gap-1.5">
+            <span className="font-bold text-emerald-950 dark:text-emerald-300 flex items-center gap-1.5">
               <Sparkles size={15} className="text-emerald-700" />
               <span>{t(language, 'brandTagline')}</span>
             </span>
             <span className="hidden md:inline text-emerald-300">|</span>
-            <span className="hidden md:inline text-emerald-800 font-medium">
+            <span className="hidden md:inline text-emerald-800 dark:text-emerald-400 font-medium">
               Civic Hackathon 2026 Project
             </span>
           </div>
-          <div className="flex items-center gap-3 text-emerald-800 font-bold">
+          <div className="flex items-center gap-3 text-emerald-800 dark:text-emerald-400 font-bold">
             <span>{t(language, 'swachhBharat')}</span>
             <span>•</span>
             <span>{t(language, 'smartCities')}</span>
@@ -44,13 +44,13 @@ export default function Footer() {
               ⚡
             </div>
             <div>
-              <h3 className="font-black text-lg text-emerald-950 tracking-tight">
+              <h3 className="font-black text-lg text-emerald-950 dark:text-white tracking-tight">
                 SAM<span className="text-emerald-600">ADHAAN</span>
               </h3>
               <p className="text-[11px] text-slate-500 font-medium">AI-Powered Multi-Stakeholder Civic Problem Solving System</p>
             </div>
           </div>
-          <p className="text-slate-600 leading-relaxed text-xs">
+          <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-xs">
             {t(language, 'heroDesc')}
           </p>
           <div className="flex items-center gap-3 text-xs text-slate-600">
@@ -68,8 +68,8 @@ export default function Footer() {
 
         {/* Col 2: Platform Services */}
         <div className="space-y-3">
-          <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'citizenServices')}</h4>
-          <ul className="space-y-2 text-slate-600">
+          <h4 className="font-bold text-emerald-950 dark:text-white text-sm">{t(language, 'citizenServices')}</h4>
+          <ul className="space-y-2 text-slate-600 dark:text-slate-400">
             <li><Link to="/problems/new" className="hover:text-emerald-700 transition-colors">{t(language, 'fileGrievance')}</Link></li>
             <li><Link to="/problems" className="hover:text-emerald-700 transition-colors">{t(language, 'navGrievance')}</Link></li>
             <li><Link to="/impact" className="hover:text-emerald-700 transition-colors">{t(language, 'navImpactMap')}</Link></li>
@@ -80,8 +80,8 @@ export default function Footer() {
 
         {/* Col 3: Stakeholder Hubs */}
         <div className="space-y-3">
-          <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'stakeholderHubs')}</h4>
-          <ul className="space-y-2 text-slate-600">
+          <h4 className="font-bold text-emerald-950 dark:text-white text-sm">{t(language, 'stakeholderHubs')}</h4>
+          <ul className="space-y-2 text-slate-600 dark:text-slate-400">
             <li><Link to="/universities" className="hover:text-emerald-700 transition-colors">{t(language, 'navUniversities')}</Link></li>
             <li><Link to="/industry" className="hover:text-emerald-700 transition-colors">{t(language, 'navIndustry')}</Link></li>
             <li><Link to="/government" className="hover:text-emerald-700 transition-colors">{t(language, 'navCommandDesk')}</Link></li>
@@ -91,8 +91,8 @@ export default function Footer() {
 
         {/* Col 4: Open Architecture */}
         <div className="space-y-3">
-          <h4 className="font-bold text-emerald-950 text-sm">{t(language, 'statutoryCompliance')}</h4>
-          <ul className="space-y-2 text-slate-600">
+          <h4 className="font-bold text-emerald-950 dark:text-white text-sm">{t(language, 'statutoryCompliance')}</h4>
+          <ul className="space-y-2 text-slate-600 dark:text-slate-400">
             <li><span className="hover:text-emerald-700 cursor-pointer">{t(language, 'rti')}</span></li>
             <li><span className="hover:text-emerald-700 cursor-pointer">{t(language, 'citizenCharter')}</span></li>
             <li><span className="hover:text-emerald-700 cursor-pointer">Privacy & Data Governance</span></li>
@@ -102,10 +102,10 @@ export default function Footer() {
       </div>
 
       {/* Bottom Copyright Strip */}
-      <div className="bg-slate-50 border-t border-emerald-100 py-4 text-[11px] text-slate-500">
+      <div className="bg-slate-50 dark:bg-slate-900 border-t border-emerald-100 dark:border-slate-800 py-4 text-[11px] text-slate-500 dark:text-slate-400">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
           <p>{t(language, 'copyright')}</p>
-          <div className="flex items-center gap-4 text-emerald-700 font-semibold">
+          <div className="flex items-center gap-4 text-emerald-700 dark:text-emerald-400 font-semibold">
             <span>Real-time Telemetry</span>
             <span>•</span>
             <span>Live Cloud Sync</span>

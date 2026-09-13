@@ -145,21 +145,21 @@ export default function SignupPage() {
             S
           </div>
           <div className="flex flex-col leading-none">
-            <span className="text-lg font-black tracking-tight text-stone-900">SAMADHAAN</span>
+            <span className="text-lg font-black tracking-tight text-stone-900 dark:text-white">SAMADHAAN</span>
             <span className="text-[10px] text-emerald-800 font-bold tracking-widest uppercase mt-0.5">
-              National GovTech Gateway
+              Civic Innovation Gateway
             </span>
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-8 border border-stone-200 shadow-xl">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-8 border border-stone-200 dark:border-slate-800 shadow-xl transition-colors">
           <div className="flex items-center justify-between mb-1">
-            <h1 className="text-xl font-bold text-stone-900">Create Citizen Account</h1>
+            <h1 className="text-xl font-bold text-stone-900 dark:text-white">Create Citizen Account</h1>
             <span className="text-[11px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
               Free Registration
             </span>
           </div>
-          <p className="text-xs text-stone-500 mb-6 font-normal">Join citizens, municipal officers, researchers, and CSR sponsors</p>
+          <p className="text-xs text-stone-500 mb-6 font-normal">Join citizens, researchers, urban teams, and CSR sponsors</p>
 
           {authError && (
             <div className="mb-4 p-3.5 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800 flex items-start gap-2">
@@ -172,7 +172,7 @@ export default function SignupPage() {
             type="button"
             onClick={handleGoogleSignUp}
             disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl border border-stone-300 bg-stone-50 hover:bg-stone-100 text-xs font-bold text-stone-800 transition-all mb-5 cursor-pointer shadow-xs"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-xl border border-stone-300 dark:border-slate-700 bg-stone-50 dark:bg-slate-800 hover:bg-stone-100 dark:hover:bg-slate-700 text-xs font-bold text-stone-800 dark:text-slate-200 transition-all mb-5 cursor-pointer shadow-xs"
           >
             <svg className="w-4 h-4" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -185,7 +185,7 @@ export default function SignupPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
-              <label className="text-xs font-bold text-stone-700 mb-2 block uppercase tracking-wider">Select Primary Role</label>
+              <label className="text-xs font-bold text-stone-700 dark:text-slate-300 mb-2 block uppercase tracking-wider">Select Primary Role</label>
               <div className="grid grid-cols-2 gap-2">
                 {ROLE_CONFIGS.map((role) => (
                   <button
@@ -195,7 +195,7 @@ export default function SignupPage() {
                     className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-semibold transition-all text-left ${
                       selectedRole === role.id
                         ? 'bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-200'
-                        : 'bg-stone-50 border-stone-200 text-stone-700 hover:bg-stone-100'
+                        : 'bg-stone-50 dark:bg-slate-800 border-stone-200 dark:border-slate-700 text-stone-700 dark:text-slate-300 hover:bg-stone-100 dark:hover:bg-slate-700'
                     }`}
                   >
                     <span>{role.icon}</span>
@@ -206,33 +206,33 @@ export default function SignupPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold text-stone-700 mb-1.5 block uppercase tracking-wider">Full Name *</label>
+              <label className="text-xs font-bold text-stone-700 dark:text-slate-300 mb-1.5 block uppercase tracking-wider">Full Name *</label>
               <input
                 {...register('name')}
                 placeholder="e.g. Ananya Sharma"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-xs text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 text-xs text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
               />
               {errors.name && <p className="text-xs text-red-600 mt-1">{errors.name.message}</p>}
             </div>
 
             {selectedRole !== 'citizen' && (
               <div>
-                <label className="text-xs font-bold text-stone-700 mb-1.5 block uppercase tracking-wider">Organization / University Name</label>
+                <label className="text-xs font-bold text-stone-700 dark:text-slate-300 mb-1.5 block uppercase tracking-wider">Organization / University Name</label>
                 <input
                   {...register('organization')}
                   placeholder="e.g. COEP Tech University or Pune Municipal Corp"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-xs text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 text-xs text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
                 />
               </div>
             )}
 
             <div>
-              <label className="text-xs font-bold text-stone-700 mb-1.5 block uppercase tracking-wider">Email Address *</label>
+              <label className="text-xs font-bold text-stone-700 dark:text-slate-300 mb-1.5 block uppercase tracking-wider">Email Address *</label>
               <input
                 {...register('email')}
                 type="email"
                 placeholder="you@example.com"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 border border-stone-300 text-xs text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 text-xs text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
               />
               {errors.email && <p className="text-xs text-red-600 mt-1">{errors.email.message}</p>}
             </div>
@@ -244,7 +244,7 @@ export default function SignupPage() {
                   {...register('password')}
                   type={showPwd ? 'text' : 'password'}
                   placeholder="••••••••"
-                  className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-stone-50 border border-stone-300 text-xs text-stone-900 placeholder:text-stone-400 focus:bg-white focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
+                  className="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 text-xs text-stone-900 dark:text-white placeholder:text-stone-400 dark:placeholder:text-slate-500 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 transition-all font-medium"
                 />
                 <button
                   type="button"

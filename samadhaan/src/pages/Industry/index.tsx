@@ -149,10 +149,10 @@ export default function IndustryPage() {
               Section 135 Companies Act CSR Portal
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
             Corporate CSR Co-Funding & SROI Impact Hub
           </h1>
-          <p className="text-slate-600 max-w-3xl text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 max-w-3xl text-sm sm:text-base leading-relaxed">
             Direct audited CSR funds to high-priority municipal projects and university prototypes with full MCA Schedule VII compliance, real-time telemetry, and certified beneficiary audits.
           </p>
         </motion.div>
@@ -170,7 +170,7 @@ export default function IndustryPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-2xl p-5 border-2 border-emerald-100 shadow-xs hover:border-emerald-300 transition-colors"
+              className="bg-white dark:bg-slate-900 rounded-2xl p-5 border-2 border-emerald-100 dark:border-slate-800 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-slate-500 font-medium">{item.label}</p>
@@ -178,36 +178,36 @@ export default function IndustryPage() {
                   <item.icon size={16} />
                 </div>
               </div>
-              <p className="text-2xl font-black text-slate-900">{item.val}</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">{item.val}</p>
             </motion.div>
           ))}
         </div>
 
         {/* Interactive AI SROI Simulator */}
-        <div className="bg-white rounded-3xl p-6 border-2 border-emerald-200 shadow-sm space-y-5">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-emerald-200 dark:border-slate-800 shadow-sm space-y-5 transition-colors">
           <div className="flex items-center gap-2 border-b border-emerald-100 pb-3">
             <Calculator size={20} className="text-emerald-700" />
-            <h3 className="text-base font-bold text-slate-900">Interactive AI Social Return on Investment (SROI) Simulator</h3>
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Interactive AI Social Return on Investment (SROI) Simulator</h3>
           </div>
 
           <form onSubmit={handleSimulateSROI} className="grid md:grid-cols-3 gap-4 items-end">
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Proposed CSR Grant (₹ INR)</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Proposed CSR Grant (₹ INR)</label>
               <input
                 type="number"
                 value={budgetInput}
                 onChange={(e) => setBudgetInput(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:bg-white"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800"
                 placeholder="500000"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-slate-700 block mb-1">Target Ward Citizen Population</label>
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Target Ward Citizen Population</label>
               <input
                 type="number"
                 value={populationInput}
                 onChange={(e) => setPopulationInput(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-emerald-500 focus:bg-white"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 focus:bg-white dark:focus:bg-slate-800"
                 placeholder="10000"
               />
             </div>
@@ -252,7 +252,7 @@ export default function IndustryPage() {
             {csrOpportunities.map((csr) => (
               <div
                 key={csr.id}
-                className="bg-white rounded-3xl p-6 border-2 border-emerald-100 hover:border-emerald-400 transition-all shadow-xs flex flex-col justify-between space-y-4 group"
+                className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-emerald-100 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all shadow-xs flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs">
@@ -304,7 +304,7 @@ export default function IndustryPage() {
                 initial={{ scale: 0.95, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.95, opacity: 0 }}
-                className="bg-white rounded-3xl max-w-lg w-full p-6 border border-emerald-200 shadow-2xl space-y-5"
+                className="bg-white dark:bg-slate-900 max-w-lg w-full p-6 border border-emerald-200 dark:border-slate-800 shadow-2xl space-y-5"
               >
                 <div className="flex items-center justify-between border-b border-emerald-100 pb-3">
                   <div className="flex items-center gap-2">
@@ -330,7 +330,7 @@ export default function IndustryPage() {
                 ) : (
                   <form onSubmit={handlePledgeSubmit} className="space-y-4">
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1">Grant Allocation Amount (₹ INR)</label>
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Grant Allocation Amount (₹ INR)</label>
                       <input
                         type="number"
                         value={pledgeAmount}
@@ -340,7 +340,7 @@ export default function IndustryPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-slate-700 block mb-1">Corporate Entity Name</label>
+                      <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">Corporate Entity Name</label>
                       <input
                         type="text"
                         defaultValue="Tata Power CSR Foundation"

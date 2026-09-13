@@ -161,10 +161,10 @@ export default function UniversitiesPage() {
               Higher Education & University R&D Hub
             </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
             Academic Research & Civic Prototype Innovation
           </h1>
-          <p className="text-slate-600 max-w-3xl text-sm sm:text-base leading-relaxed">
+          <p className="text-slate-600 dark:text-slate-300 max-w-3xl text-sm sm:text-base leading-relaxed">
             Connecting university faculties and student engineering labs (IITs, COEP, NITs, and State Universities) with municipal problems and CSR innovation grants.
           </p>
         </motion.div>
@@ -182,7 +182,7 @@ export default function UniversitiesPage() {
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-2xl p-5 border-2 border-emerald-100 shadow-xs hover:border-emerald-300 transition-colors"
+              className="bg-white dark:bg-slate-900 rounded-2xl p-5 border-2 border-emerald-100 dark:border-slate-800 shadow-xs hover:border-emerald-300 dark:hover:border-emerald-600 transition-colors"
             >
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs text-slate-500 font-medium">{item.label}</p>
@@ -190,7 +190,7 @@ export default function UniversitiesPage() {
                   <item.icon size={16} />
                 </div>
               </div>
-              <p className="text-2xl font-black text-slate-900">{item.val}</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">{item.val}</p>
             </motion.div>
           ))}
         </div>
@@ -198,12 +198,12 @@ export default function UniversitiesPage() {
         {/* Visual Charts: Domain Donut & HEI Grants BarChart */}
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Research Disciplines */}
-          <div className="bg-white rounded-3xl p-6 border-2 border-emerald-100 shadow-xs flex flex-col justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-emerald-100 dark:border-slate-800 shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3 pb-2 border-b border-emerald-50">
                 <div>
                   <p className="text-[11px] text-emerald-800 uppercase tracking-wider font-bold">Research Disciplines</p>
-                  <h3 className="text-base font-bold text-slate-900">Prototype Domains</h3>
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">Prototype Domains</h3>
                 </div>
                 <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center">
                   <PieIcon size={16} />
@@ -250,7 +250,7 @@ export default function UniversitiesPage() {
             <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-emerald-50">
               <div>
                 <p className="text-[11px] text-emerald-800 uppercase tracking-wider font-bold">Academic Performance</p>
-                <h3 className="text-base font-bold text-slate-900">Active Student Teams & Seed Grants (₹ Lakhs)</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Active Student Teams & Seed Grants (₹ Lakhs)</h3>
               </div>
               <div className="flex items-center gap-4 text-xs font-semibold">
                 <span className="flex items-center gap-1.5 text-emerald-800"><span className="w-2.5 h-2.5 rounded-full bg-emerald-600" /> Student Teams</span>
@@ -292,7 +292,7 @@ export default function UniversitiesPage() {
             {challenges.map((uc) => (
               <div
                 key={uc.id}
-                className="bg-white rounded-3xl p-6 border-2 border-emerald-100 hover:border-emerald-400 transition-all shadow-xs flex flex-col justify-between space-y-4 group"
+                className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-emerald-100 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 transition-all shadow-xs flex flex-col justify-between space-y-4 group"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between text-xs">

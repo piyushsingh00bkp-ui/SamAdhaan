@@ -351,7 +351,7 @@ export default function GovernmentPage() {
                 <Landmark size={16} className="text-amber-400" />
               </div>
               <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">Government & Municipal Command</span>
-              <span className="text-xs text-slate-400 bg-white/4 px-2 py-0.5 rounded-full border border-stone-100">GovTech Console</span>
+              <span className="text-xs text-slate-400 bg-white/4 px-2 py-0.5 rounded-full border border-stone-100">Operations Console</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900">University Assignment & CSR Co-Funding Console</h1>
             <p className="text-slate-400 mt-1 max-w-2xl text-sm">
@@ -386,7 +386,7 @@ export default function GovernmentPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Bot size={15} className="text-indigo-400" />
-                  <span className="text-xs font-bold text-white">Custom Google Gemini API Key</span>
+                  <span className="text-xs font-bold text-white">Custom AI Engine API Key</span>
                 </div>
                 <button onClick={() => setShowKeyInput(false)} className="text-xs text-slate-400 hover:text-white cursor-pointer">Close</button>
               </div>
@@ -396,7 +396,7 @@ export default function GovernmentPage() {
                   placeholder="AIzaSy..."
                   value={geminiApiKey}
                   onChange={(e) => handleSaveApiKey(e.target.value)}
-                  className="flex-1 px-3 py-2 rounded-xl bg-white border border-stone-300 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                  className="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-700 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
             </motion.div>
@@ -410,7 +410,7 @@ export default function GovernmentPage() {
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'match'
                 ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30'
-                : 'bg-white text-slate-700 hover:text-emerald-900 hover:bg-emerald-50 border border-stone-200'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-emerald-900 dark:hover:text-white hover:bg-emerald-50 dark:hover:bg-slate-800 border border-stone-200 dark:border-slate-800'
             }`}
           >
             <GraduationCap size={15} />
@@ -421,7 +421,7 @@ export default function GovernmentPage() {
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'dossier'
                 ? 'bg-amber-600 text-white shadow-lg shadow-amber-600/30'
-                : 'bg-white text-slate-700 hover:text-emerald-900 hover:bg-emerald-50 border border-stone-200'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-emerald-900 dark:hover:text-white hover:bg-emerald-50 dark:hover:bg-slate-800 border border-stone-200 dark:border-slate-800'
             }`}
           >
             <FileText size={15} />
@@ -432,7 +432,7 @@ export default function GovernmentPage() {
             className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer ${
               activeTab === 'radar'
                 ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30'
-                : 'bg-white text-slate-700 hover:text-emerald-900 hover:bg-emerald-50 border border-stone-200'
+                : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:text-emerald-900 dark:hover:text-white hover:bg-emerald-50 dark:hover:bg-slate-800 border border-stone-200 dark:border-slate-800'
             }`}
           >
             <BarChart2 size={15} />

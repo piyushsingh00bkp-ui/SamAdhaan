@@ -65,7 +65,7 @@ export default function ProfilePage() {
         login({
           id: u.id || user?.id || 'citizen_user',
           name: u.name || user?.name || 'Citizen User',
-          email: u.email || user?.email || 'citizen@samadhaan.gov.in',
+          email: u.email || user?.email || 'citizen@samadhaan.dev',
           role: (u.role || user?.role || 'citizen').toLowerCase() as any,
           avatar: u.avatar || u.avatarUrl,
           joinedAt: u.createdAt || user?.joinedAt || new Date().toISOString(),
@@ -167,7 +167,7 @@ export default function ProfilePage() {
     <PageWrapper>
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
         {/* Profile Banner */}
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200 shadow-sm relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-stone-200 dark:border-slate-800 shadow-sm relative overflow-hidden transition-colors">
           <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-emerald-500/5 blur-3xl pointer-events-none" />
 
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
@@ -177,14 +177,14 @@ export default function ProfilePage() {
               </div>
               <div>
                 <div className="flex items-center gap-3">
-                  <h1 className="text-xl sm:text-2xl font-bold text-stone-900">{user?.name || 'Citizen User'}</h1>
+                  <h1 className="text-xl sm:text-2xl font-bold text-stone-900 dark:text-white">{user?.name || 'Citizen User'}</h1>
                   <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold uppercase border ${rankTier.bg}`}>
                     {rankTier.icon}
                     {rankTier.name}
                   </span>
                 </div>
                 <div className="text-xs text-stone-500 mt-1 flex items-center gap-4 flex-wrap font-medium">
-                  <span className="flex items-center gap-1"><Mail size={13} className="text-emerald-700" /> {user?.email || 'citizen@samadhaan.gov.in'}</span>
+                  <span className="flex items-center gap-1"><Mail size={13} className="text-emerald-700" /> {user?.email || 'citizen@samadhaan.dev'}</span>
                   <span className="flex items-center gap-1"><MapPin size={13} className="text-emerald-700" /> {formData.city}, {formData.state}</span>
                   <span className="flex items-center gap-1 font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                     Role: {user?.role ? user.role.toUpperCase() : 'CITIZEN'}
@@ -224,48 +224,48 @@ export default function ProfilePage() {
                 className="mt-6 pt-6 border-t border-stone-200 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs"
               >
                 <div>
-                  <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">Display Name</label>
+                  <label className="block text-[11px] font-bold text-stone-700 dark:text-slate-300 uppercase mb-1">Display Name</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-xl text-stone-900 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                    className="w-full px-3 py-2 bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl text-stone-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">Phone Number</label>
+                  <label className="block text-[11px] font-bold text-stone-700 dark:text-slate-300 uppercase mb-1">Phone Number</label>
                   <input
                     type="text"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-xl text-stone-900 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                    className="w-full px-3 py-2 bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl text-stone-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">City / Municipal Jurisdiction</label>
+                  <label className="block text-[11px] font-bold text-stone-700 dark:text-slate-300 uppercase mb-1">City / Municipal Jurisdiction</label>
                   <input
                     type="text"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-xl text-stone-900 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                    className="w-full px-3 py-2 bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl text-stone-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">State</label>
+                  <label className="block text-[11px] font-bold text-stone-700 dark:text-slate-300 uppercase mb-1">State</label>
                   <input
                     type="text"
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-xl text-stone-900 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                    className="w-full px-3 py-2 bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl text-stone-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                   />
                 </div>
                 <div className="sm:col-span-2">
-                  <label className="block text-[11px] font-bold text-stone-700 uppercase mb-1">Bio / Civic Specialization</label>
+                  <label className="block text-[11px] font-bold text-stone-700 dark:text-slate-300 uppercase mb-1">Bio / Civic Specialization</label>
                   <textarea
                     rows={2}
                     value={formData.bio}
                     onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                    className="w-full px-3 py-2 bg-stone-50 border border-stone-300 rounded-xl text-stone-900 outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                    className="w-full px-3 py-2 bg-stone-50 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl text-stone-900 dark:text-white outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
                   />
                 </div>
                 <div className="sm:col-span-2 flex justify-end gap-2">
@@ -286,7 +286,7 @@ export default function ProfilePage() {
           {/* Left 2 Cols: Real-Time Scorecard & My Submissions */}
           <div className="lg:col-span-2 space-y-6">
             {/* Impact Score Card */}
-            <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-stone-200 dark:border-slate-800 shadow-sm transition-colors">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
@@ -344,7 +344,7 @@ export default function ProfilePage() {
             </div>
 
             {/* My Submissions Feed */}
-            <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-stone-200 dark:border-slate-800 shadow-sm transition-colors">
               <div className="flex items-center justify-between mb-4 pb-3 border-b border-stone-100">
                 <h2 className="text-sm font-bold text-stone-900 flex items-center gap-2">
                   <FileText className="text-emerald-700" size={16} />
@@ -395,7 +395,7 @@ export default function ProfilePage() {
 
           {/* Right Column: Security & Official Badges */}
           <div className="space-y-6">
-            <div className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-stone-200 dark:border-slate-800 shadow-sm transition-colors">
               <h2 className="text-xs font-bold text-stone-700 uppercase tracking-wider mb-4">
                 Statutory Citizen Badges
               </h2>
